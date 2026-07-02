@@ -1,0 +1,5 @@
+{
+  "ignore_dockerfile": true,
+  "build_command": "",
+  "start_command": "npm start"
+}
