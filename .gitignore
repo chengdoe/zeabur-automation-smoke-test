@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+data/outputs/heartbeat/heartbeat.log
+data/outputs/reports/persistence-probe.json
+.env
