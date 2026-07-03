@@ -38,6 +38,16 @@ test("GET /api/jobs lists dry-run jobs", async () => {
   assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13"]);
 });
 
+test("GET /api/status reports the dry-run scheduler state", async () => {
+  const response = await fetch(`${baseUrl}/api/status`);
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.scheduler.enabled, true);
+  assert.equal(body.scheduler.mode, "dry-run");
+  assert.equal(body.scheduler.intervalMs, 60000);
+});
+
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
   const response = await fetch(`${baseUrl}/api/jobs/sop13/dry-run?date=2026-07-03`, {
     method: "POST"

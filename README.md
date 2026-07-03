@@ -8,6 +8,7 @@ It checks:
 - environment variables
 - persistent file storage
 - scheduled background heartbeat
+- scheduled dry-run automation
 - outbound network access
 
 ## Endpoints
@@ -30,6 +31,8 @@ Set environment variables:
 ```text
 DATA_DIR=/data
 HEARTBEAT_INTERVAL_MS=60000
+SCHEDULER_ENABLED=true
+SCHEDULER_INTERVAL_MS=60000
 TEST_SECRET=hello-from-zeabur
 ```
 
@@ -54,7 +57,16 @@ The app writes:
 /data/outputs/reports/persistence-probe.json
 /data/outputs/automations/*/<YYYY-MM-DD>-dry-run.json
 /data/outputs/automations/*/<YYYY-MM-DD>-dry-run.md
+/data/outputs/automations/scheduler/<YYYY-MM-DD>.log.json
 ```
+
+## Dry-Run Schedule
+
+The scheduler is dry-run only. It writes payload previews and audit files, and never sends Feishu messages.
+
+- `morning-motivation` runs daily at 09:00 Asia/Shanghai.
+- `sop13` runs daily at 09:30 Asia/Shanghai.
+- Set `SCHEDULER_ENABLED=false` to disable scheduled dry-runs.
 
 ## Local Test
 

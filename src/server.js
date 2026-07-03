@@ -3,11 +3,15 @@ import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { listJobs, runDryRunJob } from "./dryRunRunner.js";
+import { startDryRunScheduler } from "./scheduler.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
 const heartbeatIntervalMs = Number(process.env.HEARTBEAT_INTERVAL_MS || 60_000);
+const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
+const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
 const startedAt = new Date();
+let scheduler;
 
 const dirs = {
   memory: path.join(dataDir, "memory"),
@@ -111,8 +115,11 @@ async function status() {
     dataDir,
     env: {
       hasTestSecret: Boolean(process.env.TEST_SECRET),
-      heartbeatIntervalMs
+      heartbeatIntervalMs,
+      schedulerEnabled,
+      schedulerIntervalMs
     },
+    scheduler: schedulerStatus(),
     folders: {
       memory: dirs.memory,
       uploads: dirs.uploads,
@@ -120,6 +127,16 @@ async function status() {
     },
     persistence: await getDiskProbe(),
     recentHeartbeats: await listRecentHeartbeats()
+  };
+}
+
+function schedulerStatus() {
+  return {
+    enabled: Boolean(scheduler?.enabled),
+    mode: "dry-run",
+    intervalMs: scheduler?.intervalMs || schedulerIntervalMs,
+    lastTickAt: scheduler?.state?.lastTickAt || null,
+    recentRuns: scheduler?.state?.lastRuns || []
   };
 }
 
@@ -226,6 +243,12 @@ async function main() {
     console.log(JSON.stringify(await status(), null, 2));
     return;
   }
+
+  scheduler = startDryRunScheduler({
+    dataDir,
+    enabled: schedulerEnabled,
+    intervalMs: schedulerIntervalMs
+  });
 
   setInterval(() => {
     appendHeartbeat("interval").catch((error) => {
