@@ -2,6 +2,7 @@ import http from "node:http";
 import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { listJobs, runDryRunJob } from "./dryRunRunner.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
@@ -153,6 +154,23 @@ async function handle(req, res) {
     if (url.pathname === "/api/outbound") {
       return sendJson(res, 200, { ok: true, results: await outboundCheck() });
     }
+    if (url.pathname === "/api/jobs") {
+      return sendJson(res, 200, { ok: true, jobs: listJobs() });
+    }
+    if (url.pathname === "/api/jobs/sop13/dry-run" && req.method === "POST") {
+      return sendJson(res, 200, await runDryRunJob({
+        job: "sop13",
+        date: url.searchParams.get("date") || undefined,
+        dataDir
+      }));
+    }
+    if (url.pathname === "/api/jobs/morning-motivation/dry-run" && req.method === "POST") {
+      return sendJson(res, 200, await runDryRunJob({
+        job: "morning-motivation",
+        date: url.searchParams.get("date") || undefined,
+        dataDir
+      }));
+    }
     if (url.pathname === "/") {
       const snapshot = await status();
       return sendHtml(res, `<!doctype html>
@@ -179,6 +197,7 @@ async function handle(req, res) {
       <li><a href="/health">/health</a></li>
       <li><a href="/api/status">/api/status</a></li>
       <li><a href="/api/outbound">/api/outbound</a></li>
+      <li><a href="/api/jobs">/api/jobs</a></li>
     </ul>
     <pre>${escapeHtml(JSON.stringify(snapshot, null, 2))}</pre>
   </main>

@@ -1,0 +1,80 @@
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdtemp } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { after, before, test } from "node:test";
+
+const port = 38_000 + Math.floor(Math.random() * 1000);
+const baseUrl = `http://127.0.0.1:${port}`;
+let child;
+
+before(async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-server-"));
+  child = spawn(process.execPath, ["src/server.js"], {
+    cwd: path.resolve(import.meta.dirname, ".."),
+    env: {
+      ...process.env,
+      PORT: String(port),
+      DATA_DIR: dataDir,
+      HEARTBEAT_INTERVAL_MS: "600000"
+    },
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+
+  await waitForHealth();
+});
+
+after(() => {
+  child?.kill();
+});
+
+test("GET /api/jobs lists dry-run jobs", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs`);
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13"]);
+});
+
+test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/sop13/dry-run?date=2026-07-03`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.sent, false);
+  assert.equal(body.msgType, "post");
+  assert.equal(body.payload.zh_cn.title, "");
+  assert.equal(body.payload.zh_cn.content[0][1].user_id, "all");
+});
+
+test("POST /api/jobs/morning-motivation/dry-run returns text payload without sending", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/morning-motivation/dry-run?date=2026-07-03`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.sent, false);
+  assert.equal(body.msgType, "text");
+  assert.match(body.payload.text, /^【晨间激励】2026-07-03 <at user_id="all"><\/at>/);
+});
+
+async function waitForHealth() {
+  const deadline = Date.now() + 5000;
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(`${baseUrl}/health`);
+      if (response.ok) return;
+    } catch {
+      // Keep waiting until the service is listening.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error("server did not become healthy");
+}

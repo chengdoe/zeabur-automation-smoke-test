@@ -16,6 +16,9 @@ It checks:
 - `/health` — health check
 - `/api/status` — JSON status, folders, env presence, recent heartbeats
 - `/api/outbound` — tests outbound access to Feishu and OpenAI
+- `/api/jobs` — lists available dry-run jobs
+- `POST /api/jobs/sop13/dry-run` — generates SOP13 rich-post dry-run payload and audit files; does not send
+- `POST /api/jobs/morning-motivation/dry-run` — generates morning motivation text dry-run payload and audit files; does not send
 - `POST /api/heartbeat` — writes one manual heartbeat
 
 ## Zeabur Setup
@@ -49,6 +52,14 @@ The app writes:
 /data/uploads/
 /data/outputs/heartbeat/heartbeat.log
 /data/outputs/reports/persistence-probe.json
+/data/outputs/automations/*/<YYYY-MM-DD>-dry-run.json
+/data/outputs/automations/*/<YYYY-MM-DD>-dry-run.md
+```
+
+## Local Test
+
+```text
+npm test
 ```
 
 ## Verification
@@ -66,4 +77,3 @@ After deployment:
 6. Visit `/api/outbound`; Feishu/OpenAI checks should return network results.
 
 If all pass, this server can host the first version of Kane Automation Hub.
-
