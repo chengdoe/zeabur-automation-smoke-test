@@ -3,6 +3,7 @@ import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { listJobs, runDryRunJob } from "./dryRunRunner.js";
+import { runLiveSendJob } from "./liveSendRunner.js";
 import { startDryRunScheduler } from "./scheduler.js";
 
 const port = Number(process.env.PORT || 3000);
@@ -10,6 +11,7 @@ const dataDir = path.resolve(process.env.DATA_DIR || "data");
 const heartbeatIntervalMs = Number(process.env.HEARTBEAT_INTERVAL_MS || 60_000);
 const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
 const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
+const liveSendEnabled = process.env.LIVE_SEND_ENABLED === "true";
 const startedAt = new Date();
 let scheduler;
 
@@ -117,7 +119,11 @@ async function status() {
       hasTestSecret: Boolean(process.env.TEST_SECRET),
       heartbeatIntervalMs,
       schedulerEnabled,
-      schedulerIntervalMs
+      schedulerIntervalMs,
+      liveSendEnabled,
+      hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
+      hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
+      hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)
     },
     scheduler: schedulerStatus(),
     folders: {
@@ -181,11 +187,31 @@ async function handle(req, res) {
         dataDir
       }));
     }
+    if (url.pathname === "/api/jobs/sop13/send" && req.method === "POST") {
+      return sendJson(res, 200, await runLiveSendJob({
+        job: "sop13",
+        date: url.searchParams.get("date") || undefined,
+        dataDir,
+        enabled: liveSendEnabled,
+        confirm: url.searchParams.get("confirm") || "",
+        force: url.searchParams.get("force") === "true"
+      }));
+    }
     if (url.pathname === "/api/jobs/morning-motivation/dry-run" && req.method === "POST") {
       return sendJson(res, 200, await runDryRunJob({
         job: "morning-motivation",
         date: url.searchParams.get("date") || undefined,
         dataDir
+      }));
+    }
+    if (url.pathname === "/api/jobs/morning-motivation/send" && req.method === "POST") {
+      return sendJson(res, 200, await runLiveSendJob({
+        job: "morning-motivation",
+        date: url.searchParams.get("date") || undefined,
+        dataDir,
+        enabled: liveSendEnabled,
+        confirm: url.searchParams.get("confirm") || "",
+        force: url.searchParams.get("force") === "true"
       }));
     }
     if (url.pathname === "/") {

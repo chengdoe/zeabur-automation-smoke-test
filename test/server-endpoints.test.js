@@ -46,6 +46,7 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.scheduler.enabled, true);
   assert.equal(body.scheduler.mode, "dry-run");
   assert.equal(body.scheduler.intervalMs, 60000);
+  assert.equal(body.env.liveSendEnabled, false);
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
@@ -73,6 +74,17 @@ test("POST /api/jobs/morning-motivation/dry-run returns text payload without sen
   assert.equal(body.sent, false);
   assert.equal(body.msgType, "text");
   assert.match(body.payload.text, /^【晨间激励】2026-07-03 <at user_id="all"><\/at>/);
+});
+
+test("POST /api/jobs/sop13/send is blocked by default", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/sop13/send?date=2026-07-03&confirm=SEND`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.sent, false);
+  assert.equal(body.sendSkippedReason, "live send disabled");
 });
 
 async function waitForHealth() {

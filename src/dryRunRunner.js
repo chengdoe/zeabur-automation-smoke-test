@@ -28,13 +28,15 @@ export function listJobs() {
       id: "morning-motivation",
       name: "晨间激励",
       schedule: "daily 09:00 Asia/Shanghai",
-      dryRunEndpoint: "/api/jobs/morning-motivation/dry-run"
+      dryRunEndpoint: "/api/jobs/morning-motivation/dry-run",
+      liveSendEndpoint: "/api/jobs/morning-motivation/send"
     },
     {
       id: "sop13",
       name: "每日个人工作系统 SOP",
       schedule: "daily 09:30 Asia/Shanghai",
-      dryRunEndpoint: "/api/jobs/sop13/dry-run"
+      dryRunEndpoint: "/api/jobs/sop13/dry-run",
+      liveSendEndpoint: "/api/jobs/sop13/send"
     }
   ];
 }
