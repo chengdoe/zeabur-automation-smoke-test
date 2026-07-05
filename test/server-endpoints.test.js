@@ -73,7 +73,8 @@ test("POST /api/jobs/morning-motivation/dry-run returns text payload without sen
   assert.equal(body.ok, true);
   assert.equal(body.sent, false);
   assert.equal(body.msgType, "text");
-  assert.match(body.payload.text, /^【晨间激励】2026-07-03 <at user_id="all"><\/at>/);
+  assert.match(body.payload.text, /^【晨间激励 · 2026-07-03】\n\n/);
+  assert.match(body.payload.text, /<at user_id="all"><\/at>$/);
 });
 
 test("POST /api/jobs/sop13/send is blocked by default", async () => {

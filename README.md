@@ -73,6 +73,20 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 - `sop13` runs daily at 09:30 Asia/Shanghai.
 - Set `SCHEDULER_ENABLED=false` to disable scheduled dry-runs.
 
+## Message Formats
+
+`morning-motivation` sends Feishu `text` and mirrors the current HappyCapy format:
+
+```text
+【晨间激励 · YYYY-MM-DD】
+
+<one powerful line>
+
+<short Chinese body><at user_id="all"></at>
+```
+
+`sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty, and row 0 contains the visible bold title plus `{ "tag": "at", "user_id": "all" }`.
+
 ## Controlled Live Send
 
 Live-send is intentionally gated and is not used by the scheduler.

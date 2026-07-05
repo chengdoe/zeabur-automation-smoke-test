@@ -23,9 +23,20 @@ test("morning motivation dry-run preserves the HappyCapy text format", () => {
   assert.equal(result.msgType, "text");
   assert.deepEqual(result.validation.errors, []);
   assert.deepEqual(result.payload, {
-    text: "【晨间激励】2026-07-03 <at user_id=\"all\"></at>\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。"
+    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。<at user_id=\"all\"></at>"
   });
   assert.deepEqual(validateMorningPayload(result.payload), { ok: true, errors: [] });
+});
+
+test("morning motivation validator rejects old title-line @all format", () => {
+  const validation = validateMorningPayload({
+    text: "【晨间激励】2026-07-03 <at user_id=\"all\"></at>\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。"
+  }, { date: "2026-07-03" });
+
+  assert.equal(validation.ok, false);
+  assert.match(validation.errors.join("\n"), /first line/);
+  assert.match(validation.errors.join("\n"), /title line/);
+  assert.match(validation.errors.join("\n"), /final body sentence/);
 });
 
 test("SOP13 rotation selects item 8 on 2026-07-03", () => {
