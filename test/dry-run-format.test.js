@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 import {
   buildMorningMotivationDryRun,
+  selectMorningContent,
   validateMorningPayload
 } from "../src/jobs/morningMotivation.js";
 import {
@@ -37,6 +38,24 @@ test("morning motivation validator rejects old title-line @all format", () => {
   assert.match(validation.errors.join("\n"), /first line/);
   assert.match(validation.errors.join("\n"), /title line/);
   assert.match(validation.errors.join("\n"), /final body sentence/);
+});
+
+test("morning motivation default content rotates beyond a fixed weekday slogan", () => {
+  const first = buildMorningMotivationDryRun({ date: "2026-07-08" });
+  const nextWeek = buildMorningMotivationDryRun({ date: "2026-07-15" });
+
+  assert.equal(first.validation.ok, true);
+  assert.equal(nextWeek.validation.ok, true);
+  assert.notEqual(first.selectedContent.theme, nextWeek.selectedContent.theme);
+  assert.notEqual(first.payload.text, nextWeek.payload.text);
+  assert.match(first.payload.text, /^【晨间激励 · 2026-07-08】\n\n/);
+  assert.match(nextWeek.payload.text, /^【晨间激励 · 2026-07-15】\n\n/);
+  assert.doesNotMatch(first.payload.text.replaceAll("<at user_id=\"all\"></at>", ""), /[#*_`]/);
+});
+
+test("morning motivation selection is date based, not server timezone based", () => {
+  assert.equal(selectMorningContent("2026-07-06").theme, "Sunday / reset");
+  assert.equal(selectMorningContent("2026-07-07").theme, "courage");
 });
 
 test("SOP13 rotation selects item 8 on 2026-07-03", () => {
