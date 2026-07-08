@@ -9,7 +9,8 @@
     "check": "node src/server.js --check",
     "test": "node --test",
     "fund:install": "node scripts/installFundPortfolioAssets.js",
-    "fund:verify": "node scripts/verifyFundPortfolioAssets.js"
+    "fund:verify": "node scripts/verifyFundPortfolioAssets.js",
+    "cutover:verify": "node scripts/verifyCutover.js"
   },
   "engines": {
     "node": "22"
