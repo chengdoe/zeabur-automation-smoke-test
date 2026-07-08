@@ -35,7 +35,7 @@ test("GET /api/jobs lists dry-run jobs", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
-  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13"]);
+  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13", "fund-portfolio-daily"]);
 });
 
 test("GET /api/status reports the dry-run scheduler state", async () => {
@@ -75,6 +75,31 @@ test("POST /api/jobs/morning-motivation/dry-run returns text payload without sen
   assert.equal(body.msgType, "text");
   assert.match(body.payload.text, /^【晨间激励 · 2026-07-03】\n\n/);
   assert.match(body.payload.text, /<at user_id="all"><\/at>$/);
+});
+
+test("POST /api/jobs/fund-portfolio-daily/dry-run is safe when fund assets are missing", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/fund-portfolio-daily/dry-run?date=2026-07-08`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, false);
+  assert.equal(body.sent, false);
+  assert.equal(body.msgType, "markdown");
+  assert.match(body.validation.errors.join("\n"), /no fund report markdown found/);
+});
+
+test("GET /api/jobs/fund-portfolio-daily/status reports missing assets without side effects", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/fund-portfolio-daily/status?date=2026-07-08`);
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.job, "fund-portfolio-daily");
+  assert.equal(body.status.ready, false);
+  assert.equal(body.status.latestReport, null);
+  assert.ok(body.status.requiredFiles.some((file) => file.exists === false));
 });
 
 test("POST /api/jobs/sop13/send is blocked by default", async () => {

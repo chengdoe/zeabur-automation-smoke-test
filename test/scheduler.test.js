@@ -30,6 +30,25 @@ test("scheduler marks SOP13 due at 09:30 Asia/Shanghai", () => {
   assert.equal(due[0].date, "2026-07-04");
 });
 
+test("scheduler marks fund portfolio daily due at 13:50 on Shanghai weekdays", () => {
+  const due = getDueDryRunJobs({
+    now: new Date("2026-07-08T05:50:00.000Z"),
+    state: createSchedulerState()
+  });
+
+  assert.deepEqual(due.map((job) => job.id), ["fund-portfolio-daily"]);
+  assert.equal(due[0].date, "2026-07-08");
+});
+
+test("scheduler skips fund portfolio daily on Shanghai weekends", () => {
+  const due = getDueDryRunJobs({
+    now: new Date("2026-07-04T05:50:00.000Z"),
+    state: createSchedulerState()
+  });
+
+  assert.deepEqual(due, []);
+});
+
 test("scheduler does not run the same job twice for the same Shanghai date", async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-scheduler-"));
   const state = createSchedulerState();

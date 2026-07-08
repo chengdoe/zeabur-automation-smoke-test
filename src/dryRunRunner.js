@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { buildFundPortfolioDailyDryRun } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
 
@@ -19,6 +20,11 @@ const JOBS = {
     key: "sop13",
     folder: "sop13",
     build: buildSop13DryRun
+  },
+  "fund-portfolio-daily": {
+    key: "fundPortfolioDaily",
+    folder: "fund-portfolio-daily",
+    build: buildFundPortfolioDailyDryRun
   }
 };
 
@@ -37,6 +43,13 @@ export function listJobs() {
       schedule: "daily 09:30 Asia/Shanghai",
       dryRunEndpoint: "/api/jobs/sop13/dry-run",
       liveSendEndpoint: "/api/jobs/sop13/send"
+    },
+    {
+      id: "fund-portfolio-daily",
+      name: "基金持仓日报",
+      schedule: "weekdays 13:50 Asia/Shanghai",
+      dryRunEndpoint: "/api/jobs/fund-portfolio-daily/dry-run",
+      liveSendEndpoint: null
     }
   ];
 }
@@ -47,7 +60,7 @@ export async function runDryRunJob({ job, date, dataDir }) {
     throw new Error(`Unknown job: ${job}`);
   }
 
-  const dryRun = definition.build({ date });
+  const dryRun = await definition.build({ date, dataDir });
   const result = {
     ...dryRun,
     sent: false,

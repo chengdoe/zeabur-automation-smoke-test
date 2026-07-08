@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "check": "node src/server.js --check",
-    "test": "node --test"
+    "test": "node --test",
+    "fund:install": "node scripts/installFundPortfolioAssets.js",
+    "fund:verify": "node scripts/verifyFundPortfolioAssets.js"
   },
   "engines": {
     "node": "22"

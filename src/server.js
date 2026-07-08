@@ -5,6 +5,7 @@ import path from "node:path";
 import { listJobs, runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
 import { startDryRunScheduler } from "./scheduler.js";
+import { getFundPortfolioAssetStatus } from "./jobs/fundPortfolioDaily.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
@@ -213,6 +214,23 @@ async function handle(req, res) {
         confirm: url.searchParams.get("confirm") || "",
         force: url.searchParams.get("force") === "true"
       }));
+    }
+    if (url.pathname === "/api/jobs/fund-portfolio-daily/dry-run" && req.method === "POST") {
+      return sendJson(res, 200, await runDryRunJob({
+        job: "fund-portfolio-daily",
+        date: url.searchParams.get("date") || undefined,
+        dataDir
+      }));
+    }
+    if (url.pathname === "/api/jobs/fund-portfolio-daily/status") {
+      return sendJson(res, 200, {
+        ok: true,
+        job: "fund-portfolio-daily",
+        status: await getFundPortfolioAssetStatus({
+          date: url.searchParams.get("date") || undefined,
+          dataDir
+        })
+      });
     }
     if (url.pathname === "/") {
       const snapshot = await status();

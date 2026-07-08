@@ -81,6 +81,23 @@ test("SOP13 dry-run preserves the HappyCapy rich-post format", () => {
   assert.deepEqual(validateSop13Post(result.payload), { ok: true, errors: [] });
 });
 
+test("SOP13 content pack reproduces HappyCapy-style depth for known sent examples", () => {
+  const projectReview = buildSop13DryRun({ date: "2026-07-03" });
+  const projectReviewText = JSON.stringify(projectReview.payload);
+
+  assert.match(projectReviewText, /经历不等于经验/);
+  assert.match(projectReviewText, /留痕提供素材，复盘提取经验，成长闭环确保经验被复用/);
+  assert.doesNotMatch(projectReviewText, /核心不是多做一步/);
+
+  const sopBuilder = buildSop13DryRun({ date: "2026-07-07" });
+  const sopBuilderText = JSON.stringify(sopBuilder.payload);
+
+  assert.match(sopBuilderText, /四步把重复经验变成方法论/);
+  assert.match(sopBuilderText, /隐性经验显性化的最小路径/);
+  assert.match(sopBuilderText, /经验不写成步骤就只是直觉/);
+  assert.doesNotMatch(sopBuilderText, /降低含糊带来的损耗/);
+});
+
 test("SOP13 validator rejects duplicate visible outer title and missing @all", () => {
   const result = buildSop13DryRun({ date: "2026-07-03" });
   const broken = structuredClone(result.payload);
