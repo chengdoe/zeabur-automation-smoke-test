@@ -27,6 +27,29 @@ export async function buildFundPortfolioDailyDryRun(options = {}) {
   };
 }
 
+export async function buildFundPortfolioDailyPost(options = {}) {
+  const date = options.date || shanghaiDateString();
+  const reportsDir = resolveReportsDir(options);
+  const report = await loadReport({ reportsDir, date });
+  const reportValidation = validateFundReport(report);
+  const payload = report ? buildFundPortfolioPostPayload({ date, markdown: report.markdown }) : null;
+  const validation = validateFundPortfolioPost(payload, reportValidation);
+  const assetStatus = await getFundPortfolioAssetStatus(options);
+
+  return {
+    ok: validation.ok,
+    job: "fundPortfolioDaily",
+    dryRun: false,
+    msgType: "post",
+    date,
+    payload,
+    preview: report?.markdown || "",
+    assetStatus,
+    sourceFile: report?.file || null,
+    validation
+  };
+}
+
 export async function getFundPortfolioAssetStatus(options = {}) {
   const root = resolveAssetRoot(options);
   const reportsDir = resolveReportsDir(options);
@@ -82,6 +105,76 @@ export function validateFundReport(report) {
   }
 
   return { ok: errors.length === 0, errors };
+}
+
+export function buildFundPortfolioPostPayload({ date, markdown }) {
+  return {
+    zh_cn: {
+      title: "",
+      content: [
+        [
+          { tag: "text", text: `【基金持仓日报 · ${date}】 `, style: ["bold"] },
+          { tag: "at", user_id: "all" }
+        ],
+        [{ tag: "text", text: "　" }],
+        ...chunkMarkdown(markdown).map((text) => [{ tag: "md", text }])
+      ]
+    }
+  };
+}
+
+export function validateFundPortfolioPost(payload, reportValidation = { ok: true, errors: [] }) {
+  const errors = [...(reportValidation.errors || [])];
+  const zhCn = payload?.zh_cn;
+  const content = zhCn?.content;
+
+  if (!payload) {
+    errors.push("fund post payload is missing");
+    return { ok: false, errors };
+  }
+  if (!zhCn || typeof zhCn !== "object") {
+    errors.push("payload.zh_cn is required");
+    return { ok: false, errors };
+  }
+  if (zhCn.title !== "" && zhCn.title !== " ") {
+    errors.push("outer title must be empty or a single space");
+  }
+  if (!Array.isArray(content)) {
+    errors.push("content must be an array of rows");
+    return { ok: false, errors };
+  }
+
+  const row0 = content[0] || [];
+  if (!row0.some((item) => item?.tag === "text" && item.text?.startsWith("【基金持仓日报 · ") && item.style?.includes("bold"))) {
+    errors.push("row 0 must contain the bold visible title");
+  }
+  if (!row0.some((item) => item?.tag === "at" && item.user_id === "all")) {
+    errors.push("row 0 must contain @all");
+  }
+  if (!content.some((row) => row?.[0]?.tag === "md" && row[0].text?.includes("今日结论"))) {
+    errors.push("post markdown must include the fund report content");
+  }
+
+  return { ok: errors.length === 0, errors };
+}
+
+function chunkMarkdown(markdown, maxLength = 1800) {
+  const chunks = [];
+  let remaining = String(markdown || "").trim();
+
+  while (remaining.length > maxLength) {
+    let splitAt = remaining.lastIndexOf("\n\n", maxLength);
+    if (splitAt < maxLength * 0.5) {
+      splitAt = remaining.lastIndexOf("\n", maxLength);
+    }
+    if (splitAt < maxLength * 0.5) {
+      splitAt = maxLength;
+    }
+    chunks.push(remaining.slice(0, splitAt).trim());
+    remaining = remaining.slice(splitAt).trim();
+  }
+  if (remaining) chunks.push(remaining);
+  return chunks;
 }
 
 function resolveReportsDir(options) {

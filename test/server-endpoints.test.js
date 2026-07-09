@@ -113,6 +113,17 @@ test("POST /api/jobs/sop13/send is blocked by default", async () => {
   assert.equal(body.sendSkippedReason, "live send disabled");
 });
 
+test("POST /api/jobs/fund-portfolio-daily/send is blocked by default", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/fund-portfolio-daily/send?date=2026-07-08&confirm=SEND`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.sent, false);
+  assert.equal(body.sendSkippedReason, "live send disabled");
+});
+
 async function waitForHealth() {
   const deadline = Date.now() + 5000;
   while (Date.now() < deadline) {

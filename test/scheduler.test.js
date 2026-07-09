@@ -74,3 +74,33 @@ test("scheduler does not run the same job twice for the same Shanghai date", asy
   assert.equal(log.entries[0].job, "sop13");
   assert.equal(log.entries[0].sent, false);
 });
+
+test("scheduler sends live jobs when live send is enabled", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-scheduler-live-"));
+  const state = createSchedulerState();
+  let sendCount = 0;
+
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-04T01:30:00.000Z"),
+    state,
+    dataDir,
+    liveSendEnabled: true,
+    sender: {
+      async sendMessage({ msgType, payload, uuid }) {
+        sendCount += 1;
+        assert.equal(msgType, "post");
+        assert.equal(payload.zh_cn.content[0][1].user_id, "all");
+        assert.equal(uuid, "sop13-2026-07-04");
+        return { ok: true, messageId: "om_scheduler_live" };
+      }
+    }
+  });
+
+  assert.equal(sendCount, 1);
+  assert.equal(result.ran.length, 1);
+  assert.equal(result.ran[0].sent, true);
+  assert.match(result.ran[0].files.sentLog, /outputs\/automations\/sop13\/2026-07-04-sent\.json$/);
+
+  const log = JSON.parse(await readFile(path.join(dataDir, "outputs", "automations", "scheduler", "2026-07-04.log.json"), "utf8"));
+  assert.equal(log.entries[0].sent, true);
+});

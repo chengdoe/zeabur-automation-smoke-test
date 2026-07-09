@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -91,4 +91,50 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
   assert.equal(second.skipped, true);
   assert.equal(second.sendSkippedReason, "already sent");
   assert.equal(sendCount, 1);
+});
+
+test("live-send runner can send fund portfolio daily as a Feishu post", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-fund-"));
+  const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(path.join(reportsDir, "fund-daily-2026-07-08.md"), [
+    "# 基金持仓日报",
+    "",
+    "## 今日结论",
+    "保持观察。",
+    "",
+    "## v8.0 机会层",
+    "等待信号。",
+    "",
+    "## 精简市场总结",
+    "市场震荡。",
+    "",
+    "## 方法论评分",
+    "中性。",
+    "",
+    "## 风险关注",
+    "控制仓位。"
+  ].join("\n"), "utf8");
+
+  const result = await runLiveSendJob({
+    job: "fund-portfolio-daily",
+    date: "2026-07-08",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    sender: {
+      async sendMessage({ msgType, payload, uuid }) {
+        assert.equal(msgType, "post");
+        assert.equal(payload.zh_cn.title, "");
+        assert.equal(payload.zh_cn.content[0][1].user_id, "all");
+        assert.match(JSON.stringify(payload), /今日结论/);
+        assert.equal(uuid, "fund-portfolio-daily-2026-07-08");
+        return { ok: true, messageId: "om_fund_live" };
+      }
+    }
+  });
+
+  assert.equal(result.sent, true);
+  assert.equal(result.messageId, "om_fund_live");
+  assert.match(result.files.sentLog, /outputs\/automations\/fund-portfolio-daily\/2026-07-08-sent\.json$/);
 });

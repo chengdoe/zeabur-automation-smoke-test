@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { parseDateOnly, shanghaiDateTimeParts } from "./date.js";
 import { runDryRunJob } from "./dryRunRunner.js";
+import { runLiveSendJob } from "./liveSendRunner.js";
 
 const SCHEDULED_DRY_RUN_JOBS = [
   {
@@ -49,18 +50,33 @@ export function getDueDryRunJobs({ now = new Date(), state }) {
     }));
 }
 
-export async function runSchedulerTick({ now = new Date(), state, dataDir }) {
+export async function runSchedulerTick({
+  now = new Date(),
+  state,
+  dataDir,
+  liveSendEnabled = false,
+  sender
+}) {
   const schedulerState = state || createSchedulerState();
   schedulerState.lastTickAt = now.toISOString();
   const dueJobs = getDueDryRunJobs({ now, state: schedulerState });
   const ran = [];
 
   for (const job of dueJobs) {
-    const result = await runDryRunJob({
-      job: job.id,
-      date: job.date,
-      dataDir
-    });
+    const result = liveSendEnabled
+      ? await runLiveSendJob({
+        job: job.id,
+        date: job.date,
+        dataDir,
+        enabled: true,
+        confirm: "SEND",
+        sender
+      })
+      : await runDryRunJob({
+        job: job.id,
+        date: job.date,
+        dataDir
+      });
     schedulerState.ranKeys.add(schedulerKey(job.id, job.date));
     schedulerState.lastRuns.unshift({
       ts: now.toISOString(),
@@ -82,7 +98,13 @@ export async function runSchedulerTick({ now = new Date(), state, dataDir }) {
   };
 }
 
-export function startDryRunScheduler({ dataDir, intervalMs = 30_000, enabled = true, logger = console } = {}) {
+export function startDryRunScheduler({
+  dataDir,
+  intervalMs = 30_000,
+  enabled = true,
+  liveSendEnabled = false,
+  logger = console
+} = {}) {
   const state = createSchedulerState();
 
   if (!enabled) {
@@ -95,7 +117,7 @@ export function startDryRunScheduler({ dataDir, intervalMs = 30_000, enabled = t
   }
 
   const tick = () => {
-    runSchedulerTick({ state, dataDir }).catch((error) => {
+    runSchedulerTick({ state, dataDir, liveSendEnabled }).catch((error) => {
       logger.error("scheduler dry-run tick failed", error);
     });
   };
@@ -104,6 +126,7 @@ export function startDryRunScheduler({ dataDir, intervalMs = 30_000, enabled = t
 
   return {
     enabled: true,
+    mode: liveSendEnabled ? "live-send" : "dry-run",
     intervalMs,
     state,
     stop() {

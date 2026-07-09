@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
+import { buildFundPortfolioDailyPost } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
 import { createFeishuClient } from "./feishuClient.js";
@@ -14,6 +15,10 @@ const LIVE_JOBS = {
   sop13: {
     folder: "sop13",
     build: buildSop13DryRun
+  },
+  "fund-portfolio-daily": {
+    folder: "fund-portfolio-daily",
+    build: buildFundPortfolioDailyPost
   }
 };
 
@@ -38,7 +43,7 @@ export async function runLiveSendJob({
     return blockedResult({ job, date, reason: "missing SEND confirmation" });
   }
 
-  const draft = definition.build({ date });
+  const draft = await definition.build({ date, dataDir });
   const outputDir = path.join(dataDir, "outputs", "automations", definition.folder);
   await mkdir(outputDir, { recursive: true });
 

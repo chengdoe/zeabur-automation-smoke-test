@@ -49,7 +49,7 @@ export function listJobs() {
       name: "基金持仓日报",
       schedule: "weekdays 13:50 Asia/Shanghai",
       dryRunEndpoint: "/api/jobs/fund-portfolio-daily/dry-run",
-      liveSendEndpoint: null
+      liveSendEndpoint: "/api/jobs/fund-portfolio-daily/send"
     }
   ];
 }

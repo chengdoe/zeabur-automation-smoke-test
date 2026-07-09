@@ -140,7 +140,7 @@ async function status() {
 function schedulerStatus() {
   return {
     enabled: Boolean(scheduler?.enabled),
-    mode: "dry-run",
+    mode: scheduler?.mode || (liveSendEnabled ? "live-send" : "dry-run"),
     intervalMs: scheduler?.intervalMs || schedulerIntervalMs,
     lastTickAt: scheduler?.state?.lastTickAt || null,
     recentRuns: scheduler?.state?.lastRuns || []
@@ -222,6 +222,16 @@ async function handle(req, res) {
         dataDir
       }));
     }
+    if (url.pathname === "/api/jobs/fund-portfolio-daily/send" && req.method === "POST") {
+      return sendJson(res, 200, await runLiveSendJob({
+        job: "fund-portfolio-daily",
+        date: url.searchParams.get("date") || undefined,
+        dataDir,
+        enabled: liveSendEnabled,
+        confirm: url.searchParams.get("confirm") || "",
+        force: url.searchParams.get("force") === "true"
+      }));
+    }
     if (url.pathname === "/api/jobs/fund-portfolio-daily/status") {
       return sendJson(res, 200, {
         ok: true,
@@ -291,7 +301,8 @@ async function main() {
   scheduler = startDryRunScheduler({
     dataDir,
     enabled: schedulerEnabled,
-    intervalMs: schedulerIntervalMs
+    intervalMs: schedulerIntervalMs,
+    liveSendEnabled
   });
 
   setInterval(() => {
