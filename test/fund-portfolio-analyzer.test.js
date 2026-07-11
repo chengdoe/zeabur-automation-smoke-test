@@ -30,6 +30,7 @@ test("fund analyzer sends preserved v8 context to the Responses API", async () =
 
   assert.match(request.url, /\/v1\/responses$/);
   assert.equal(request.body.model, "test-model");
+  assert.deepEqual(request.body.tools, [{ type: "web_search" }]);
   assert.match(request.body.input, /v8\.0 机会层/);
   assert.match(request.body.input, /风险提示和下一步盯什么/);
   assert.match(request.body.input, /2026-07-13/);
