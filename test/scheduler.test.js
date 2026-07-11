@@ -49,6 +49,31 @@ test("scheduler skips fund portfolio daily on Shanghai weekends", () => {
   assert.deepEqual(due, []);
 });
 
+test("scheduler uses Shanghai weekdays even when the server timezone is UTC", () => {
+  const originalTimezone = process.env.TZ;
+  process.env.TZ = "UTC";
+
+  try {
+    const saturday = getDueDryRunJobs({
+      now: new Date("2026-07-11T05:50:00.000Z"),
+      state: createSchedulerState()
+    });
+    const monday = getDueDryRunJobs({
+      now: new Date("2026-07-13T05:50:00.000Z"),
+      state: createSchedulerState()
+    });
+
+    assert.deepEqual(saturday, []);
+    assert.deepEqual(monday.map((job) => job.id), ["fund-portfolio-daily"]);
+  } finally {
+    if (originalTimezone === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = originalTimezone;
+    }
+  }
+});
+
 test("scheduler does not run the same job twice for the same Shanghai date", async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-scheduler-"));
   const state = createSchedulerState();

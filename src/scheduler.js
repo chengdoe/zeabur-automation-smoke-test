@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-import { parseDateOnly, shanghaiDateTimeParts } from "./date.js";
+import { shanghaiDateTimeParts, weekdayForDate } from "./date.js";
 import { runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
 
@@ -42,7 +42,7 @@ export function getDueDryRunJobs({ now = new Date(), state }) {
 
   return SCHEDULED_DRY_RUN_JOBS
     .filter((job) => job.hour === hour && job.minute === minute)
-    .filter((job) => !job.weekdays || job.weekdays.includes(parseDateOnly(date).getDay()))
+    .filter((job) => !job.weekdays || job.weekdays.includes(weekdayForDate(date)))
     .filter((job) => !ranKeys.has(schedulerKey(job.id, date)))
     .map((job) => ({
       ...job,
