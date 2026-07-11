@@ -6,6 +6,8 @@ import { listJobs, runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
 import { startDryRunScheduler } from "./scheduler.js";
 import { getFundPortfolioAssetStatus } from "./jobs/fundPortfolioDaily.js";
+import { createFundPortfolioAnalyzer } from "./jobs/fundPortfolioAnalyzer.js";
+import { runFundPortfolioPipeline } from "./jobs/fundPortfolioPipeline.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
@@ -150,6 +152,15 @@ function schedulerStatus() {
     lastTickAt: scheduler?.state?.lastTickAt || null,
     recentRuns: scheduler?.state?.lastRuns || []
   };
+}
+
+async function prepareScheduledJob({ job, date }) {
+  if (job !== "fund-portfolio-daily") return;
+  await runFundPortfolioPipeline({
+    date,
+    dataDir,
+    analyzer: createFundPortfolioAnalyzer()
+  });
 }
 
 function sendJson(res, code, body) {
@@ -310,7 +321,8 @@ async function main() {
     liveSendEnabled,
     enabledJobs: {
       "fund-portfolio-daily": fundPortfolioEnabled
-    }
+    },
+    prepareJob: prepareScheduledJob
   });
 
   setInterval(() => {

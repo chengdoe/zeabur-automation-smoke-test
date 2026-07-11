@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -140,4 +140,38 @@ test("scheduler can disable only the fund portfolio job", () => {
   });
 
   assert.deepEqual(due, []);
+});
+
+test("scheduler prepares a fresh fund report before live send", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-scheduler-fund-"));
+  const state = createSchedulerState();
+  const events = [];
+
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-13T05:50:00.000Z"),
+    state,
+    dataDir,
+    liveSendEnabled: true,
+    prepareJob: async ({ job, date }) => {
+      events.push(`prepare:${job}:${date}`);
+      const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+      await mkdir(reportsDir, { recursive: true });
+      await writeFile(path.join(reportsDir, `fund-daily-${date}.md`), [
+        "## 今日结论", "不操作。",
+        "## v8.0 机会层", "暂无。",
+        "## 精简市场总结", "震荡。",
+        "## 方法论评分", "不足。",
+        "## 风险关注", "控制仓位。"
+      ].join("\n"), "utf8");
+    },
+    sender: {
+      async sendMessage() {
+        events.push("send");
+        return { ok: true, messageId: "om_fund_scheduler" };
+      }
+    }
+  });
+
+  assert.deepEqual(events, ["prepare:fund-portfolio-daily:2026-07-13", "send"]);
+  assert.equal(result.ran[0].sent, true);
 });

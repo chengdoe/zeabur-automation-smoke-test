@@ -57,7 +57,8 @@ export async function runSchedulerTick({
   dataDir,
   liveSendEnabled = false,
   sender,
-  enabledJobs = {}
+  enabledJobs = {},
+  prepareJob
 }) {
   const schedulerState = state || createSchedulerState();
   schedulerState.lastTickAt = now.toISOString();
@@ -65,6 +66,9 @@ export async function runSchedulerTick({
   const ran = [];
 
   for (const job of dueJobs) {
+    if (liveSendEnabled && prepareJob) {
+      await prepareJob({ job: job.id, date: job.date, dataDir });
+    }
     const result = liveSendEnabled
       ? await runLiveSendJob({
         job: job.id,
@@ -106,6 +110,7 @@ export function startDryRunScheduler({
   enabled = true,
   liveSendEnabled = false,
   enabledJobs = {},
+  prepareJob,
   logger = console
 } = {}) {
   const state = createSchedulerState();
@@ -120,7 +125,7 @@ export function startDryRunScheduler({
   }
 
   const tick = () => {
-    runSchedulerTick({ state, dataDir, liveSendEnabled, enabledJobs }).catch((error) => {
+    runSchedulerTick({ state, dataDir, liveSendEnabled, enabledJobs, prepareJob }).catch((error) => {
       logger.error("scheduler dry-run tick failed", error);
     });
   };
