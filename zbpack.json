@@ -1,4 +1,4 @@
 {
-  "ignore_dockerfile": true,
+  "ignore_dockerfile": false,
   "start_command": "npm start"
 }
