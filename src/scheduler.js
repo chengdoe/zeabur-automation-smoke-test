@@ -33,7 +33,7 @@ export function createSchedulerState() {
   };
 }
 
-export function getDueDryRunJobs({ now = new Date(), state }) {
+export function getDueDryRunJobs({ now = new Date(), state, enabledJobs = {} }) {
   const parts = shanghaiDateTimeParts(now);
   const date = `${parts.year}-${parts.month}-${parts.day}`;
   const hour = parts.hour;
@@ -41,6 +41,7 @@ export function getDueDryRunJobs({ now = new Date(), state }) {
   const ranKeys = state?.ranKeys || new Set();
 
   return SCHEDULED_DRY_RUN_JOBS
+    .filter((job) => enabledJobs[job.id] !== false)
     .filter((job) => job.hour === hour && job.minute === minute)
     .filter((job) => !job.weekdays || job.weekdays.includes(weekdayForDate(date)))
     .filter((job) => !ranKeys.has(schedulerKey(job.id, date)))
@@ -55,11 +56,12 @@ export async function runSchedulerTick({
   state,
   dataDir,
   liveSendEnabled = false,
-  sender
+  sender,
+  enabledJobs = {}
 }) {
   const schedulerState = state || createSchedulerState();
   schedulerState.lastTickAt = now.toISOString();
-  const dueJobs = getDueDryRunJobs({ now, state: schedulerState });
+  const dueJobs = getDueDryRunJobs({ now, state: schedulerState, enabledJobs });
   const ran = [];
 
   for (const job of dueJobs) {
@@ -103,6 +105,7 @@ export function startDryRunScheduler({
   intervalMs = 30_000,
   enabled = true,
   liveSendEnabled = false,
+  enabledJobs = {},
   logger = console
 } = {}) {
   const state = createSchedulerState();
@@ -117,7 +120,7 @@ export function startDryRunScheduler({
   }
 
   const tick = () => {
-    runSchedulerTick({ state, dataDir, liveSendEnabled }).catch((error) => {
+    runSchedulerTick({ state, dataDir, liveSendEnabled, enabledJobs }).catch((error) => {
       logger.error("scheduler dry-run tick failed", error);
     });
   };

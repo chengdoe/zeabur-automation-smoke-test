@@ -13,6 +13,7 @@ const heartbeatIntervalMs = Number(process.env.HEARTBEAT_INTERVAL_MS || 60_000);
 const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
 const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
 const liveSendEnabled = process.env.LIVE_SEND_ENABLED === "true";
+const fundPortfolioEnabled = process.env.FUND_PORTFOLIO_ENABLED === "true";
 const startedAt = new Date();
 let scheduler;
 
@@ -122,6 +123,7 @@ async function status() {
       schedulerEnabled,
       schedulerIntervalMs,
       liveSendEnabled,
+      fundPortfolioEnabled,
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
       hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)
@@ -227,7 +229,7 @@ async function handle(req, res) {
         job: "fund-portfolio-daily",
         date: url.searchParams.get("date") || undefined,
         dataDir,
-        enabled: liveSendEnabled,
+        enabled: liveSendEnabled && fundPortfolioEnabled,
         confirm: url.searchParams.get("confirm") || "",
         force: url.searchParams.get("force") === "true"
       }));
@@ -302,7 +304,10 @@ async function main() {
     dataDir,
     enabled: schedulerEnabled,
     intervalMs: schedulerIntervalMs,
-    liveSendEnabled
+    liveSendEnabled,
+    enabledJobs: {
+      "fund-portfolio-daily": fundPortfolioEnabled
+    }
   });
 
   setInterval(() => {

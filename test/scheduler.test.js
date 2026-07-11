@@ -129,3 +129,15 @@ test("scheduler sends live jobs when live send is enabled", async () => {
   const log = JSON.parse(await readFile(path.join(dataDir, "outputs", "automations", "scheduler", "2026-07-04.log.json"), "utf8"));
   assert.equal(log.entries[0].sent, true);
 });
+
+test("scheduler can disable only the fund portfolio job", () => {
+  const due = getDueDryRunJobs({
+    now: new Date("2026-07-13T05:50:00.000Z"),
+    state: createSchedulerState(),
+    enabledJobs: {
+      "fund-portfolio-daily": false
+    }
+  });
+
+  assert.deepEqual(due, []);
+});
