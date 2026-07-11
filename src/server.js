@@ -124,6 +124,9 @@ async function status() {
       schedulerIntervalMs,
       liveSendEnabled,
       fundPortfolioEnabled,
+      hasFundDataKey: Boolean(process.env.MX_APIKEY),
+      hasFundAnalysisKey: Boolean(process.env.OPENAI_API_KEY),
+      hasFundAnalysisModel: Boolean(process.env.FUND_ANALYSIS_MODEL),
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
       hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)

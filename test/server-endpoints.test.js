@@ -48,6 +48,9 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.scheduler.intervalMs, 60000);
   assert.equal(body.env.liveSendEnabled, false);
   assert.equal(body.env.fundPortfolioEnabled, false);
+  assert.equal(body.env.hasFundDataKey, false);
+  assert.equal(body.env.hasFundAnalysisKey, false);
+  assert.equal(body.env.hasFundAnalysisModel, false);
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
