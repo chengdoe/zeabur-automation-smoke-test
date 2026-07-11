@@ -30,8 +30,10 @@ export async function buildFundPortfolioDailyDryRun(options = {}) {
 export async function buildFundPortfolioDailyPost(options = {}) {
   const date = options.date || shanghaiDateString();
   const reportsDir = resolveReportsDir(options);
-  const report = await loadReport({ reportsDir, date });
-  const reportValidation = validateFundReport(report);
+  const report = await loadReport({ reportsDir, date, allowFallback: false });
+  const reportValidation = validateFundReport(report, {
+    missingMessage: `exact-date fund report missing: ${date}`
+  });
   const payload = report ? buildFundPortfolioPostPayload({ date, markdown: report.markdown }) : null;
   const validation = validateFundPortfolioPost(payload, reportValidation);
   const assetStatus = await getFundPortfolioAssetStatus(options);
@@ -83,10 +85,10 @@ export async function getFundPortfolioAssetStatus(options = {}) {
   };
 }
 
-export function validateFundReport(report) {
+export function validateFundReport(report, options = {}) {
   const errors = [];
   if (!report) {
-    errors.push("no fund report markdown found");
+    errors.push(options.missingMessage || "no fund report markdown found");
     return { ok: false, errors };
   }
 
@@ -194,13 +196,17 @@ function resolveAssetRoot(options) {
   return path.join(dataDir, "fund-portfolio-daily");
 }
 
-async function loadReport({ reportsDir, date }) {
+async function loadReport({ reportsDir, date, allowFallback = true }) {
   const exactFile = path.join(reportsDir, `fund-daily-${date}.md`);
   if (existsSync(exactFile)) {
     return {
       file: exactFile,
       markdown: await readFile(exactFile, "utf8")
     };
+  }
+
+  if (!allowFallback) {
+    return null;
   }
 
   if (!existsSync(reportsDir)) {

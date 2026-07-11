@@ -138,3 +138,40 @@ test("live-send runner can send fund portfolio daily as a Feishu post", async ()
   assert.equal(result.messageId, "om_fund_live");
   assert.match(result.files.sentLog, /outputs\/automations\/fund-portfolio-daily\/2026-07-08-sent\.json$/);
 });
+
+test("live-send runner refuses to send a stale fund report for a newer date", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-fund-stale-"));
+  const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(path.join(reportsDir, "fund-daily-2026-07-08.md"), [
+    "## 今日结论",
+    "旧报告",
+    "## v8.0 机会层",
+    "旧机会",
+    "## 精简市场总结",
+    "旧市场",
+    "## 方法论评分",
+    "旧评分",
+    "## 风险关注",
+    "旧风险"
+  ].join("\n"), "utf8");
+  let sendCount = 0;
+
+  const result = await runLiveSendJob({
+    job: "fund-portfolio-daily",
+    date: "2026-07-13",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    sender: {
+      async sendMessage() {
+        sendCount += 1;
+      }
+    }
+  });
+
+  assert.equal(result.sent, false);
+  assert.equal(result.sendSkippedReason, "validation failed");
+  assert.match(result.validation.errors.join("\n"), /exact-date fund report missing/);
+  assert.equal(sendCount, 0);
+});
