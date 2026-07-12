@@ -106,6 +106,13 @@ export function validateFundReport(report, options = {}) {
     }
   }
 
+  if (/必做确定性动作|必须买入|必须卖出/.test(report.markdown)) {
+    errors.push("imperative trade language is forbidden");
+  }
+  if (options.isReplay && !report.markdown.includes("迁移回放预览，不发送，不执行交易")) {
+    errors.push("migration replay warning is required");
+  }
+
   return { ok: errors.length === 0, errors };
 }
 

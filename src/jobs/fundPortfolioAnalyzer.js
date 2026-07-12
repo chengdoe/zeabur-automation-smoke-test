@@ -1,3 +1,5 @@
+import { shanghaiDateString } from "../date.js";
+
 const RESPONSES_URL = "https://api.openai.com/v1/responses";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -89,8 +91,15 @@ export function buildFundAnalysisPrompt({
   portfolioState,
   portfolio,
   basketConfig,
-  scoringConfig
+  scoringConfig,
+  currentDate = shanghaiDateString()
 }) {
+  const isReplay = Boolean(date && currentDate && date < currentDate);
+  const analysisData = buildAnalysisData(rawData);
+  const replayRules = isReplay ? `
+- 这是迁移回放预览，不发送、不执行交易、不构成交易指令。标题后第一行必须原样写：> 迁移回放预览，不发送，不执行交易。
+- 历史回放中的动作只能写成“当日规则会提示复核/观察”，不得写“必做”“必须买入”“必须卖出”或让用户现在补做历史交易。` : "";
+
   return `你是 Kane 的基金组合纪律执行助手。请基于输入数据生成 ${date} 的完整中文 Markdown 日报。
 
 原则：
@@ -102,6 +111,10 @@ export function buildFundAnalysisPrompt({
 - v8.0 机会层必须读取 v8_opportunities，低吸、回补、止盈、定投倍率和海外基金隔夜择时都要逐项说明，没有机会也必须明确写“没有”。
 - 使用全中文人话。除基金代码外，不展示内部英文变量、代码名或组件自检。
 - 真实买卖仅能作为建议，不得写成用户已经执行。
+- “今日持仓涨跌”的唯一依据是【今日实时估值口径】中的 estimated_change_pct；禁止把历史净值变化、持有收益率或 significant_movers 当成今日涨跌。
+- 持仓金额、余额宝金额和收益率必须同时标注持仓配置的更新时间；快照不是当天时只能称为“旧快照参考”，不得表述为当前准确余额。
+- 输入缺少指数、宏观或实时估值时，数据置信度只能写“中等”或“偏低”，不能写“正常/充分”。
+- 所有操作结论都必须保留用户确认权；不得使用“必做确定性动作”等命令式交易语言。${replayRules}
 - 输出纯 Markdown，不要代码围栏，不要前言或解释。
 
 以下 section 必须全部保留且按顺序输出：
@@ -124,20 +137,32 @@ export function buildFundAnalysisPrompt({
 输入数据：
 
 【当日原始数据】
-${JSON.stringify(rawData)}
+${JSON.stringify(analysisData)}
+
+【今日实时估值口径（今日持仓涨跌唯一来源）】
+${JSON.stringify(analysisData?.market_data?.fund_realtime || {})}
 
 【v7/v8 组合状态】
-${JSON.stringify(portfolioState)}
+${JSON.stringify(portfolioState ?? null)}
 
 【持仓配置】
-${JSON.stringify(portfolio)}
+${JSON.stringify(portfolio ?? null)}
 
 【篮子与硬约束】
-${JSON.stringify(basketConfig)}
+${JSON.stringify(basketConfig ?? null)}
 
 【评分方法】
-${JSON.stringify(scoringConfig)}
+${JSON.stringify(scoringConfig ?? null)}
 `;
+}
+
+function buildAnalysisData(rawData) {
+  if (!rawData || typeof rawData !== "object") return rawData ?? null;
+  const cloned = structuredClone(rawData);
+  if (cloned?.market_data?.analytics) {
+    delete cloned.market_data.analytics.significant_movers;
+  }
+  return cloned;
 }
 
 function extractOutputText(output) {

@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import { shanghaiDateString } from "../date.js";
 import { validateFundReport } from "./fundPortfolioDaily.js";
 
 const execFileAsync = promisify(execFile);
@@ -72,7 +73,9 @@ export async function runFundPortfolioPipeline({
     basketConfig,
     scoringConfig
   });
-  const validation = validateFundReport({ file: reportFile, markdown });
+  const validation = validateFundReport({ file: reportFile, markdown }, {
+    isReplay: date < shanghaiDateString()
+  });
   const preservedSections = [
     "今天怎么做",
     "今天系统帮你盯到的机会",

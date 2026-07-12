@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createFundPortfolioAnalyzer } from "../src/jobs/fundPortfolioAnalyzer.js";
+import { buildFundAnalysisPrompt, createFundPortfolioAnalyzer } from "../src/jobs/fundPortfolioAnalyzer.js";
 
 test("fund analyzer sends preserved v8 context to the Responses API", async () => {
   let request;
@@ -81,4 +81,29 @@ test("OpenRouter analyzer fails closed without OPENROUTER_API_KEY", async () => 
     model: "anthropic/claude-opus-4.8"
   });
   await assert.rejects(() => analyzer({}), /OPENROUTER_API_KEY/);
+});
+
+test("fund analysis prompt isolates realtime estimates from historical NAV movers", () => {
+  const prompt = buildFundAnalysisPrompt({
+    date: "2026-07-10",
+    currentDate: "2026-07-12",
+    rawData: {
+      market_data: {
+        fund_realtime: {
+          "012922": { name: "全球成长", estimated_change_pct: 1.25 }
+        },
+        analytics: {
+          significant_movers: [{ code: "012922", daily_change: 4.59 }]
+        }
+      }
+    },
+    portfolio: { cash_in_yue_bao: 3298.53, update_date: "2026-06-26" }
+  });
+
+  assert.match(prompt, /迁移回放预览/);
+  assert.match(prompt, /estimated_change_pct/);
+  assert.match(prompt, /1\.25/);
+  assert.doesNotMatch(prompt, /"significant_movers"/);
+  assert.doesNotMatch(prompt, /4\.59/);
+  assert.match(prompt, /2026-06-26/);
 });
