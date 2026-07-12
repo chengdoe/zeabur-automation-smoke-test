@@ -1,19 +1,37 @@
 const RESPONSES_URL = "https://api.openai.com/v1/responses";
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export function createFundPortfolioAnalyzer({
-  apiKey = process.env.OPENAI_API_KEY || "",
+  provider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai"),
+  apiKey,
   model = process.env.FUND_ANALYSIS_MODEL || "",
   fetchImpl = fetch
 } = {}) {
   return async function analyzeFundPortfolio(context = {}) {
-    if (!apiKey || !model) {
-      throw new Error("OPENAI_API_KEY and FUND_ANALYSIS_MODEL are required for fresh fund analysis");
+    const resolvedApiKey = apiKey ?? (
+      provider === "openrouter" ? process.env.OPENROUTER_API_KEY : process.env.OPENAI_API_KEY
+    ) ?? "";
+    const requiredKey = provider === "openrouter" ? "OPENROUTER_API_KEY" : "OPENAI_API_KEY";
+    if (!resolvedApiKey || !model) {
+      throw new Error(`${requiredKey} and FUND_ANALYSIS_MODEL are required for fresh fund analysis`);
+    }
+
+    if (provider === "openrouter") {
+      return analyzeWithOpenRouter({
+        apiKey: resolvedApiKey,
+        model,
+        context,
+        fetchImpl
+      });
+    }
+    if (provider !== "openai") {
+      throw new Error(`Unsupported fund analysis provider: ${provider}`);
     }
 
     const response = await fetchImpl(RESPONSES_URL, {
       method: "POST",
       headers: {
-        authorization: `Bearer ${apiKey}`,
+        authorization: `Bearer ${resolvedApiKey}`,
         "content-type": "application/json"
       },
       body: JSON.stringify({
@@ -32,6 +50,37 @@ export function createFundPortfolioAnalyzer({
     }
     return stripMarkdownFence(outputText);
   };
+}
+
+async function analyzeWithOpenRouter({ apiKey, model, context, fetchImpl }) {
+  const response = await fetchImpl(OPENROUTER_URL, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+      "x-openrouter-title": "Kane Fund Portfolio Daily"
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{
+        role: "user",
+        content: buildFundAnalysisPrompt(context)
+      }],
+      tools: [{
+        type: "openrouter:web_search",
+        parameters: { max_results: 5 }
+      }]
+    })
+  });
+  const body = await response.json();
+  if (!response.ok) {
+    throw new Error(`Fund analysis request failed (${response.status || "unknown"}): ${body?.error?.message || "unknown error"}`);
+  }
+  const outputText = body?.choices?.[0]?.message?.content;
+  if (!outputText?.trim()) {
+    throw new Error("Fund analysis returned empty output");
+  }
+  return stripMarkdownFence(outputText);
 }
 
 export function buildFundAnalysisPrompt({

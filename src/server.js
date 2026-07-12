@@ -16,6 +16,7 @@ const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
 const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
 const liveSendEnabled = process.env.LIVE_SEND_ENABLED === "true";
 const fundPortfolioEnabled = process.env.FUND_PORTFOLIO_ENABLED === "true";
+const fundAnalysisProvider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai");
 const startedAt = new Date();
 let scheduler;
 
@@ -127,8 +128,12 @@ async function status() {
       liveSendEnabled,
       fundPortfolioEnabled,
       hasFundDataKey: Boolean(process.env.MX_APIKEY),
-      hasFundAnalysisKey: Boolean(process.env.OPENAI_API_KEY),
+      hasFundAnalysisKey: fundAnalysisProvider === "openrouter"
+        ? Boolean(process.env.OPENROUTER_API_KEY)
+        : Boolean(process.env.OPENAI_API_KEY),
       hasFundAnalysisModel: Boolean(process.env.FUND_ANALYSIS_MODEL),
+      fundAnalysisProvider,
+      hasOpenRouterApiKey: Boolean(process.env.OPENROUTER_API_KEY),
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
       hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)
