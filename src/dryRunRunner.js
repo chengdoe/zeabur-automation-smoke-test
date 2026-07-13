@@ -4,6 +4,7 @@ import path from "node:path";
 import { buildFundPortfolioDailyDryRun } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
+import { buildWisereadsWeeklyDryRun } from "./jobs/wisereadsWeekly.js";
 
 const JOBS = {
   "morning-motivation": {
@@ -25,6 +26,11 @@ const JOBS = {
     key: "fundPortfolioDaily",
     folder: "fund-portfolio-daily",
     build: buildFundPortfolioDailyDryRun
+  },
+  "wisereads-weekly": {
+    key: "wisereadsWeekly",
+    folder: "wisereads-weekly",
+    build: buildWisereadsWeeklyDryRun
   }
 };
 
@@ -50,17 +56,24 @@ export function listJobs() {
       schedule: "weekdays 13:50 Asia/Shanghai",
       dryRunEndpoint: "/api/jobs/fund-portfolio-daily/dry-run",
       liveSendEndpoint: "/api/jobs/fund-portfolio-daily/send"
+    },
+    {
+      id: "wisereads-weekly",
+      name: "Wisereads 新刊发现与推送",
+      schedule: "bounded retry Mon 09:00 through Tue 18:00 Asia/Shanghai",
+      dryRunEndpoint: "/api/jobs/wisereads-weekly/dry-run",
+      liveSendEndpoint: "/api/jobs/wisereads-weekly/send"
     }
   ];
 }
 
-export async function runDryRunJob({ job, date, dataDir }) {
+export async function runDryRunJob({ job, date, dataDir, env = process.env }) {
   const definition = JOBS[job];
   if (!definition) {
     throw new Error(`Unknown job: ${job}`);
   }
 
-  const dryRun = await definition.build({ date, dataDir });
+  const dryRun = await definition.build({ date, dataDir, env });
   const result = {
     ...dryRun,
     sent: false,
@@ -89,9 +102,11 @@ function renderMarkdown(result) {
     "",
     `- Date (Asia/Shanghai): ${result.date}`,
     `- Message type: ${result.msgType}`,
+    result.source?.vol ? `- Source Vol: ${result.source.vol}` : null,
+    result.sourceStatus ? `- Source status: ${result.sourceStatus}` : null,
     `- Validation: ${result.validation.ok ? "passed" : "failed"}`,
     "- No Feishu message was sent."
-  ];
+  ].filter(Boolean);
 
   if (result.selectedSop) {
     lines.splice(2, 0, `- Selected SOP: ${result.selectedSop.name}`, `- Selected index: ${result.selectedSop.index} (Day ${result.selectedSop.dayNumber})`);

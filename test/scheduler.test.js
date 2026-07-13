@@ -65,6 +65,25 @@ test("scheduler skips fund portfolio daily on Shanghai weekends", () => {
   assert.deepEqual(due, []);
 });
 
+test("scheduler marks Wisereads due every 30 minutes in the Monday-Tuesday retry window", () => {
+  const mondayStart = getDueDryRunJobs({
+    now: new Date("2026-07-13T01:00:00.000Z"),
+    state: createSchedulerState()
+  });
+  const mondaySlot = getDueDryRunJobs({
+    now: new Date("2026-07-13T01:30:00.000Z"),
+    state: createSchedulerState()
+  });
+  const afterWindow = getDueDryRunJobs({
+    now: new Date("2026-07-14T10:30:00.000Z"),
+    state: createSchedulerState()
+  });
+
+  assert.deepEqual(mondayStart.map((job) => job.id), ["morning-motivation", "wisereads-weekly"]);
+  assert.deepEqual(mondaySlot.map((job) => job.id), ["sop13", "wisereads-weekly"]);
+  assert.deepEqual(afterWindow, []);
+});
+
 test("scheduler uses Shanghai weekdays even when the server timezone is UTC", () => {
   const originalTimezone = process.env.TZ;
   process.env.TZ = "UTC";
@@ -192,4 +211,33 @@ test("scheduler prepares a fresh fund report before live send", async () => {
 
   assert.deepEqual(events, ["prepare:fund-portfolio-daily:2026-07-13", "send"]);
   assert.equal(result.ran[0].sent, true);
+});
+
+test("scheduler keeps a task in dry-run when its independent live gate is closed", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-wisereads-dryrun-"));
+  const feedFile = path.join(dataDir, "feed.xml");
+  const analysisFile = path.join(dataDir, "analysis.json");
+  const sections = ["Article", "Article", "YouTube", "Twitter", "PDF", "Book"];
+  await writeFile(feedFile, `<?xml version="1.0"?><rss><channel><item><title>Wisereads Vol. 151</title><link>https://example.com/151</link><pubDate>Sun, 12 Jul 2026 14:17:19 +0000</pubDate><content:encoded><![CDATA[<main>${sections.map((section, index) => `<h2>${section}</h2><h3><a href="https://example.com/${index}">Item ${index}</a></h3><p class="author">Author ${index}</p><p>Summary ${index}</p><p>Quote ${index}</p>`).join("")}</main>]]></content:encoded></item></channel></rss>`, "utf8");
+  await writeFile(analysisFile, JSON.stringify({ items: Array.from({ length: 6 }, (_, index) => ({ index, title: `Item ${index}`, summary: `这是第${index}条内容的中文摘要，用于验证独立任务关闭发送后仍会正常生成预览。`, quote: `这是第${index}条内容的中文引文，用于验证不会发送飞书消息。` })) }), "utf8");
+
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-13T01:00:00.000Z"),
+    state: createSchedulerState(),
+    dataDir,
+    liveSendEnabled: true,
+    liveEnabledJobs: { "wisereads-weekly": false },
+    enabledJobs: { "morning-motivation": false, sop13: false, "fund-portfolio-daily": false, "wisereads-weekly": true },
+    env: {
+      WISEREADS_WEEKLY_ENABLED: "false",
+      WISEREADS_FEED_XML_FILE: feedFile,
+      WISEREADS_ANALYSIS_JSON_FILE: analysisFile
+    }
+  });
+
+  assert.equal(result.ran.length, 1);
+  assert.equal(result.ran[0].job, "wisereads-weekly");
+  assert.equal(result.ran[0].ok, true);
+  assert.equal(result.ran[0].dryRun, true);
+  assert.equal(result.ran[0].sent, false);
 });

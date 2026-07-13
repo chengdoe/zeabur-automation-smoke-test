@@ -35,7 +35,7 @@ test("GET /api/jobs lists dry-run jobs", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
-  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13", "fund-portfolio-daily"]);
+  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13", "fund-portfolio-daily", "wisereads-weekly"]);
 });
 
 test("GET /api/status reports the dry-run scheduler state", async () => {
@@ -48,6 +48,8 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.scheduler.intervalMs, 60000);
   assert.equal(body.env.liveSendEnabled, false);
   assert.equal(body.env.fundPortfolioEnabled, false);
+  assert.equal(body.env.wisereadsWeeklyEnabled, false);
+  assert.equal(body.env.wisereadsSchedulerEnabled, false);
   assert.equal(body.env.hasFundDataKey, false);
   assert.equal(body.env.hasFundAnalysisKey, false);
   assert.equal(body.env.hasFundAnalysisModel, false);
@@ -56,6 +58,8 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.jobIdentity["morning-motivation"].configured, false);
   assert.ok(body.jobIdentity["morning-motivation"].missing.includes("bot_role"));
   assert.equal(body.jobIdentity.sop13.hasAppSecret, false);
+  assert.equal(body.jobIdentity["wisereads-weekly"].configured, false);
+  assert.ok(body.jobIdentity["wisereads-weekly"].missing.includes("bot_role"));
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
@@ -124,6 +128,17 @@ test("POST /api/jobs/sop13/send is blocked by default", async () => {
 
 test("POST /api/jobs/fund-portfolio-daily/send is blocked by default", async () => {
   const response = await fetch(`${baseUrl}/api/jobs/fund-portfolio-daily/send?date=2026-07-08&confirm=SEND`, {
+    method: "POST"
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.sent, false);
+  assert.equal(body.sendSkippedReason, "live send disabled");
+});
+
+test("POST /api/jobs/wisereads-weekly/send is blocked by default", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/wisereads-weekly/send?date=2026-07-13&confirm=SEND`, {
     method: "POST"
   });
   const body = await response.json();

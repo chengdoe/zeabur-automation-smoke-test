@@ -17,6 +17,8 @@ const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
 const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
 const liveSendEnabled = process.env.LIVE_SEND_ENABLED === "true";
 const fundPortfolioEnabled = process.env.FUND_PORTFOLIO_ENABLED === "true";
+const wisereadsWeeklyEnabled = process.env.WISEREADS_WEEKLY_ENABLED === "true";
+const wisereadsSchedulerEnabled = process.env.WISEREADS_WEEKLY_SCHEDULER_ENABLED === "true";
 const fundAnalysisProvider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai");
 const startedAt = new Date();
 let scheduler;
@@ -128,6 +130,8 @@ async function status() {
       schedulerIntervalMs,
       liveSendEnabled,
       fundPortfolioEnabled,
+      wisereadsWeeklyEnabled,
+      wisereadsSchedulerEnabled,
       hasFundDataKey: Boolean(process.env.MX_APIKEY),
       hasFundAnalysisKey: fundAnalysisProvider === "openrouter"
         ? Boolean(process.env.OPENROUTER_API_KEY)
@@ -137,12 +141,16 @@ async function status() {
       hasOpenRouterApiKey: Boolean(process.env.OPENROUTER_API_KEY),
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
-      hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)
+      hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID),
+      hasWisereadsRssUrl: Boolean(process.env.WISEREADS_RSS_URL),
+      wisereadsLiveSendGate: wisereadsWeeklyEnabled ? "open" : "closed",
+      wisereadsSchedulerGate: wisereadsSchedulerEnabled ? "open" : "closed"
     },
     jobIdentity: Object.fromEntries([
       "morning-motivation",
       "sop13",
-      "fund-portfolio-daily"
+      "fund-portfolio-daily",
+      "wisereads-weekly"
     ].map((job) => [job, getJobIdentityStatus(job)])),
     scheduler: schedulerStatus(),
     folders: {
@@ -263,12 +271,29 @@ async function handle(req, res) {
         dataDir
       }));
     }
+    if (url.pathname === "/api/jobs/wisereads-weekly/dry-run" && req.method === "POST") {
+      return sendJson(res, 200, await runDryRunJob({
+        job: "wisereads-weekly",
+        date: url.searchParams.get("date") || undefined,
+        dataDir
+      }));
+    }
     if (url.pathname === "/api/jobs/fund-portfolio-daily/send" && req.method === "POST") {
       return sendJson(res, 200, await runLiveSendJob({
         job: "fund-portfolio-daily",
         date: url.searchParams.get("date") || undefined,
         dataDir,
         enabled: liveSendEnabled && fundPortfolioEnabled,
+        confirm: url.searchParams.get("confirm") || "",
+        force: url.searchParams.get("force") === "true"
+      }));
+    }
+    if (url.pathname === "/api/jobs/wisereads-weekly/send" && req.method === "POST") {
+      return sendJson(res, 200, await runLiveSendJob({
+        job: "wisereads-weekly",
+        date: url.searchParams.get("date") || undefined,
+        dataDir,
+        enabled: liveSendEnabled,
         confirm: url.searchParams.get("confirm") || "",
         force: url.searchParams.get("force") === "true"
       }));
@@ -344,8 +369,12 @@ async function main() {
     enabled: schedulerEnabled,
     intervalMs: schedulerIntervalMs,
     liveSendEnabled,
+    liveEnabledJobs: {
+      "wisereads-weekly": wisereadsWeeklyEnabled
+    },
     enabledJobs: {
-      "fund-portfolio-daily": fundPortfolioEnabled
+      "fund-portfolio-daily": fundPortfolioEnabled,
+      "wisereads-weekly": wisereadsSchedulerEnabled
     },
     prepareJob: prepareScheduledJob
   });

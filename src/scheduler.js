@@ -22,6 +22,14 @@ const SCHEDULED_DRY_RUN_JOBS = [
     hour: "13",
     minute: "50",
     weekdays: [1, 2, 3, 4, 5]
+  },
+  {
+    id: "wisereads-weekly",
+    retryWindow: true,
+    weekdays: [1, 2],
+    start: "09:00",
+    end: "18:00",
+    intervalMinutes: 30
   }
 ];
 
@@ -42,13 +50,14 @@ export function getDueDryRunJobs({ now = new Date(), state, enabledJobs = {} }) 
 
   return SCHEDULED_DRY_RUN_JOBS
     .filter((job) => enabledJobs[job.id] !== false)
-    .filter((job) => job.hour === hour && job.minute === minute)
+    .filter((job) => isJobDueAt({ job, date, hour, minute }))
     .filter((job) => !job.weekdays || job.weekdays.includes(weekdayForDate(date)))
-    .filter((job) => !ranKeys.has(schedulerKey(job.id, date)))
     .map((job) => ({
       ...job,
-      date
-    }));
+      date,
+      slot: job.retryWindow ? `${hour}:${minute}` : "daily"
+    }))
+    .filter((job) => !ranKeys.has(schedulerKey(job.id, date, job.slot)));
 }
 
 export async function runSchedulerTick({
@@ -56,6 +65,7 @@ export async function runSchedulerTick({
   state,
   dataDir,
   liveSendEnabled = false,
+  liveEnabledJobs,
   sender,
   enabledJobs = {},
   prepareJob,
@@ -67,10 +77,11 @@ export async function runSchedulerTick({
   const ran = [];
 
   for (const job of dueJobs) {
-    if (liveSendEnabled && prepareJob) {
+    const runLive = liveSendEnabled && (liveEnabledJobs ? liveEnabledJobs[job.id] !== false : true);
+    if (runLive && prepareJob) {
       await prepareJob({ job: job.id, date: job.date, dataDir });
     }
-    const result = liveSendEnabled
+    const result = runLive
       ? await runLiveSendJob({
         job: job.id,
         date: job.date,
@@ -83,9 +94,10 @@ export async function runSchedulerTick({
       : await runDryRunJob({
         job: job.id,
         date: job.date,
-        dataDir
+        dataDir,
+        env
       });
-    schedulerState.ranKeys.add(schedulerKey(job.id, job.date));
+    schedulerState.ranKeys.add(schedulerKey(job.id, job.date, job.slot));
     schedulerState.lastRuns.unshift({
       ts: now.toISOString(),
       job: job.id,
@@ -111,6 +123,7 @@ export function startDryRunScheduler({
   intervalMs = 30_000,
   enabled = true,
   liveSendEnabled = false,
+  liveEnabledJobs,
   enabledJobs = {},
   prepareJob,
   logger = console
@@ -127,7 +140,7 @@ export function startDryRunScheduler({
   }
 
   const tick = () => {
-    runSchedulerTick({ state, dataDir, liveSendEnabled, enabledJobs, prepareJob }).catch((error) => {
+    runSchedulerTick({ state, dataDir, liveSendEnabled, liveEnabledJobs, enabledJobs, prepareJob }).catch((error) => {
       logger.error("scheduler dry-run tick failed", error);
     });
   };
@@ -167,6 +180,17 @@ async function appendSchedulerLog({ dataDir, now, result }) {
   await writeFile(file, JSON.stringify(existing, null, 2), "utf8");
 }
 
-function schedulerKey(job, date) {
-  return `${job}:${date}`;
+function isJobDueAt({ job, hour, minute }) {
+  if (!job.retryWindow) return job.hour === hour && job.minute === minute;
+  const current = Number(hour) * 60 + Number(minute);
+  const [startHour, startMinute] = job.start.split(":").map(Number);
+  const [endHour, endMinute] = job.end.split(":").map(Number);
+  const start = startHour * 60 + startMinute;
+  const end = endHour * 60 + endMinute;
+  const interval = job.intervalMinutes || 30;
+  return current >= start && current <= end && (current - start) % interval === 0;
+}
+
+function schedulerKey(job, date, slot = "daily") {
+  return `${job}:${date}:${slot}`;
 }

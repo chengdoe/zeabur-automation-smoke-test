@@ -49,6 +49,14 @@ export function validateFeishuConfig(config) {
 
 export async function createFeishuClient({ config = getFeishuConfig(), fetchImpl = fetch } = {}) {
   return {
+    async findRecentMessageContaining({ text, limit = 200 }) {
+      const missing = validateFeishuConfig(config);
+      if (missing.length) {
+        throw new Error(`Missing Feishu configuration: ${missing.join(", ")}`);
+      }
+      const tenantAccessToken = await fetchTenantAccessToken({ config, fetchImpl });
+      return findRecentFeishuMessageContaining({ config, fetchImpl, tenantAccessToken, text, limit });
+    },
     async sendMessage({ msgType, payload, uuid }) {
       const missing = validateFeishuConfig(config);
       if (missing.length) {
@@ -113,4 +121,33 @@ async function sendFeishuMessage({ config, fetchImpl, tenantAccessToken, msgType
     messageId: body.data?.message_id || null,
     raw: body.data || null
   };
+}
+
+export async function findRecentFeishuMessageContaining({ config, fetchImpl, tenantAccessToken, text, limit = 200 }) {
+  let pageToken = "";
+  let scanned = 0;
+  do {
+    const url = new URL(`${config.baseUrl}/open-apis/im/v1/messages`);
+    url.searchParams.set("container_id_type", "chat");
+    url.searchParams.set("container_id", config.targetChatId);
+    url.searchParams.set("page_size", String(Math.min(limit - scanned, 50)));
+    if (pageToken) url.searchParams.set("page_token", pageToken);
+    const response = await fetchImpl(url, {
+      method: "GET",
+      headers: { authorization: `Bearer ${tenantAccessToken}` }
+    });
+    const body = await response.json();
+    if (!response.ok || body.code !== 0) {
+      throw new Error(`Feishu message list failed: ${body.msg || response.status}`);
+    }
+    const items = body.data?.items || [];
+    scanned += items.length;
+    const match = items.find((item) => {
+      if (item.deleted) return false;
+      return String(item.body?.content || item.content || "").includes(text);
+    });
+    if (match) return match;
+    pageToken = body.data?.has_more ? body.data?.page_token || "" : "";
+  } while (pageToken && scanned < limit);
+  return null;
 }
