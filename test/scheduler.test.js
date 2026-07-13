@@ -10,6 +10,22 @@ import {
   runSchedulerTick
 } from "../src/scheduler.js";
 
+const SOP_ENV = {
+  SOP13_BOT_ROLE: "aheng",
+  SOP13_CONNECTION_REF: "aheng",
+  SOP13_TARGET_CHAT_ID: "oc_test",
+  FEISHU_CONNECTION_AHENG_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_APP_SECRET: "secret_test"
+};
+
+const FUND_ENV = {
+  FUND_PORTFOLIO_DAILY_BOT_ROLE: "aheng",
+  FUND_PORTFOLIO_DAILY_CONNECTION_REF: "aheng",
+  FUND_PORTFOLIO_DAILY_TARGET_CHAT_ID: "oc_test",
+  FEISHU_CONNECTION_AHENG_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_APP_SECRET: "secret_test"
+};
+
 test("scheduler marks morning motivation due at 09:00 Asia/Shanghai", () => {
   const due = getDueDryRunJobs({
     now: new Date("2026-07-04T01:00:00.000Z"),
@@ -110,6 +126,7 @@ test("scheduler sends live jobs when live send is enabled", async () => {
     state,
     dataDir,
     liveSendEnabled: true,
+    env: SOP_ENV,
     sender: {
       async sendMessage({ msgType, payload, uuid }) {
         sendCount += 1;
@@ -152,6 +169,7 @@ test("scheduler prepares a fresh fund report before live send", async () => {
     state,
     dataDir,
     liveSendEnabled: true,
+    env: FUND_ENV,
     prepareJob: async ({ job, date }) => {
       events.push(`prepare:${job}:${date}`);
       const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");

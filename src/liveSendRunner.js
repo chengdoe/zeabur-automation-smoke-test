@@ -5,7 +5,11 @@ import path from "node:path";
 import { buildFundPortfolioDailyPost } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
-import { createFeishuClient } from "./feishuClient.js";
+import {
+  createFeishuClient,
+  getJobFeishuConfig,
+  validateJobFeishuConfig
+} from "./feishuClient.js";
 
 const LIVE_JOBS = {
   "morning-motivation": {
@@ -29,7 +33,8 @@ export async function runLiveSendJob({
   enabled = false,
   confirm = "",
   force = false,
-  sender
+  sender,
+  env = process.env
 }) {
   const definition = LIVE_JOBS[job];
   if (!definition) {
@@ -41,6 +46,17 @@ export async function runLiveSendJob({
   }
   if (confirm !== "SEND") {
     return blockedResult({ job, date, reason: "missing SEND confirmation" });
+  }
+
+  const jobFeishuConfig = getJobFeishuConfig(job, env);
+  const missingIdentity = validateJobFeishuConfig(jobFeishuConfig);
+  if (missingIdentity.length) {
+    return blockedResult({
+      job,
+      date,
+      reason: "bot-role-unconfirmed",
+      missingIdentity
+    });
   }
 
   const draft = await definition.build({ date, dataDir });
@@ -69,7 +85,7 @@ export async function runLiveSendJob({
     };
   }
 
-  const messageSender = sender || await createFeishuClient();
+  const messageSender = sender || await createFeishuClient({ config: jobFeishuConfig.config });
   const uuid = `${job}-${draft.date}`;
   const sendResult = await messageSender.sendMessage({
     msgType: draft.msgType,
@@ -93,14 +109,15 @@ export async function runLiveSendJob({
   return result;
 }
 
-function blockedResult({ job, date, reason }) {
+function blockedResult({ job, date, reason, missingIdentity = [] }) {
   return {
     ok: false,
     job,
     date: date || null,
     dryRun: false,
     sent: false,
-    sendSkippedReason: reason
+    sendSkippedReason: reason,
+    missingIdentity
   };
 }
 

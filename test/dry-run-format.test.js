@@ -54,8 +54,68 @@ test("morning motivation default content rotates beyond a fixed weekday slogan",
 });
 
 test("morning motivation selection is date based, not server timezone based", () => {
-  assert.equal(selectMorningContent("2026-07-06").theme, "Sunday / reset");
-  assert.equal(selectMorningContent("2026-07-07").theme, "courage");
+  const originalTimezone = process.env.TZ;
+  process.env.TZ = "America/Los_Angeles";
+
+  try {
+    assert.equal(selectMorningContent("2026-07-01").theme, "start");
+    assert.equal(selectMorningContent("2026-07-28").theme, "perspective");
+  } finally {
+    if (originalTimezone === undefined) {
+      delete process.env.TZ;
+    } else {
+      process.env.TZ = originalTimezone;
+    }
+  }
+});
+
+test("morning motivation provides 28 deterministic days before repeating", () => {
+  const dates = Array.from({ length: 29 }, (_, index) => {
+    const date = new Date(Date.UTC(2026, 6, 1 + index));
+    return date.toISOString().slice(0, 10);
+  });
+  const results = dates.map((date) => buildMorningMotivationDryRun({ date }));
+  const firstCycle = results.slice(0, 28);
+
+  assert.equal(new Set(firstCycle.map((result) => result.preview)).size, 28);
+  assert.equal(new Set(firstCycle.map((result) => result.selectedContent.theme)).size, 28);
+  assert.equal(new Set(firstCycle.map((result) => result.preview.split("\n")[2])).size, 28);
+  assert.equal(new Set(firstCycle.map((result) => result.preview.split("\n")[4])).size, 28);
+  assert.equal(results[28].selectedContent.theme, results[0].selectedContent.theme);
+  assert.equal(results[28].preview.replace("2026-07-29", "2026-07-01"), results[0].preview);
+  assert.ok(firstCycle.every((result) => !/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/.test(result.selectedContent.theme)));
+});
+
+test("morning motivation content pack stays grounded and action oriented", () => {
+  const bannedCliches = /加油|相信自己|你一定可以|未来可期|全力以赴|正能量/;
+
+  for (let day = 1; day <= 28; day += 1) {
+    const date = `2026-07-${String(day).padStart(2, "0")}`;
+    const result = buildMorningMotivationDryRun({ date });
+    const [, , headline, , bodyWithMention] = result.preview.split("\n");
+    const body = bodyWithMention.replaceAll("<at user_id=\"all\"></at>", "");
+
+    assert.equal(result.validation.ok, true, `${date} validation`);
+    assert.equal(result.preview.split("\n").length, 5, `${date} line count`);
+    assert.ok(Array.from(headline).length >= 8 && Array.from(headline).length <= 24, `${date} headline length`);
+    assert.ok(Array.from(body).length >= 32 && Array.from(body).length <= 80, `${date} body length`);
+    assert.doesNotMatch(`${headline}${body}`, bannedCliches, `${date} cliché check`);
+    assert.match(body, /[。！？].*[。！？]$/, `${date} body should contain at least two sentences`);
+  }
+});
+
+test("morning motivation validator rejects extra lines and unexpected mentions", () => {
+  const extraLine = validateMorningPayload({
+    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。\n再做一件事。<at user_id=\"all\"></at>"
+  }, { date: "2026-07-03" });
+  const unexpectedMention = validateMorningPayload({
+    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力交给<at user_id=\"someone\"></at>能推进的小事。<at user_id=\"all\"></at>"
+  }, { date: "2026-07-03" });
+
+  assert.equal(extraLine.ok, false);
+  assert.match(extraLine.errors.join("\n"), /exactly five lines/);
+  assert.equal(unexpectedMention.ok, false);
+  assert.match(unexpectedMention.errors.join("\n"), /unexpected mention/);
 });
 
 test("SOP13 rotation selects item 8 on 2026-07-03", () => {
@@ -93,7 +153,7 @@ test("SOP13 dry-run preserves the HappyCapy rich-post format", () => {
   assert.deepEqual(content.at(-4), [
     {
       tag: "md",
-      text: "> 目标：\n> 输入：\n> 输出：\n> 验收标准：\n> 最大风险：\n> 最小可交付版本："
+      text: "> 复盘对象：\n> 原目标：\n> 实际结果：\n> 关键偏差：\n> 下次保留：\n> 下次调整："
     }
   ]);
   assert.deepEqual(content.at(-2), [{ tag: "text", text: "一句话带走", style: ["bold"] }]);

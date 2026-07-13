@@ -8,6 +8,7 @@ import { startDryRunScheduler } from "./scheduler.js";
 import { getFundPortfolioAssetStatus } from "./jobs/fundPortfolioDaily.js";
 import { createFundPortfolioAnalyzer } from "./jobs/fundPortfolioAnalyzer.js";
 import { runFundPortfolioPipeline } from "./jobs/fundPortfolioPipeline.js";
+import { getJobFeishuConfig, validateJobFeishuConfig } from "./feishuClient.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
@@ -138,6 +139,11 @@ async function status() {
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
       hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID)
     },
+    jobIdentity: Object.fromEntries([
+      "morning-motivation",
+      "sop13",
+      "fund-portfolio-daily"
+    ].map((job) => [job, getJobIdentityStatus(job)])),
     scheduler: schedulerStatus(),
     folders: {
       memory: dirs.memory,
@@ -146,6 +152,20 @@ async function status() {
     },
     persistence: await getDiskProbe(),
     recentHeartbeats: await listRecentHeartbeats()
+  };
+}
+
+function getJobIdentityStatus(job) {
+  const jobConfig = getJobFeishuConfig(job);
+  const missing = validateJobFeishuConfig(jobConfig);
+  return {
+    configured: missing.length === 0,
+    botRole: jobConfig.botRole || null,
+    connectionRef: jobConfig.connectionRef || null,
+    hasTargetChat: Boolean(jobConfig.config.targetChatId),
+    hasAppId: Boolean(jobConfig.config.appId),
+    hasAppSecret: Boolean(jobConfig.config.appSecret),
+    missing
   };
 }
 

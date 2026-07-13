@@ -58,7 +58,8 @@ export async function runSchedulerTick({
   liveSendEnabled = false,
   sender,
   enabledJobs = {},
-  prepareJob
+  prepareJob,
+  env = process.env
 }) {
   const schedulerState = state || createSchedulerState();
   schedulerState.lastTickAt = now.toISOString();
@@ -76,7 +77,8 @@ export async function runSchedulerTick({
         dataDir,
         enabled: true,
         confirm: "SEND",
-        sender
+        sender,
+        env
       })
       : await runDryRunJob({
         job: job.id,

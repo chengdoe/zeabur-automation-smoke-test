@@ -6,6 +6,22 @@ import { test } from "node:test";
 
 import { runLiveSendJob } from "../src/liveSendRunner.js";
 
+const SOP_ENV = {
+  SOP13_BOT_ROLE: "aheng",
+  SOP13_CONNECTION_REF: "aheng",
+  SOP13_TARGET_CHAT_ID: "oc_test",
+  FEISHU_CONNECTION_AHENG_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_APP_SECRET: "secret_test"
+};
+
+const FUND_ENV = {
+  FUND_PORTFOLIO_DAILY_BOT_ROLE: "aheng",
+  FUND_PORTFOLIO_DAILY_CONNECTION_REF: "aheng",
+  FUND_PORTFOLIO_DAILY_TARGET_CHAT_ID: "oc_test",
+  FEISHU_CONNECTION_AHENG_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_APP_SECRET: "secret_test"
+};
+
 test("live-send runner is blocked unless explicitly enabled and confirmed", async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-send-blocked-"));
   let sendCount = 0;
@@ -67,6 +83,7 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
     dataDir,
     enabled: true,
     confirm: "SEND",
+    env: SOP_ENV,
     sender
   });
 
@@ -84,6 +101,7 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
     dataDir,
     enabled: true,
     confirm: "SEND",
+    env: SOP_ENV,
     sender
   });
 
@@ -91,6 +109,25 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
   assert.equal(second.skipped, true);
   assert.equal(second.sendSkippedReason, "already sent");
   assert.equal(sendCount, 1);
+});
+
+test("live-send runner blocks a globally enabled job without task-level bot mapping", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-send-role-blocked-"));
+  let sendCount = 0;
+  const result = await runLiveSendJob({
+    job: "sop13",
+    date: "2026-07-03",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    env: {},
+    sender: { async sendMessage() { sendCount += 1; } }
+  });
+
+  assert.equal(result.sent, false);
+  assert.equal(result.sendSkippedReason, "bot-role-unconfirmed");
+  assert.ok(result.missingIdentity.includes("bot_role"));
+  assert.equal(sendCount, 0);
 });
 
 test("live-send runner can send fund portfolio daily as a Feishu post", async () => {
@@ -122,6 +159,7 @@ test("live-send runner can send fund portfolio daily as a Feishu post", async ()
     dataDir,
     enabled: true,
     confirm: "SEND",
+    env: FUND_ENV,
     sender: {
       async sendMessage({ msgType, payload, uuid }) {
         assert.equal(msgType, "post");
@@ -163,6 +201,7 @@ test("live-send runner refuses to send a stale fund report for a newer date", as
     dataDir,
     enabled: true,
     confirm: "SEND",
+    env: FUND_ENV,
     sender: {
       async sendMessage() {
         sendCount += 1;

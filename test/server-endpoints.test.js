@@ -53,6 +53,9 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.env.hasFundAnalysisModel, false);
   assert.equal(body.env.fundAnalysisProvider, "openai");
   assert.equal(body.env.hasOpenRouterApiKey, false);
+  assert.equal(body.jobIdentity["morning-motivation"].configured, false);
+  assert.ok(body.jobIdentity["morning-motivation"].missing.includes("bot_role"));
+  assert.equal(body.jobIdentity.sop13.hasAppSecret, false);
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {

@@ -9,6 +9,36 @@ export function getFeishuConfig(env = process.env) {
   };
 }
 
+export function getJobFeishuConfig(job, env = process.env) {
+  const prefix = envToken(job);
+  const botRole = env[`${prefix}_BOT_ROLE`] || "";
+  const connectionRef = env[`${prefix}_CONNECTION_REF`] || "";
+  const targetChatId = env[`${prefix}_TARGET_CHAT_ID`] || "";
+  const connectionPrefix = connectionRef
+    ? `FEISHU_CONNECTION_${envToken(connectionRef)}`
+    : "";
+
+  return {
+    botRole,
+    connectionRef,
+    config: {
+      appId: connectionPrefix ? env[`${connectionPrefix}_APP_ID`] || "" : "",
+      appSecret: connectionPrefix ? env[`${connectionPrefix}_APP_SECRET`] || "" : "",
+      targetChatId,
+      baseUrl: env.FEISHU_BASE_URL || FEISHU_BASE_URL
+    }
+  };
+}
+
+export function validateJobFeishuConfig(jobConfig) {
+  const missing = [];
+  if (!jobConfig.botRole) missing.push("bot_role");
+  if (!jobConfig.connectionRef) missing.push("connection_ref");
+  if (!jobConfig.config.targetChatId) missing.push("target_chat");
+  missing.push(...validateFeishuConfig(jobConfig.config));
+  return [...new Set(missing)];
+}
+
 export function validateFeishuConfig(config) {
   const missing = [];
   if (!config.appId) missing.push("FEISHU_APP_ID");
@@ -36,6 +66,10 @@ export async function createFeishuClient({ config = getFeishuConfig(), fetchImpl
       });
     }
   };
+}
+
+function envToken(value) {
+  return String(value).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "").toUpperCase();
 }
 
 async function fetchTenantAccessToken({ config, fetchImpl }) {
