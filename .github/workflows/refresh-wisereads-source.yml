@@ -1,0 +1,36 @@
+name: Refresh Wisereads source mirror
+
+on:
+  schedule:
+    - cron: "*/30 1-23 * * 1"
+    - cron: "*/30 0-10 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-wisereads-source
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Refresh latest issue
+        run: node scripts/refreshWisereadsSource.js
+      - name: Commit changed source only
+        run: |
+          if git diff --quiet -- data-sources/wisereads/latest.xml; then
+            echo "Wisereads source is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data-sources/wisereads/latest.xml
+          git commit -m "Refresh Wisereads source mirror"
+          git push

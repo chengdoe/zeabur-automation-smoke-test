@@ -6,6 +6,7 @@ import { shanghaiDateString } from "../date.js";
 
 export const WISEREADS_JOB_ID = "wisereads-weekly";
 export const DEFAULT_WISEREADS_RSS_URL = "https://wise.readwise.io/feed/";
+export const DEFAULT_WISEREADS_MIRROR_URL = "https://raw.githubusercontent.com/chengdoe/zeabur-automation-smoke-test/main/data-sources/wisereads/latest.xml";
 export const NBSP = "\u00a0";
 
 const GROUPS = {
@@ -23,9 +24,10 @@ export async function buildWisereadsWeeklyDryRun({
   env = process.env
 } = {}) {
   const rssUrl = env.WISEREADS_RSS_URL || DEFAULT_WISEREADS_RSS_URL;
+  const mirrorUrl = env.WISEREADS_MIRROR_URL || DEFAULT_WISEREADS_MIRROR_URL;
   const previousDeliveredVol = await readLastDeliveredVol({ dataDir });
   const fixtureXml = feedXml ?? (env.WISEREADS_FEED_XML_FILE ? await readFile(env.WISEREADS_FEED_XML_FILE, "utf8") : undefined);
-  const source = await getLatestWisereadsSource({ rssUrl, fetchImpl, feedXml: fixtureXml });
+  const source = await getLatestWisereadsSource({ rssUrl, mirrorUrl, fetchImpl, feedXml: fixtureXml });
 
   if (!source.ok) {
     return buildUnavailableResult({ date, source, previousDeliveredVol });
@@ -57,8 +59,9 @@ export async function buildWisereadsWeeklyDryRun({
     issueDate: source.issue.issueDate,
     sourceStatus: "source_available",
     source: {
-      type: "rss",
+      type: source.type || "rss",
       url: rssUrl,
+      mirrorUrl: source.type === "rss-mirror" ? mirrorUrl : null,
       vol: source.issue.vol,
       title: source.issue.title,
       link: source.issue.link,
@@ -120,21 +123,35 @@ export function createWisereadsAnalyzer({
   };
 }
 
-export async function getLatestWisereadsSource({ rssUrl = DEFAULT_WISEREADS_RSS_URL, fetchImpl = fetch, feedXml } = {}) {
+export async function getLatestWisereadsSource({
+  rssUrl = DEFAULT_WISEREADS_RSS_URL,
+  mirrorUrl = DEFAULT_WISEREADS_MIRROR_URL,
+  fetchImpl = fetch,
+  feedXml
+} = {}) {
+  if (feedXml !== undefined) return parseSourceXml(feedXml, { type: "rss-fixture" });
   try {
-    const xml = feedXml ?? await fetchText({ url: rssUrl, fetchImpl });
-    const issue = parseWisereadsFeed(xml);
-    if (!issue) {
-      return { ok: false, status: "source_absent", error: "no Wisereads RSS item found" };
+    return parseSourceXml(await fetchText({ url: rssUrl, fetchImpl }), { type: "rss" });
+  } catch (primaryError) {
+    try {
+      const mirrored = parseSourceXml(await fetchText({ url: mirrorUrl, fetchImpl }), { type: "rss-mirror" });
+      return { ...mirrored, primaryError: primaryError.message };
+    } catch (mirrorError) {
+      return {
+        ok: false,
+        status: "source_unavailable",
+        error: `primary: ${primaryError.message}; mirror: ${mirrorError.message}`
+      };
     }
-    const validation = validateIssue(issue);
-    if (!validation.ok) {
-      return { ok: false, status: "parse_failed", error: validation.errors.join("; "), issue };
-    }
-    return { ok: true, status: "source_available", issue };
-  } catch (error) {
-    return { ok: false, status: "source_unavailable", error: error.message };
   }
+}
+
+function parseSourceXml(xml, { type }) {
+  const issue = parseWisereadsFeed(xml);
+  if (!issue) return { ok: false, status: "source_absent", error: "no Wisereads RSS item found", type };
+  const validation = validateIssue(issue);
+  if (!validation.ok) return { ok: false, status: "parse_failed", error: validation.errors.join("; "), issue, type };
+  return { ok: true, status: "source_available", issue, type };
 }
 
 export async function readLastDeliveredVol({ dataDir }) {

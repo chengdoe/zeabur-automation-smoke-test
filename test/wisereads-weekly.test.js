@@ -163,6 +163,28 @@ test("distinguishes unavailable and parse failed source states", async () => {
   assert.equal(parseFailed.status, "parse_failed");
 });
 
+test("falls back to the GitHub source mirror when Zeabur cannot reach Readwise", async () => {
+  const requested = [];
+  const source = await getLatestWisereadsSource({
+    rssUrl: "https://wise.readwise.io/feed/",
+    mirrorUrl: "https://raw.githubusercontent.com/example/latest.xml",
+    fetchImpl: async (url) => {
+      requested.push(url);
+      if (url.includes("wise.readwise.io")) throw new Error("connect timeout");
+      return { ok: true, async text() { return VOL_151_FEED; } };
+    }
+  });
+
+  assert.deepEqual(requested, [
+    "https://wise.readwise.io/feed/",
+    "https://raw.githubusercontent.com/example/latest.xml"
+  ]);
+  assert.equal(source.ok, true);
+  assert.equal(source.type, "rss-mirror");
+  assert.equal(source.issue.vol, 151);
+  assert.equal(source.primaryError, "connect timeout");
+});
+
 test("generates Chinese editorial content once and reuses the persisted cache", async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "wisereads-analysis-cache-"));
   let modelCalls = 0;
