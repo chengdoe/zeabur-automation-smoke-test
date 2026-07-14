@@ -143,16 +143,28 @@ const CONTENT_PACK = [
   }
 ];
 
-const AT_ALL = "<at user_id=\"all\"></at>";
 const BASE_DATE = "2026-07-01";
+const SPACER = "　";
 
 export function buildMorningMotivationDryRun(options = {}) {
   const date = options.date || shanghaiDateString();
   const fallback = selectMorningContent(date);
   const headline = options.headline || fallback.headline;
-  const body = stripAtAll(options.body || fallback.body).trim();
+  const body = String(options.body || fallback.body).trim();
   const payload = {
-    text: `【晨间激励 · ${date}】\n\n${headline}\n\n${body}${AT_ALL}`
+    zh_cn: {
+      title: "",
+      content: [
+        [{ tag: "text", text: `【晨间激励 · ${date}】`, style: ["bold"] }],
+        [{ tag: "text", text: SPACER }],
+        [{ tag: "text", text: headline }],
+        [{ tag: "text", text: SPACER }],
+        [
+          { tag: "text", text: body },
+          { tag: "at", user_id: "all" }
+        ]
+      ]
+    }
   };
   const validation = validateMorningPayload(payload, { date });
 
@@ -160,13 +172,13 @@ export function buildMorningMotivationDryRun(options = {}) {
     ok: validation.ok,
     job: "morningMotivation",
     dryRun: true,
-    msgType: "text",
+    msgType: "post",
     date,
     selectedContent: {
       theme: fallback.theme
     },
     payload,
-    preview: payload.text,
+    preview: `【晨间激励 · ${date}】\n\n${headline}\n\n${body}<at user_id="all"></at>`,
     validation
   };
 }
@@ -180,55 +192,62 @@ export function selectMorningContent(date) {
 
 export function validateMorningPayload(payload, options = {}) {
   const errors = [];
-  const text = payload?.text;
+  const zhCn = payload?.zh_cn;
+  const content = zhCn?.content;
   const datePattern = options.date || "\\d{4}-\\d{2}-\\d{2}";
 
-  if (typeof text !== "string") {
-    errors.push("content.text must be a string");
+  if (!zhCn || typeof zhCn !== "object") {
+    errors.push("payload.zh_cn is required");
     return { ok: false, errors };
   }
+  if (zhCn.title !== "") {
+    errors.push("outer title must be empty");
+  }
+  if (!Array.isArray(content)) {
+    errors.push("content must be an array of rows");
+    return { ok: false, errors };
+  }
+  if (content.length !== 5) {
+    errors.push("morning motivation must contain exactly five rows");
+  }
 
-  const lines = text.split("\n");
-  const firstLine = lines[0] || "";
+  const titleItem = content[0]?.[0];
   const firstLinePattern = new RegExp(`^【晨间激励 · ${datePattern}】$`);
+  const titleIsValid = content[0]?.length === 1 &&
+    titleItem?.tag === "text" &&
+    firstLinePattern.test(titleItem.text || "") &&
+    Array.isArray(titleItem.style) &&
+    titleItem.style.includes("bold");
+  if (!titleIsValid) {
+    errors.push("row 0 must contain the bold title 【晨间激励 · YYYY-MM-DD】");
+  }
+  for (const rowIndex of [1, 3]) {
+    const row = content[rowIndex];
+    if (row?.length !== 1 || row[0]?.tag !== "text" || row[0].text !== SPACER) {
+      errors.push(`expected full-width spacer at row ${rowIndex}`);
+    }
+  }
 
-  if (!firstLinePattern.test(firstLine)) {
-    errors.push("first line must be 【晨间激励 · YYYY-MM-DD】");
-  }
-  if ((text.match(/<at user_id="all"><\/at>/g) || []).length !== 1) {
-    errors.push("@all must appear exactly once");
-  }
-  if (firstLine.includes(AT_ALL)) {
-    errors.push("@all must not appear in the title line");
-  }
-  if (!text.trimEnd().endsWith(AT_ALL)) {
-    errors.push("@all must be appended to the final body sentence");
-  }
-  if (lines.length !== 5) {
-    errors.push("morning motivation must contain exactly five lines");
-  }
-  if (lines[1] !== "" || lines[3] !== "") {
-    errors.push("blank lines must separate first line, headline, and body");
-  }
-  if (!lines[2]?.trim()) {
+  const headlineItem = content[2]?.[0];
+  if (content[2]?.length !== 1 || headlineItem?.tag !== "text" || !headlineItem.text?.trim()) {
     errors.push("headline must not be empty");
   }
-  if (!lines.slice(4).join("\n").trim()) {
+
+  const bodyRow = content[4] || [];
+  const bodyItem = bodyRow[0];
+  const atItem = bodyRow[1];
+  if (bodyRow.length !== 2 || bodyItem?.tag !== "text" || !bodyItem.text?.trim()) {
     errors.push("body must not be empty");
   }
-  const textWithoutMention = stripAtAll(text);
-  if (/<\/?at\b/i.test(textWithoutMention)) {
-    errors.push("unexpected mention tag is not allowed");
+  if (atItem?.tag !== "at" || atItem.user_id !== "all") {
+    errors.push("final body row must end with @all");
   }
-  if (/[#*_`]/.test(textWithoutMention)) {
+  const visibleText = [titleItem?.text, headlineItem?.text, bodyItem?.text].filter(Boolean).join("\n");
+  if (/[#*_`]/.test(visibleText)) {
     errors.push("morning motivation must be plain text without Markdown symbols");
   }
 
   return { ok: errors.length === 0, errors };
-}
-
-function stripAtAll(text) {
-  return String(text).replaceAll(AT_ALL, "");
 }
 
 function dateUtcMs(date) {

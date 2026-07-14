@@ -61,7 +61,7 @@ test("SOP13 validator enforces non-empty ordered sections and matching title", (
   );
 
   const wrongTitle = structuredClone(result.payload);
-  wrongTitle.zh_cn.content[0][0].text = "【每日遇见】 今日 SOP：错误主题 SOP ";
+  wrongTitle.zh_cn.content[0][0].text = "【每日遇见】 今日 SOP：错误主题 ";
   assert.match(
     validateForSelected(wrongTitle, result).errors.join("\n"),
     /visible title must match selected SOP: 每日留痕 SOP/
@@ -91,7 +91,7 @@ test("SOP13 second-round payload matches the reviewed rich-post snapshot", () =>
 
   assert.deepEqual(snapshotPayload(result.payload), {
     title: "",
-    visibleTitle: "【每日遇见】 今日 SOP：每日留痕 SOP ",
+    visibleTitle: "【每日遇见】 今日 SOP：每日留痕 ",
     mention: { tag: "at", user_id: "all" },
     sections: [
       ["原文精华", "第二轮练习不再只记录“做了什么”，而是补上“什么值得继续、什么应该停止、下次怎样更省力”。留痕要服务选择，而不是积累流水账。"],

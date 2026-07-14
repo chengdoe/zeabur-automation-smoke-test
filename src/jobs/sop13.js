@@ -63,12 +63,13 @@ export function buildSop13DryRun(options = {}) {
 }
 
 export function buildSop13PostPayload(sop, card) {
+  const displayName = sopDisplayName(sop.name);
   return {
     zh_cn: {
       title: "",
       content: [
         [
-          { tag: "text", text: `【每日遇见】 今日 SOP：${sop.name} `, style: ["bold"] },
+          { tag: "text", text: `【每日遇见】 今日 SOP：${displayName} `, style: ["bold"] },
           { tag: "at", user_id: "all" }
         ],
         spacerRow(),
@@ -129,6 +130,9 @@ export function validateSop13Post(payload, options = {}) {
   if (!hasTitleText) {
     errors.push("row 0 must contain the bold visible title");
   }
+  if ((titleItem?.text?.match(/SOP/g) || []).length !== 1) {
+    errors.push("visible title must not repeat SOP");
+  }
   if (!hasAtAll) {
     errors.push("row 0 must contain @all");
   }
@@ -136,7 +140,7 @@ export function validateSop13Post(payload, options = {}) {
     errors.push("row 0 must contain only the visible title and @all");
   }
   if (options.expectedSopName) {
-    const expectedTitle = `【每日遇见】 今日 SOP：${options.expectedSopName} `;
+    const expectedTitle = `【每日遇见】 今日 SOP：${sopDisplayName(options.expectedSopName)} `;
     if (titleItem?.text !== expectedTitle) {
       errors.push(`visible title must match selected SOP: ${options.expectedSopName}`);
     }
@@ -210,4 +214,8 @@ function spacerRow() {
 
 function normalizeText(text) {
   return text.trim().replace(/\s+/g, " ");
+}
+
+function sopDisplayName(name) {
+  return String(name).trim().replace(/\s+SOP$/i, "");
 }

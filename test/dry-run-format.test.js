@@ -12,7 +12,7 @@ import {
   validateSop13Post
 } from "../src/jobs/sop13.js";
 
-test("morning motivation dry-run preserves the HappyCapy text format", () => {
+test("morning motivation dry-run uses a bold native-post title", () => {
   const result = buildMorningMotivationDryRun({
     date: "2026-07-03",
     headline: "先稳住今天最小的一步",
@@ -21,23 +21,33 @@ test("morning motivation dry-run preserves the HappyCapy text format", () => {
 
   assert.equal(result.job, "morningMotivation");
   assert.equal(result.dryRun, true);
-  assert.equal(result.msgType, "text");
+  assert.equal(result.msgType, "post");
   assert.deepEqual(result.validation.errors, []);
   assert.deepEqual(result.payload, {
-    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。<at user_id=\"all\"></at>"
+    zh_cn: {
+      title: "",
+      content: [
+        [{ tag: "text", text: "【晨间激励 · 2026-07-03】", style: ["bold"] }],
+        [{ tag: "text", text: "　" }],
+        [{ tag: "text", text: "先稳住今天最小的一步" }],
+        [{ tag: "text", text: "　" }],
+        [
+          { tag: "text", text: "把注意力放回能推进的一件小事上。" },
+          { tag: "at", user_id: "all" }
+        ]
+      ]
+    }
   });
   assert.deepEqual(validateMorningPayload(result.payload), { ok: true, errors: [] });
 });
 
-test("morning motivation validator rejects old title-line @all format", () => {
+test("morning motivation validator rejects the old plain-text payload", () => {
   const validation = validateMorningPayload({
     text: "【晨间激励】2026-07-03 <at user_id=\"all\"></at>\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。"
   }, { date: "2026-07-03" });
 
   assert.equal(validation.ok, false);
-  assert.match(validation.errors.join("\n"), /first line/);
-  assert.match(validation.errors.join("\n"), /title line/);
-  assert.match(validation.errors.join("\n"), /final body sentence/);
+  assert.match(validation.errors.join("\n"), /payload.zh_cn/);
 });
 
 test("morning motivation default content rotates beyond a fixed weekday slogan", () => {
@@ -47,10 +57,10 @@ test("morning motivation default content rotates beyond a fixed weekday slogan",
   assert.equal(first.validation.ok, true);
   assert.equal(nextWeek.validation.ok, true);
   assert.notEqual(first.selectedContent.theme, nextWeek.selectedContent.theme);
-  assert.notEqual(first.payload.text, nextWeek.payload.text);
-  assert.match(first.payload.text, /^【晨间激励 · 2026-07-08】\n\n/);
-  assert.match(nextWeek.payload.text, /^【晨间激励 · 2026-07-15】\n\n/);
-  assert.doesNotMatch(first.payload.text.replaceAll("<at user_id=\"all\"></at>", ""), /[#*_`]/);
+  assert.notEqual(first.preview, nextWeek.preview);
+  assert.match(first.preview, /^【晨间激励 · 2026-07-08】\n\n/);
+  assert.match(nextWeek.preview, /^【晨间激励 · 2026-07-15】\n\n/);
+  assert.doesNotMatch(first.preview.replaceAll("<at user_id=\"all\"></at>", ""), /[#*_`]/);
 });
 
 test("morning motivation selection is date based, not server timezone based", () => {
@@ -105,17 +115,18 @@ test("morning motivation content pack stays grounded and action oriented", () =>
 });
 
 test("morning motivation validator rejects extra lines and unexpected mentions", () => {
-  const extraLine = validateMorningPayload({
-    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力放回能推进的一件小事上。\n再做一件事。<at user_id=\"all\"></at>"
-  }, { date: "2026-07-03" });
-  const unexpectedMention = validateMorningPayload({
-    text: "【晨间激励 · 2026-07-03】\n\n先稳住今天最小的一步\n\n把注意力交给<at user_id=\"someone\"></at>能推进的小事。<at user_id=\"all\"></at>"
-  }, { date: "2026-07-03" });
+  const valid = buildMorningMotivationDryRun({ date: "2026-07-03" }).payload;
+  const extraRowPayload = structuredClone(valid);
+  extraRowPayload.zh_cn.content.push([{ tag: "text", text: "额外一行" }]);
+  const missingAtPayload = structuredClone(valid);
+  missingAtPayload.zh_cn.content[4][1] = { tag: "at", user_id: "someone" };
+  const extraLine = validateMorningPayload(extraRowPayload, { date: "2026-07-03" });
+  const unexpectedMention = validateMorningPayload(missingAtPayload, { date: "2026-07-03" });
 
   assert.equal(extraLine.ok, false);
-  assert.match(extraLine.errors.join("\n"), /exactly five lines/);
+  assert.match(extraLine.errors.join("\n"), /exactly five rows/);
   assert.equal(unexpectedMention.ok, false);
-  assert.match(unexpectedMention.errors.join("\n"), /unexpected mention/);
+  assert.match(unexpectedMention.errors.join("\n"), /end with @all/);
 });
 
 test("SOP13 rotation selects item 8 on 2026-07-03", () => {
@@ -139,7 +150,7 @@ test("SOP13 dry-run preserves the HappyCapy rich-post format", () => {
   assert.deepEqual(content[0], [
     {
       tag: "text",
-      text: "【每日遇见】 今日 SOP：项目复盘 SOP ",
+      text: "【每日遇见】 今日 SOP：项目复盘 ",
       style: ["bold"]
     },
     {
@@ -180,7 +191,7 @@ test("SOP13 content pack reproduces HappyCapy-style depth for known sent example
 test("SOP13 validator rejects duplicate visible outer title and missing @all", () => {
   const result = buildSop13DryRun({ date: "2026-07-03" });
   const broken = structuredClone(result.payload);
-  broken.zh_cn.title = "【每日遇见】 今日 SOP：项目复盘 SOP";
+  broken.zh_cn.title = "【每日遇见】 今日 SOP：项目复盘";
   broken.zh_cn.content[0] = [broken.zh_cn.content[0][0]];
 
   const validation = validateSop13Post(broken);
@@ -188,4 +199,17 @@ test("SOP13 validator rejects duplicate visible outer title and missing @all", (
   assert.equal(validation.ok, false);
   assert.match(validation.errors.join("\n"), /outer title/);
   assert.match(validation.errors.join("\n"), /row 0.*@all/);
+});
+
+test("SOP13 validator rejects a repeated SOP suffix in the visible title", () => {
+  const result = buildSop13DryRun({ date: "2026-07-03" });
+  const broken = structuredClone(result.payload);
+  broken.zh_cn.content[0][0].text = "【每日遇见】 今日 SOP：项目复盘 SOP ";
+
+  const validation = validateSop13Post(broken, {
+    expectedSopName: result.selectedSop.name
+  });
+
+  assert.equal(validation.ok, false);
+  assert.match(validation.errors.join("\n"), /must not repeat SOP/);
 });

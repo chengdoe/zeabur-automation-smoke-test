@@ -76,7 +76,7 @@ test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", a
   assert.equal(body.payload.zh_cn.content[0][1].user_id, "all");
 });
 
-test("POST /api/jobs/morning-motivation/dry-run returns text payload without sending", async () => {
+test("POST /api/jobs/morning-motivation/dry-run returns rich post without sending", async () => {
   const response = await fetch(`${baseUrl}/api/jobs/morning-motivation/dry-run?date=2026-07-03`, {
     method: "POST"
   });
@@ -85,9 +85,11 @@ test("POST /api/jobs/morning-motivation/dry-run returns text payload without sen
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
   assert.equal(body.sent, false);
-  assert.equal(body.msgType, "text");
-  assert.match(body.payload.text, /^【晨间激励 · 2026-07-03】\n\n/);
-  assert.match(body.payload.text, /<at user_id="all"><\/at>$/);
+  assert.equal(body.msgType, "post");
+  assert.deepEqual(body.payload.zh_cn.content[0], [
+    { tag: "text", text: "【晨间激励 · 2026-07-03】", style: ["bold"] }
+  ]);
+  assert.deepEqual(body.payload.zh_cn.content[4][1], { tag: "at", user_id: "all" });
 });
 
 test("POST /api/jobs/fund-portfolio-daily/dry-run is safe when fund assets are missing", async () => {
