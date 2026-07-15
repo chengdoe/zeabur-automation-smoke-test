@@ -117,6 +117,7 @@ export function validateFundReport(report, options = {}) {
 }
 
 export function buildFundPortfolioPostPayload({ date, markdown }) {
+  const messageMarkdown = stripDuplicateFundHeading(markdown);
   return {
     zh_cn: {
       title: "",
@@ -126,7 +127,7 @@ export function buildFundPortfolioPostPayload({ date, markdown }) {
           { tag: "at", user_id: "all" }
         ],
         [{ tag: "text", text: "　" }],
-        ...chunkMarkdown(markdown).map((text) => [{ tag: "md", text }])
+        ...chunkMarkdown(messageMarkdown).map((text) => [{ tag: "md", text }])
       ]
     }
   };
@@ -163,6 +164,9 @@ export function validateFundPortfolioPost(payload, reportValidation = { ok: true
   if (!content.some((row) => row?.[0]?.tag === "md" && row[0].text?.includes("今日结论"))) {
     errors.push("post markdown must include the fund report content");
   }
+  if (content.some((row) => row?.[0]?.tag === "md" && /^#\s+基金(?:持仓)?日报(?:\s|$)/.test(row[0].text.trimStart()))) {
+    errors.push("post markdown must not repeat the visible fund report title");
+  }
 
   return { ok: errors.length === 0, errors };
 }
@@ -184,6 +188,15 @@ function chunkMarkdown(markdown, maxLength = 1800) {
   }
   if (remaining) chunks.push(remaining);
   return chunks;
+}
+
+function stripDuplicateFundHeading(markdown) {
+  const lines = String(markdown || "").trim().split("\n");
+  if (/^#\s+基金(?:持仓)?日报(?:\s|$)/.test(lines[0]?.trim() || "")) {
+    lines.shift();
+    while (lines[0]?.trim() === "") lines.shift();
+  }
+  return lines.join("\n").trim();
 }
 
 function resolveReportsDir(options) {

@@ -166,6 +166,7 @@ test("live-send runner can send fund portfolio daily as a Feishu post", async ()
         assert.equal(payload.zh_cn.title, "");
         assert.equal(payload.zh_cn.content[0][1].user_id, "all");
         assert.match(JSON.stringify(payload), /今日结论/);
+        assert.doesNotMatch(JSON.stringify(payload), /# 基金持仓日报/);
         assert.equal(uuid, "fund-portfolio-daily-2026-07-08");
         return { ok: true, messageId: "om_fund_live" };
       }
