@@ -95,3 +95,42 @@ test("missing structured fields fail closed before live send", () => {
   assert.match(validation.errors.join("\n"), /full_report_file/);
   assert.match(validation.errors.join("\n"), /data_quality.note/);
 });
+
+test("live-style report splits two fund confirmations, preserves triggers, and labels old snapshots", () => {
+  const markdown = [
+    "# 基金日报 2026-07-16",
+    "## 今日结论",
+    "今日以观察和确认止盈为主。配置更新 2026-06-26，数据仅供参考。",
+    "## 今天怎么做",
+    "1. 优先确认类：对012922（易方达全球成长精选混合QDII-C）与516350（芯片ETF易方达）评估部分兑现利润可行性。主题仓已超标。",
+    "## 今天系统帮你盯到的机会",
+    "- 回撤止盈触发两只（全球成长C、芯片ETF）。",
+    "- 篮子硬约束提示：科技成长、主题仓超上限。",
+    "## v8.0 机会层",
+    "无其他候选。",
+    "## 精简市场总结",
+    "市场回调。",
+    "## 方法论评分",
+    "保持谨慎。",
+    "## 仓位分布",
+    "旧快照参考总额约21124元（2026-06-26配置）。",
+    "- 科技成长仓约33%，目标10-15%，严重超标。",
+    "## 风险关注",
+    "数据并不完整。"
+  ].join("\n");
+  const brief = extractFundPortfolioBrief({
+    date: "2026-07-16",
+    markdown,
+    fullReportFile: "/data/fund-daily-2026-07-16.md"
+  });
+  const payload = buildFundPortfolioPostPayload({ date: "2026-07-16", brief });
+  const text = visibleText(payload);
+
+  assert.deepEqual(brief.confirmations.map((item) => item.fund_code), ["012922", "516350"]);
+  assert.deepEqual(brief.confirmations.map((item) => item.action), ["是否部分止盈", "是否部分止盈"]);
+  assert.ok(brief.triggers.length >= 2);
+  assert.doesNotMatch(text, /今天没有新增规则触发/);
+  assert.match(text, /持仓旧快照约21124元（2026-06-26）/);
+  assert.equal(validateFundPortfolioBrief(brief).ok, true);
+  assert.equal(validateFundPortfolioPost(payload, { ok: true, errors: [] }, { ok: true, errors: [] }, brief).ok, true);
+});

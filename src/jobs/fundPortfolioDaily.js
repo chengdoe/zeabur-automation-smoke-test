@@ -134,23 +134,25 @@ export function extractFundPortfolioBrief({ date, markdown, fullReportFile }) {
   const sections = splitReportSections(markdown);
   const conclusion = sectionLines(sections, "今日结论").join(" ");
   const actionLines = sectionLines(sections, "今天怎么做");
+  const opportunityLines = sectionLines(sections, "今天系统帮你盯到的机会");
   const allocationLines = sectionLines(sections, "仓位分布");
   const qualityText = cleanText(sectionLines(sections, "数据可靠性").join(" "));
   const confirmations = actionLines
-    .map(parseConfirmation)
-    .filter(Boolean)
+    .flatMap(parseConfirmations)
     .slice(0, 3);
-  const triggers = allocationLines
+  const triggers = [...opportunityLines, ...allocationLines]
     .map(cleanListLine)
-    .filter((line) => /高于|超配|剩余\s*\d+\s*次/.test(line))
+    .filter((line) => /触发|高于|超配|超标|超上限|剩余\s*\d+\s*次/.test(line))
     .map(removeInternalTerms)
     .filter(Boolean)
+    .filter((line, index, values) => values.indexOf(line) === index)
     .slice(0, 3);
   const fullText = cleanText(markdown);
   const summary = buildSummary(conclusion);
   const stance = determineStance({ summary, confirmations, qualityText });
-  const totalMatch = fullText.match(/(?:旧快照)?总额\s*(约?\s*[\d,，.]+\s*元)/);
-  const asOfMatch = fullText.match(/(?:持仓基准日|快照(?:日期|日)|截至)\s*(?:为|：|:)??\s*(\d{4}-\d{2}-\d{2})/);
+  const totalMatch = fullText.match(/(?:旧快照(?:参考)?|持仓)?总额\s*(约?\s*[\d,，.]+\s*元)/);
+  const asOfMatch = fullText.match(/(?:持仓基准日|快照(?:日期|日)|截至|配置更新)\s*(?:为|：|:)??\s*(\d{4}-\d{2}-\d{2})/)
+    || fullText.match(/旧快照参考总额[^。]*?[（(](\d{4}-\d{2}-\d{2})配置/);
   const changeMatch = /不给出(?:组合)?精确涨跌|实时估值覆盖不完整/.test(fullText)
     ? null
     : fullText.match(/(?:组合|持仓)(?:今日)?(?:估算|预计|实时)?(?:涨跌|变动)\s*(?:为|：|:)?\s*([+-]?[\d.]+%|[+-]?[\d,.]+\s*元)/)?.[1] || null;
@@ -389,6 +391,27 @@ function parseConfirmation(line) {
     amount_or_range: amount,
     reason: trimText(reason.replace(/[。；;]$/, ""), 60)
   };
+}
+
+function parseConfirmations(line) {
+  const text = cleanListLine(line);
+  const mentions = [...text.matchAll(/\b(\d{6})\s*[（(]([^）)]+)[）)]/g)];
+  if (mentions.length <= 1) {
+    const single = parseConfirmation(line);
+    return single ? [single] : [];
+  }
+
+  const action = /止盈|兑现利润|减仓/.test(text) ? "是否部分止盈" : "是否复核操作";
+  const reason = /超标|超上限/.test(text)
+    ? "持仓集中度偏高，操作前先核对平台持仓与流动性"
+    : "触发条件已出现，操作前先核对平台持仓";
+  return mentions.map((match) => ({
+    fund_code: match[1],
+    fund_name: cleanText(match[2]),
+    action,
+    amount_or_range: null,
+    reason
+  }));
 }
 
 function buildDataQuality(qualityText, fullText) {
