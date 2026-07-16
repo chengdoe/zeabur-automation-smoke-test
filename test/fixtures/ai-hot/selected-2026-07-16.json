@@ -1,0 +1,126 @@
+{
+  "count": 10,
+  "hasNext": false,
+  "items": [
+    {
+      "id": "aihot-agent-coding-1",
+      "title": "OpenAI 发布 Codex Remote Runner，支持从手机触发 Mac 编码任务",
+      "url": "https://openai.com/index/codex-remote-runner",
+      "permalink": "https://aihot.virxact.com/items/aihot-agent-coding-1",
+      "source": "OpenAI Blog",
+      "publishedAt": "2026-07-16T00:40:00.000Z",
+      "summary": "OpenAI 发布 Codex Remote Runner，让开发者可以从移动端发起远程编码任务，并把仓库修改留在本地工作区等待审查。",
+      "category": "ai-products",
+      "score": 94,
+      "selected": true
+    },
+    {
+      "id": "aihot-security-x-1",
+      "title": "研究者披露某主流 AI IDE 插件可在打开恶意仓库时读取本地 token",
+      "url": "https://x.com/researcher/status/1234567890",
+      "permalink": "https://aihot.virxact.com/items/aihot-security-x-1",
+      "source": "X：Security Researcher (@researcher)",
+      "publishedAt": "2026-07-16T01:15:00.000Z",
+      "summary": "安全研究者称，一个 AI IDE 插件在处理恶意仓库配置时可能读取本地 token，并建议用户在官方修复前避免打开未知仓库。",
+      "category": "industry",
+      "score": 89,
+      "selected": true
+    },
+    {
+      "id": "aihot-model-vendor-1",
+      "title": "MiniMax 发布新一代编程模型 Code 2.0，称 SWE-bench 通过率大幅提升",
+      "url": "https://www.minimax.io/news/code-2",
+      "permalink": "https://aihot.virxact.com/items/aihot-model-vendor-1",
+      "source": "MiniMax 官方博客",
+      "publishedAt": "2026-07-16T02:05:00.000Z",
+      "summary": "MiniMax 宣布 Code 2.0 编程模型，强调长上下文代码理解、仓库级修改和更强的测试修复能力。",
+      "category": "ai-models",
+      "score": 83,
+      "selected": true
+    },
+    {
+      "id": "aihot-workflow-1",
+      "title": "Claude Artifacts 增加 MCP 数据连接器，可直接读取表格并生成报告",
+      "url": "https://x.com/ClaudeDevs/status/2077489907350856038",
+      "permalink": "https://aihot.virxact.com/items/aihot-workflow-1",
+      "source": "X：Claude Developers (@ClaudeDevs)",
+      "publishedAt": "2026-07-16T02:20:00.000Z",
+      "summary": "Claude 开发者账号展示 Artifacts 与 MCP 连接器结合的工作流：用户可连接业务数据源，让 Claude 生成可交互报告。",
+      "category": "ai-products",
+      "score": 78,
+      "selected": true
+    },
+    {
+      "id": "aihot-open-source-1",
+      "title": "xAI 开源 Grok Build，用于把提示词快速转成 Web 应用",
+      "url": "https://x.ai/news/grok-build-open-source",
+      "permalink": "https://aihot.virxact.com/items/aihot-open-source-1",
+      "source": "xAI News",
+      "publishedAt": "2026-07-16T02:50:00.000Z",
+      "summary": "xAI 宣布开源 Grok Build，提供从自然语言提示生成前端应用的参考实现，开发者可以审查其应用生成链路。",
+      "category": "ai-products",
+      "score": 74,
+      "selected": true
+    },
+    {
+      "id": "aihot-research-1",
+      "title": "Anthropic 发布 Agentic Misalignment 新研究，列出四类代理越权模式",
+      "url": "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
+      "permalink": "https://aihot.virxact.com/items/aihot-research-1",
+      "source": "Anthropic Alignment",
+      "publishedAt": "2026-07-16T03:10:00.000Z",
+      "summary": "Anthropic 的研究团队展示多组模拟实验，指出长期运行代理在权限、目标和上下文压力下可能出现四类越权行为。",
+      "category": "paper",
+      "score": 91,
+      "selected": true
+    },
+    {
+      "id": "aihot-funding-low-1",
+      "title": "某 AI 营销平台完成 5000 万美元 B 轮融资",
+      "url": "https://example.com/funding",
+      "permalink": "https://aihot.virxact.com/items/aihot-funding-low-1",
+      "source": "转载：某科技媒体",
+      "publishedAt": "2026-07-16T01:55:00.000Z",
+      "summary": "该公司称将继续投入 AI 营销和销售自动化。",
+      "category": "industry",
+      "score": 52,
+      "selected": true
+    },
+    {
+      "id": "aihot-duplicate-title",
+      "title": "xAI 开源 Grok Build，用于把提示词快速转成 Web 应用",
+      "url": "https://x.ai/news/grok-build-open-source",
+      "permalink": "https://aihot.virxact.com/items/aihot-duplicate-title",
+      "source": "转载：开发者周刊",
+      "publishedAt": "2026-07-16T02:55:00.000Z",
+      "summary": "重复报道 xAI Grok Build 开源消息。",
+      "category": "ai-products",
+      "score": 50,
+      "selected": true
+    },
+    {
+      "id": "aihot-before-window",
+      "title": "前一天晚上发布的旧模型新闻",
+      "url": "https://example.com/old",
+      "permalink": "https://aihot.virxact.com/items/aihot-before-window",
+      "source": "Example",
+      "publishedAt": "2026-07-15T15:59:59.000Z",
+      "summary": "这条在北京时间当天 00:00 前发布，应被当天窗口排除。",
+      "category": "ai-models",
+      "score": 99,
+      "selected": true
+    },
+    {
+      "id": "aihot-after-run",
+      "title": "执行时刻之后才出现的未来新闻",
+      "url": "https://example.com/future",
+      "permalink": "https://aihot.virxact.com/items/aihot-after-run",
+      "source": "Example",
+      "publishedAt": "2026-07-16T04:01:00.000Z",
+      "summary": "这条在执行时刻之后，应被排除。",
+      "category": "ai-products",
+      "score": 99,
+      "selected": true
+    }
+  ]
+}

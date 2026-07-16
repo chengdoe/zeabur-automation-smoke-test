@@ -165,7 +165,8 @@ test("live-send runner can send fund portfolio daily as a Feishu post", async ()
         assert.equal(msgType, "post");
         assert.equal(payload.zh_cn.title, "");
         assert.equal(payload.zh_cn.content[0][1].user_id, "all");
-        assert.match(JSON.stringify(payload), /今日结论/);
+        assert.match(JSON.stringify(payload), /今日判断/);
+        assert.doesNotMatch(JSON.stringify(payload), /v8\.0 机会层|方法论评分/);
         assert.doesNotMatch(JSON.stringify(payload), /# 基金持仓日报/);
         assert.equal(uuid, "fund-portfolio-daily-2026-07-08");
         return { ok: true, messageId: "om_fund_live" };
@@ -214,4 +215,44 @@ test("live-send runner refuses to send a stale fund report for a newer date", as
   assert.equal(result.sendSkippedReason, "validation failed");
   assert.match(result.validation.errors.join("\n"), /exact-date fund report missing/);
   assert.equal(sendCount, 0);
+});
+
+test("fund live send skips an already delivered recent Feishu message", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-fund-dedupe-"));
+  const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(path.join(reportsDir, "fund-daily-2026-07-16.md"), [
+    "# 基金日报 2026-07-16",
+    "## 今日结论", "保持观察。",
+    "## v8.0 机会层", "暂无。",
+    "## 精简市场总结", "震荡。",
+    "## 方法论评分", "中性。",
+    "## 风险关注", "控制仓位。"
+  ].join("\n"), "utf8");
+  let sendCount = 0;
+  let searchedText = "";
+
+  const result = await runLiveSendJob({
+    job: "fund-portfolio-daily",
+    date: "2026-07-16",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    env: FUND_ENV,
+    sender: {
+      async findRecentMessageContaining({ text }) {
+        searchedText = text;
+        return { message_id: "om_existing_fund" };
+      },
+      async sendMessage() { sendCount += 1; }
+    }
+  });
+
+  assert.match(searchedText, /基金持仓日报.*2026-07-16/);
+  assert.equal(result.sent, false);
+  assert.equal(result.skipped, true);
+  assert.equal(result.sendSkippedReason, "already delivered in Feishu");
+  assert.equal(result.existingMessageId, "om_existing_fund");
+  assert.equal(sendCount, 0);
+  await assert.rejects(readFile(path.join(dataDir, "outputs", "automations", "fund-portfolio-daily", "2026-07-16-sent.json")));
 });

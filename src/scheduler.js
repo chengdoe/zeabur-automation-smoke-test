@@ -6,7 +6,14 @@ import { shanghaiDateTimeParts, weekdayForDate } from "./date.js";
 import { runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
 
+export const FUND_RETRY_SLOTS = ["13:50", "14:00", "14:10", "14:20"];
+
 const SCHEDULED_DRY_RUN_JOBS = [
+  {
+    id: "ai-hot",
+    hour: "09",
+    minute: "00"
+  },
   {
     id: "morning-motivation",
     hour: "09",
@@ -19,8 +26,7 @@ const SCHEDULED_DRY_RUN_JOBS = [
   },
   {
     id: "fund-portfolio-daily",
-    hour: "13",
-    minute: "50",
+    retrySlots: FUND_RETRY_SLOTS,
     weekdays: [1, 2, 3, 4, 5]
   },
   {
@@ -36,6 +42,7 @@ const SCHEDULED_DRY_RUN_JOBS = [
 export function createSchedulerState() {
   return {
     ranKeys: new Set(),
+    fundRetries: new Map(),
     lastTickAt: null,
     lastRuns: []
   };
@@ -50,12 +57,12 @@ export function getDueDryRunJobs({ now = new Date(), state, enabledJobs = {} }) 
 
   return SCHEDULED_DRY_RUN_JOBS
     .filter((job) => enabledJobs[job.id] !== false)
-    .filter((job) => isJobDueAt({ job, date, hour, minute }))
+    .filter((job) => isJobDueAt({ job, date, hour, minute, state }))
     .filter((job) => !job.weekdays || job.weekdays.includes(weekdayForDate(date)))
     .map((job) => ({
       ...job,
       date,
-      slot: job.retryWindow ? `${hour}:${minute}` : "daily"
+      slot: job.retryWindow || job.retrySlots ? `${hour}:${minute}` : "daily"
     }))
     .filter((job) => !ranKeys.has(schedulerKey(job.id, date, job.slot)));
 }
@@ -78,36 +85,127 @@ export async function runSchedulerTick({
 
   for (const job of dueJobs) {
     const runLive = liveSendEnabled && (liveEnabledJobs ? liveEnabledJobs[job.id] !== false : true);
-    if (runLive && prepareJob) {
-      await prepareJob({ job: job.id, date: job.date, dataDir });
+    const attempt = job.id === "fund-portfolio-daily"
+      ? FUND_RETRY_SLOTS.indexOf(job.slot) + 1
+      : 1;
+    if (runLive && job.id === "fund-portfolio-daily" && isFundSent({ dataDir, date: job.date })) {
+      const result = {
+        ok: true,
+        job: job.id,
+        date: job.date,
+        dryRun: false,
+        sent: false,
+        skipped: true,
+        sendSkippedReason: "already sent",
+        attempt,
+        phase: "precheck",
+        error_class: null,
+        next_retry_at: null,
+        files: {}
+      };
+      schedulerState.fundRetries.delete(job.date);
+      await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
+      ran.push(result);
+      continue;
     }
-    const result = runLive
-      ? await runLiveSendJob({
+
+    let prepared;
+    if (runLive && prepareJob) {
+      try {
+        prepared = await prepareJob({
+          job: job.id,
+          date: job.date,
+          dataDir,
+          attempt,
+          preparedSnapshot: schedulerState.fundRetries.get(job.date)?.preparedSnapshot
+        });
+      } catch (error) {
+        prepared = {
+          ok: false,
+          sent: false,
+          phase: error.phase || "prepare",
+          error_class: error.errorClass || error.error_class || "prepare_failure",
+          retryable: Boolean(error.retryable),
+          preparedSnapshot: error.preparedSnapshot
+        };
+      }
+    }
+
+    if (job.id === "fund-portfolio-daily" && runLive && prepared?.ok === false) {
+      const failurePhase = prepared.phase || "prepare";
+      const retryablePhase = ["prepare", "model"].includes(failurePhase);
+      const canRetry = Boolean(prepared.retryable && retryablePhase);
+      const nextRetryAt = canRetry ? nextFundRetryAt(job.date, attempt) : null;
+      const result = {
+        ok: false,
         job: job.id,
         date: job.date,
-        dataDir,
-        enabled: true,
-        confirm: "SEND",
-        sender,
-        env
-      })
-      : await runDryRunJob({
+        dryRun: false,
+        sent: false,
+        attempt,
+        phase: failurePhase,
+        error_class: prepared.error_class || "prepare_failure",
+        retryable: canRetry,
+        next_retry_at: nextRetryAt,
+        preparedSnapshot: prepared.preparedSnapshot || null,
+        promoted: Boolean(prepared.promoted),
+        files: prepared.files || {}
+      };
+      if (nextRetryAt) {
+        schedulerState.fundRetries.set(job.date, {
+          retryable: true,
+          attempt,
+          preparedSnapshot: prepared.preparedSnapshot
+        });
+      } else {
+        schedulerState.fundRetries.delete(job.date);
+      }
+      await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
+      ran.push(result);
+      continue;
+    }
+
+    let result;
+    try {
+      result = runLive
+        ? await runLiveSendJob({
+          job: job.id,
+          date: job.date,
+          dataDir,
+          enabled: true,
+          confirm: "SEND",
+          sender,
+          env
+        })
+        : await runDryRunJob({
+          job: job.id,
+          date: job.date,
+          dataDir,
+          env
+        });
+      result = {
+        ...result,
+        attempt,
+        phase: runLive ? "send" : "dry-run",
+        error_class: null,
+        next_retry_at: null
+      };
+    } catch {
+      result = {
+        ok: false,
         job: job.id,
         date: job.date,
-        dataDir,
-        env
-      });
-    schedulerState.ranKeys.add(schedulerKey(job.id, job.date, job.slot));
-    schedulerState.lastRuns.unshift({
-      ts: now.toISOString(),
-      job: job.id,
-      date: job.date,
-      ok: result.ok,
-      sent: result.sent,
-      files: result.files
-    });
-    schedulerState.lastRuns = schedulerState.lastRuns.slice(0, 20);
-    await appendSchedulerLog({ dataDir, now, result });
+        dryRun: false,
+        sent: false,
+        attempt,
+        phase: "send",
+        error_class: "send_failure",
+        next_retry_at: null,
+        files: {}
+      };
+    }
+    if (job.id === "fund-portfolio-daily") schedulerState.fundRetries.delete(job.date);
+    await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
     ran.push(result);
   }
 
@@ -173,14 +271,26 @@ async function appendSchedulerLog({ dataDir, now, result }) {
     job: result.job,
     ok: result.ok,
     dryRun: result.dryRun,
+    attempt: result.attempt,
+    phase: result.phase,
+    error_class: result.error_class,
+    next_retry_at: result.next_retry_at,
     sent: result.sent,
-    files: result.files
+    files: result.files || {}
   });
 
   await writeFile(file, JSON.stringify(existing, null, 2), "utf8");
 }
 
-function isJobDueAt({ job, hour, minute }) {
+function isJobDueAt({ job, date, hour, minute, state }) {
+  if (job.retrySlots) {
+    const slot = `${hour}:${minute}`;
+    const index = job.retrySlots.indexOf(slot);
+    if (index < 0) return false;
+    if (index === 0) return true;
+    const retry = state?.fundRetries?.get(date);
+    return Boolean(retry?.retryable && retry.attempt === index);
+  }
   if (!job.retryWindow) return job.hour === hour && job.minute === minute;
   const current = Number(hour) * 60 + Number(minute);
   const [startHour, startMinute] = job.start.split(":").map(Number);
@@ -193,4 +303,31 @@ function isJobDueAt({ job, hour, minute }) {
 
 function schedulerKey(job, date, slot = "daily") {
   return `${job}:${date}:${slot}`;
+}
+
+function isFundSent({ dataDir, date }) {
+  return existsSync(path.join(dataDir, "outputs", "automations", "fund-portfolio-daily", `${date}-sent.json`));
+}
+
+function nextFundRetryAt(date, attempt) {
+  const nextSlot = FUND_RETRY_SLOTS[attempt];
+  return nextSlot ? `${date}T${nextSlot}:00+08:00` : null;
+}
+
+async function recordSchedulerResult({ schedulerState, dataDir, now, job, result }) {
+  schedulerState.ranKeys.add(schedulerKey(job.id, job.date, job.slot));
+  schedulerState.lastRuns.unshift({
+    ts: now.toISOString(),
+    job: job.id,
+    date: job.date,
+    ok: result.ok,
+    attempt: result.attempt,
+    phase: result.phase,
+    error_class: result.error_class,
+    next_retry_at: result.next_retry_at,
+    sent: result.sent,
+    files: result.files || {}
+  });
+  schedulerState.lastRuns = schedulerState.lastRuns.slice(0, 20);
+  await appendSchedulerLog({ dataDir, now, result });
 }

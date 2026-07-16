@@ -32,8 +32,8 @@ test("scheduler marks morning motivation due at 09:00 Asia/Shanghai", () => {
     state: createSchedulerState()
   });
 
-  assert.deepEqual(due.map((job) => job.id), ["morning-motivation"]);
-  assert.equal(due[0].date, "2026-07-04");
+  assert.deepEqual(due.map((job) => job.id), ["ai-hot", "morning-motivation"]);
+  assert.equal(due[1].date, "2026-07-04");
 });
 
 test("scheduler marks SOP13 due at 09:30 Asia/Shanghai", () => {
@@ -79,7 +79,7 @@ test("scheduler marks Wisereads due every 30 minutes in the Monday-Tuesday retry
     state: createSchedulerState()
   });
 
-  assert.deepEqual(mondayStart.map((job) => job.id), ["morning-motivation", "wisereads-weekly"]);
+  assert.deepEqual(mondayStart.map((job) => job.id), ["ai-hot", "morning-motivation", "wisereads-weekly"]);
   assert.deepEqual(mondaySlot.map((job) => job.id), ["sop13", "wisereads-weekly"]);
   assert.deepEqual(afterWindow, []);
 });
@@ -227,7 +227,7 @@ test("scheduler keeps a task in dry-run when its independent live gate is closed
     dataDir,
     liveSendEnabled: true,
     liveEnabledJobs: { "wisereads-weekly": false },
-    enabledJobs: { "morning-motivation": false, sop13: false, "fund-portfolio-daily": false, "wisereads-weekly": true },
+    enabledJobs: { "ai-hot": false, "morning-motivation": false, sop13: false, "fund-portfolio-daily": false, "wisereads-weekly": true },
     env: {
       WISEREADS_WEEKLY_ENABLED: "false",
       WISEREADS_FEED_XML_FILE: feedFile,
@@ -240,4 +240,119 @@ test("scheduler keeps a task in dry-run when its independent live gate is closed
   assert.equal(result.ran[0].ok, true);
   assert.equal(result.ran[0].dryRun, true);
   assert.equal(result.ran[0].sent, false);
+});
+
+test("fund scheduler records a retryable 13:50 prepare failure and reuses its snapshot at 14:00", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-fund-retry-"));
+  const state = createSchedulerState();
+  const preparedSnapshot = path.join(dataDir, "prepared", "2026-07-16");
+  const prepareCalls = [];
+  let sends = 0;
+  const prepareJob = async ({ attempt, preparedSnapshot: reused }) => {
+    prepareCalls.push({ attempt, reused });
+    if (attempt === 1) {
+      return { ok: false, sent: false, phase: "prepare", error_class: "prepare_failure", retryable: true, preparedSnapshot };
+    }
+    const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+    await mkdir(reportsDir, { recursive: true });
+    await writeFile(path.join(reportsDir, "fund-daily-2026-07-16.md"), [
+      "## 今日结论", "观察。", "## v8.0 机会层", "暂无。", "## 精简市场总结", "震荡。",
+      "## 方法论评分", "中性。", "## 风险关注", "控制仓位。"
+    ].join("\n"));
+    return { ok: true, sent: false, phase: "promoted", promoted: true, preparedSnapshot: reused };
+  };
+  const sender = { async sendMessage() { sends += 1; return { ok: true, messageId: "om_retry" }; } };
+
+  const first = await runSchedulerTick({ now: new Date("2026-07-16T05:50:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV, prepareJob, sender });
+  assert.equal(first.ran[0].phase, "prepare");
+  assert.equal(first.ran[0].next_retry_at, "2026-07-16T14:00:00+08:00");
+  assert.equal(sends, 0);
+  const log = JSON.parse(await readFile(path.join(dataDir, "outputs", "automations", "scheduler", "2026-07-16.log.json")));
+  assert.deepEqual(Object.keys(log.entries[0]).sort(), [
+    "attempt", "dryRun", "error_class", "files", "job", "next_retry_at", "ok", "phase", "sent", "ts"
+  ]);
+  assert.doesNotMatch(JSON.stringify(log), /payload|prompt|secret/i);
+
+  const second = await runSchedulerTick({ now: new Date("2026-07-16T06:00:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV, prepareJob, sender });
+  assert.deepEqual(prepareCalls, [{ attempt: 1, reused: undefined }, { attempt: 2, reused: preparedSnapshot }]);
+  assert.equal(second.ran[0].sent, true);
+  assert.equal(sends, 1);
+});
+
+test("fund retry slots require retryable state and stop after 14:20", () => {
+  const state = createSchedulerState();
+  const noFailure = getDueDryRunJobs({ now: new Date("2026-07-16T06:00:00Z"), state });
+  assert.deepEqual(noFailure, []);
+  state.fundRetries.set("2026-07-16", { retryable: true, attempt: 1 });
+  for (const [index, minute] of ["00", "10", "20"].entries()) {
+    state.fundRetries.set("2026-07-16", { retryable: true, attempt: index + 1 });
+    const due = getDueDryRunJobs({ now: new Date(`2026-07-16T06:${minute}:00Z`), state });
+    assert.deepEqual(due.map((job) => job.id), ["fund-portfolio-daily"]);
+    state.ranKeys.clear();
+  }
+  assert.deepEqual(getDueDryRunJobs({ now: new Date("2026-07-16T06:30:00Z"), state }), []);
+});
+
+test("permanent fund prepare failure does not retry or call sender", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-fund-permanent-"));
+  const state = createSchedulerState();
+  let sends = 0;
+  const first = await runSchedulerTick({
+    now: new Date("2026-07-16T05:50:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV,
+    prepareJob: async () => ({ ok: false, sent: false, phase: "model", error_class: "model_http_status", retryable: false }),
+    sender: { async sendMessage() { sends += 1; } }
+  });
+  assert.equal(first.ran[0].next_retry_at, null);
+  assert.equal(sends, 0);
+  assert.deepEqual(getDueDryRunJobs({ now: new Date("2026-07-16T06:00:00Z"), state }), []);
+});
+
+test("fund validation failure never retries even if a caller marks it retryable", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-fund-validation-"));
+  const state = createSchedulerState();
+  const first = await runSchedulerTick({
+    now: new Date("2026-07-16T05:50:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV,
+    prepareJob: async () => ({ ok: false, sent: false, phase: "validation", error_class: "report_validation_failure", retryable: true })
+  });
+  assert.equal(first.ran[0].retryable, false);
+  assert.equal(first.ran[0].next_retry_at, null);
+  assert.deepEqual(getDueDryRunJobs({ now: new Date("2026-07-16T06:00:00Z"), state }), []);
+});
+
+test("fund send failure is logged separately and does not schedule prepare retry", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-fund-send-failure-"));
+  const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
+  await mkdir(reportsDir, { recursive: true });
+  await writeFile(path.join(reportsDir, "fund-daily-2026-07-16.md"), [
+    "## 今日结论", "观察。", "## v8.0 机会层", "暂无。", "## 精简市场总结", "震荡。",
+    "## 方法论评分", "中性。", "## 风险关注", "控制仓位。"
+  ].join("\n"));
+  const state = createSchedulerState();
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-16T05:50:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV,
+    prepareJob: async () => ({ ok: true, phase: "promoted", promoted: true }),
+    sender: { async sendMessage() { throw new Error("fixture sender failure"); } }
+  });
+  assert.equal(result.ran[0].phase, "send");
+  assert.equal(result.ran[0].error_class, "send_failure");
+  assert.equal(result.ran[0].next_retry_at, null);
+  assert.deepEqual(getDueDryRunJobs({ now: new Date("2026-07-16T06:00:00Z"), state }), []);
+});
+
+test("already-sent fund date skips prepare and send", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-fund-sent-"));
+  const sentDir = path.join(dataDir, "outputs", "automations", "fund-portfolio-daily");
+  await mkdir(sentDir, { recursive: true });
+  await writeFile(path.join(sentDir, "2026-07-16-sent.json"), JSON.stringify({ sent: true }));
+  let prepares = 0;
+  let sends = 0;
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-16T05:50:00Z"), state: createSchedulerState(), dataDir, liveSendEnabled: true, env: FUND_ENV,
+    prepareJob: async () => { prepares += 1; },
+    sender: { async sendMessage() { sends += 1; } }
+  });
+  assert.equal(result.ran[0].sendSkippedReason, "already sent");
+  assert.equal(result.ran[0].sent, false);
+  assert.equal(prepares, 0);
+  assert.equal(sends, 0);
 });

@@ -31,7 +31,7 @@ test("dry-run runner writes audit files and never sends", async () => {
   assert.match(markdown, /No Feishu message was sent/);
 });
 
-test("fund portfolio dry-run preserves latest migrated markdown report sections", async () => {
+test("fund portfolio dry-run preserves the report archive and emits a native decision brief", async () => {
   const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-fund-dry-run-"));
   const reportsDir = path.join(dataDir, "fund-portfolio-daily", "project", "outputs", "reports", "markdown");
   await mkdir(reportsDir, { recursive: true });
@@ -64,12 +64,15 @@ test("fund portfolio dry-run preserves latest migrated markdown report sections"
   assert.equal(result.ok, true);
   assert.equal(result.dryRun, true);
   assert.equal(result.sent, false);
-  assert.equal(result.msgType, "markdown");
-  assert.match(result.payload.markdown, /v8\.0 机会层/);
+  assert.equal(result.msgType, "post");
+  assert.equal(result.feishuBrief.sent, false);
+  assert.match(JSON.stringify(result.payload), /今日判断/);
+  assert.doesNotMatch(JSON.stringify(result.payload), /v8\.0 机会层|方法论评分/);
   assert.match(result.files.json, /outputs\/automations\/fund-portfolio-daily\/2026-07-08-dry-run\.json$/);
 
   const markdown = await readFile(result.files.markdown, "utf8");
   assert.match(markdown, /# fundPortfolioDaily Dry Run/);
   assert.match(markdown, /No Feishu message was sent/);
-  assert.match(markdown, /基金持仓日报 2026-07-08/);
+  assert.match(markdown, /今日判断/);
+  assert.match(await readFile(path.join(reportsDir, "fund-daily-2026-07-08.md"), "utf8"), /v8\.0 机会层/);
 });

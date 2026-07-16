@@ -2,12 +2,37 @@ import { shanghaiDateString } from "../date.js";
 
 const RESPONSES_URL = "https://api.openai.com/v1/responses";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const JSON_CONTENT_TYPE = /(?:^|\/)json(?:;|$)|\+json(?:;|$)/i;
+const HTML_PREFIX = /^\s*(?:<!doctype\s+html|<html|<head|<body)/i;
+
+const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export class FundAnalysisError extends Error {
+  constructor({ provider, status = null, responseType = "unknown", attempt = 1, errorClass, retryable = false, safeSummary = "" }) {
+    const statusText = status ?? "unknown";
+    const summaryText = safeSummary ? ` summary="${safeSummary}"` : "";
+    super(`Fund analysis ${provider} failed: ${errorClass} status=${statusText} response_type=${responseType} attempt=${attempt}${summaryText}`);
+    this.name = "FundAnalysisError";
+    this.provider = provider;
+    this.status = status;
+    this.responseType = responseType;
+    this.attempt = attempt;
+    this.errorClass = errorClass;
+    this.retryable = retryable;
+    this.safeSummary = safeSummary;
+  }
+}
 
 export function createFundPortfolioAnalyzer({
   provider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai"),
   apiKey,
   model = process.env.FUND_ANALYSIS_MODEL || "",
-  fetchImpl = fetch
+  fetchImpl = fetch,
+  timeoutMs = 45_000,
+  maxAttempts = 3,
+  baseDelayMs = 500,
+  sleep = defaultSleep,
+  random = Math.random
 } = {}) {
   return async function analyzeFundPortfolio(context = {}) {
     const resolvedApiKey = apiKey ?? (
@@ -15,47 +40,60 @@ export function createFundPortfolioAnalyzer({
     ) ?? "";
     const requiredKey = provider === "openrouter" ? "OPENROUTER_API_KEY" : "OPENAI_API_KEY";
     if (!resolvedApiKey || !model) {
-      throw new Error(`${requiredKey} and FUND_ANALYSIS_MODEL are required for fresh fund analysis`);
-    }
-
-    if (provider === "openrouter") {
-      return analyzeWithOpenRouter({
-        apiKey: resolvedApiKey,
-        model,
-        context,
-        fetchImpl
+      throw new FundAnalysisError({
+        provider,
+        errorClass: "model_configuration_error",
+        retryable: false,
+        safeSummary: `${requiredKey} and FUND_ANALYSIS_MODEL are required`
       });
     }
-    if (provider !== "openai") {
-      throw new Error(`Unsupported fund analysis provider: ${provider}`);
+
+    if (!["openai", "openrouter"].includes(provider)) {
+      throw new FundAnalysisError({
+        provider,
+        errorClass: "model_configuration_error",
+        retryable: false,
+        safeSummary: "unsupported provider"
+      });
     }
 
-    const response = await fetchImpl(RESPONSES_URL, {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${resolvedApiKey}`,
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        model,
-        tools: [{ type: "web_search" }],
-        input: buildFundAnalysisPrompt(context)
-      })
+    const prompt = buildFundAnalysisPrompt(context);
+    const request = provider === "openrouter"
+      ? buildOpenRouterRequest({ apiKey: resolvedApiKey, model, prompt })
+      : buildOpenAiRequest({ apiKey: resolvedApiKey, model, prompt });
+
+    return requestWithRetry({
+      provider,
+      request,
+      fetchImpl,
+      timeoutMs,
+      maxAttempts,
+      baseDelayMs,
+      sleep,
+      random
     });
-    const body = await response.json();
-    if (!response.ok) {
-      throw new Error(`Fund analysis request failed (${response.status || "unknown"}): ${body?.error?.message || "unknown error"}`);
-    }
-    const outputText = body.output_text || extractOutputText(body.output);
-    if (!outputText?.trim()) {
-      throw new Error("Fund analysis returned empty output");
-    }
-    return stripMarkdownFence(outputText);
   };
 }
 
-async function analyzeWithOpenRouter({ apiKey, model, context, fetchImpl }) {
-  const response = await fetchImpl(OPENROUTER_URL, {
+function buildOpenAiRequest({ apiKey, model, prompt }) {
+  return {
+    url: RESPONSES_URL,
+    options: {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ model, tools: [{ type: "web_search" }], input: prompt })
+    },
+    extract: (body) => body.output_text || extractOutputText(body.output)
+  };
+}
+
+function buildOpenRouterRequest({ apiKey, model, prompt }) {
+  return {
+    url: OPENROUTER_URL,
+    options: {
     method: "POST",
     headers: {
       authorization: `Bearer ${apiKey}`,
@@ -64,25 +102,139 @@ async function analyzeWithOpenRouter({ apiKey, model, context, fetchImpl }) {
     },
     body: JSON.stringify({
       model,
-      messages: [{
-        role: "user",
-        content: buildFundAnalysisPrompt(context)
-      }],
+        messages: [{ role: "user", content: prompt }],
       tools: [{
         type: "openrouter:web_search",
         parameters: { max_results: 5 }
       }]
     })
-  });
-  const body = await response.json();
-  if (!response.ok) {
-    throw new Error(`Fund analysis request failed (${response.status || "unknown"}): ${body?.error?.message || "unknown error"}`);
+    },
+    extract: (body) => body?.choices?.[0]?.message?.content
+  };
+}
+
+async function requestWithRetry({ provider, request, fetchImpl, timeoutMs, maxAttempts, baseDelayMs, sleep, random }) {
+  const configuredAttempts = Math.floor(maxAttempts);
+  const attempts = Number.isFinite(configuredAttempts) ? Math.max(1, configuredAttempts) : 3;
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await requestOnce({ provider, request, fetchImpl, timeoutMs, attempt });
+    } catch (error) {
+      lastError = normalizeRequestError(error, { provider, attempt });
+      if (!lastError.retryable || attempt >= attempts) throw lastError;
+      const exponential = baseDelayMs * (2 ** (attempt - 1));
+      const jitter = Math.max(0, random()) * baseDelayMs;
+      await sleep(Math.min(10_000, exponential + jitter));
+    }
   }
-  const outputText = body?.choices?.[0]?.message?.content;
-  if (!outputText?.trim()) {
-    throw new Error("Fund analysis returned empty output");
+  throw lastError;
+}
+
+async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt }) {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  let response;
+  let text;
+  try {
+    response = await fetchImpl(request.url, { ...request.options, signal: controller.signal });
+    text = await response.text();
+  } catch (error) {
+    if (timedOut || error?.name === "AbortError" || error?.name === "TimeoutError") {
+      throw new FundAnalysisError({ provider, attempt, errorClass: "model_timeout", retryable: true, safeSummary: "request timed out" });
+    }
+    throw new FundAnalysisError({ provider, attempt, errorClass: "model_network_error", retryable: true, safeSummary: "network request failed" });
+  } finally {
+    clearTimeout(timer);
+  }
+
+  const status = Number.isFinite(response.status) ? response.status : null;
+  const contentType = response.headers?.get?.("content-type")?.split(";", 1)[0]?.trim().toLowerCase() || "unknown";
+  const htmlLike = HTML_PREFIX.test(text);
+  const jsonLike = JSON_CONTENT_TYPE.test(contentType);
+  const retryableStatus = isRetryableStatus(status);
+  if (htmlLike || !jsonLike) {
+    throw new FundAnalysisError({
+      provider,
+      status,
+      responseType: htmlLike ? "text/html" : contentType,
+      attempt,
+      errorClass: "model_non_json_response",
+      retryable: retryableStatus,
+      safeSummary: redactSummary(text)
+    });
+  }
+
+  let body;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    throw new FundAnalysisError({
+      provider,
+      status,
+      responseType: contentType,
+      attempt,
+      errorClass: "model_malformed_json",
+      retryable: false,
+      safeSummary: "invalid JSON response"
+    });
+  }
+
+  if (!response.ok) {
+    throw new FundAnalysisError({
+      provider,
+      status,
+      responseType: contentType,
+      attempt,
+      errorClass: "model_http_status",
+      retryable: retryableStatus,
+      safeSummary: redactSummary(body?.error?.message || `HTTP ${status ?? "unknown"}`)
+    });
+  }
+
+  const outputText = request.extract(body);
+  if (typeof outputText !== "string" || !outputText.trim()) {
+    throw new FundAnalysisError({
+      provider,
+      status,
+      responseType: contentType,
+      attempt,
+      errorClass: "model_empty_output",
+      retryable: false,
+      safeSummary: "model output was empty"
+    });
   }
   return stripMarkdownFence(outputText);
+}
+
+function normalizeRequestError(error, { provider, attempt }) {
+  if (error instanceof FundAnalysisError) return error;
+  return new FundAnalysisError({
+    provider,
+    attempt,
+    errorClass: "model_network_error",
+    retryable: true,
+    safeSummary: "network request failed"
+  });
+}
+
+function isRetryableStatus(status) {
+  return [408, 425, 429].includes(status) || (status >= 500 && status <= 599);
+}
+
+export function redactSummary(value, maxLength = 300) {
+  const redacted = String(value || "")
+    .replace(/Bearer\s+[^\s"'<>]+/gi, "Bearer [REDACTED]")
+    .replace(/\b(?:sk|key)-[A-Za-z0-9_-]{8,}\b/gi, "[REDACTED]")
+    .replace(/\b[A-Fa-f0-9]{32,}\b/g, "[REDACTED]")
+    .replace(/\b[A-Za-z0-9+/_=-]{40,}\b/g, "[REDACTED]")
+    .replace(/\s+/g, " ")
+    .trim();
+  return redacted.length > maxLength ? `${redacted.slice(0, maxLength - 3)}...` : redacted;
 }
 
 export function buildFundAnalysisPrompt({

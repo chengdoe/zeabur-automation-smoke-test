@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { listJobs, runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
-import { startDryRunScheduler } from "./scheduler.js";
+import { FUND_RETRY_SLOTS, startDryRunScheduler } from "./scheduler.js";
 import { getFundPortfolioAssetStatus } from "./jobs/fundPortfolioDaily.js";
 import { createFundPortfolioAnalyzer } from "./jobs/fundPortfolioAnalyzer.js";
 import { runFundPortfolioPipeline } from "./jobs/fundPortfolioPipeline.js";
@@ -16,6 +16,8 @@ const heartbeatIntervalMs = Number(process.env.HEARTBEAT_INTERVAL_MS || 60_000);
 const schedulerEnabled = process.env.SCHEDULER_ENABLED !== "false";
 const schedulerIntervalMs = Number(process.env.SCHEDULER_INTERVAL_MS || 60_000);
 const liveSendEnabled = process.env.LIVE_SEND_ENABLED === "true";
+const aiHotEnabled = process.env.AI_HOT_ENABLED === "true";
+const aiHotSchedulerEnabled = process.env.AI_HOT_SCHEDULER_ENABLED === "true";
 const fundPortfolioEnabled = process.env.FUND_PORTFOLIO_ENABLED === "true";
 const wisereadsWeeklyEnabled = process.env.WISEREADS_WEEKLY_ENABLED === "true";
 const wisereadsSchedulerEnabled = process.env.WISEREADS_WEEKLY_SCHEDULER_ENABLED === "true";
@@ -87,7 +89,8 @@ async function getDiskProbe() {
 async function outboundCheck() {
   const targets = [
     "https://open.feishu.cn/",
-    "https://api.openai.com/"
+    "https://api.openai.com/",
+    "https://aihot.virxact.com/api/public/fingerprint"
   ];
   const results = [];
   for (const url of targets) {
@@ -129,6 +132,8 @@ async function status() {
       schedulerEnabled,
       schedulerIntervalMs,
       liveSendEnabled,
+      aiHotEnabled,
+      aiHotSchedulerEnabled,
       fundPortfolioEnabled,
       wisereadsWeeklyEnabled,
       wisereadsSchedulerEnabled,
@@ -143,15 +148,23 @@ async function status() {
       hasFeishuAppSecret: Boolean(process.env.FEISHU_APP_SECRET),
       hasFeishuTargetChatId: Boolean(process.env.FEISHU_TARGET_CHAT_ID),
       hasWisereadsRssUrl: Boolean(process.env.WISEREADS_RSS_URL),
+      aiHotLiveSendGate: aiHotEnabled ? "open" : "closed",
+      aiHotSchedulerGate: aiHotSchedulerEnabled ? "open" : "closed",
       wisereadsLiveSendGate: wisereadsWeeklyEnabled ? "open" : "closed",
       wisereadsSchedulerGate: wisereadsSchedulerEnabled ? "open" : "closed"
     },
     jobIdentity: Object.fromEntries([
+      "ai-hot",
       "morning-motivation",
       "sop13",
       "fund-portfolio-daily",
       "wisereads-weekly"
     ].map((job) => [job, getJobIdentityStatus(job)])),
+    fundPortfolioAudit: getFundPortfolioAudit(),
+    fundPortfolioReliability: {
+      retrySlots: FUND_RETRY_SLOTS,
+      mostRecentAttempt: scheduler?.state?.lastRuns?.find((run) => run.job === "fund-portfolio-daily") || null
+    },
     scheduler: schedulerStatus(),
     folders: {
       memory: dirs.memory,
@@ -177,6 +190,40 @@ function getJobIdentityStatus(job) {
   };
 }
 
+function getFundPortfolioAudit() {
+  const provider = fundAnalysisProvider;
+  const jobConfig = getJobFeishuConfig("fund-portfolio-daily");
+  const missing = validateJobFeishuConfig(jobConfig);
+  return {
+    gates: {
+      liveSendEnabled,
+      fundPortfolioEnabled
+    },
+    analysis: {
+      providerOpenAi: provider === "openai",
+      providerOpenRouter: provider === "openrouter",
+      providerSupported: ["openai", "openrouter"].includes(provider),
+      hasFundAnalysisKey: provider === "openrouter"
+        ? Boolean(process.env.OPENROUTER_API_KEY)
+        : Boolean(process.env.OPENAI_API_KEY),
+      hasFundAnalysisModel: Boolean(process.env.FUND_ANALYSIS_MODEL)
+    },
+    identity: {
+      configured: missing.length === 0,
+      hasBotRole: Boolean(jobConfig.botRole),
+      hasConnectionRef: Boolean(jobConfig.connectionRef),
+      hasTargetChat: Boolean(jobConfig.config.targetChatId),
+      hasAppId: Boolean(jobConfig.config.appId),
+      hasAppSecret: Boolean(jobConfig.config.appSecret),
+      missingBotRole: missing.includes("bot_role"),
+      missingConnectionRef: missing.includes("connection_ref"),
+      missingTargetChat: missing.includes("target_chat_id"),
+      missingAppId: missing.includes("app_id"),
+      missingAppSecret: missing.includes("app_secret")
+    }
+  };
+}
+
 function schedulerStatus() {
   return {
     enabled: Boolean(scheduler?.enabled),
@@ -187,11 +234,14 @@ function schedulerStatus() {
   };
 }
 
-async function prepareScheduledJob({ job, date }) {
+async function prepareScheduledJob({ job, date, attempt, preparedSnapshot }) {
   if (job !== "fund-portfolio-daily") return;
-  await runFundPortfolioPipeline({
+  return runFundPortfolioPipeline({
     date,
     dataDir,
+    attempt,
+    preparedSnapshot,
+    promote: true,
     analyzer: createFundPortfolioAnalyzer()
   });
 }
@@ -229,6 +279,23 @@ async function handle(req, res) {
     }
     if (url.pathname === "/api/jobs") {
       return sendJson(res, 200, { ok: true, jobs: listJobs() });
+    }
+    if (url.pathname === "/api/jobs/ai-hot/dry-run" && req.method === "POST") {
+      return sendJson(res, 200, await runDryRunJob({
+        job: "ai-hot",
+        date: url.searchParams.get("date") || undefined,
+        dataDir
+      }));
+    }
+    if (url.pathname === "/api/jobs/ai-hot/send" && req.method === "POST") {
+      return sendJson(res, 200, await runLiveSendJob({
+        job: "ai-hot",
+        date: url.searchParams.get("date") || undefined,
+        dataDir,
+        enabled: liveSendEnabled,
+        confirm: url.searchParams.get("confirm") || "",
+        force: url.searchParams.get("force") === "true"
+      }));
     }
     if (url.pathname === "/api/jobs/sop13/dry-run" && req.method === "POST") {
       return sendJson(res, 200, await runDryRunJob({
@@ -370,9 +437,11 @@ async function main() {
     intervalMs: schedulerIntervalMs,
     liveSendEnabled,
     liveEnabledJobs: {
+      "ai-hot": aiHotEnabled,
       "wisereads-weekly": wisereadsWeeklyEnabled
     },
     enabledJobs: {
+      "ai-hot": aiHotSchedulerEnabled,
       "fund-portfolio-daily": fundPortfolioEnabled,
       "wisereads-weekly": wisereadsSchedulerEnabled
     },

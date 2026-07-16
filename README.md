@@ -11,6 +11,7 @@ It checks:
 - scheduled dry-run automation
 - gated Feishu live-send runner
 - outbound network access
+- AI HOT daily intelligence dry-run
 
 ## Endpoints
 
@@ -19,6 +20,8 @@ It checks:
 - `/api/status` — JSON status, folders, env presence, recent heartbeats
 - `/api/outbound` — tests outbound access to Feishu and OpenAI
 - `/api/jobs` — lists available dry-run jobs
+- `POST /api/jobs/ai-hot/dry-run` — generates AI HOT ranked native-post dry-run payload and audit files; does not send
+- `POST /api/jobs/ai-hot/send?confirm=SEND` — gated AI HOT live-send endpoint; blocked unless global and task gates plus bot identity are configured
 - `POST /api/jobs/sop13/dry-run` — generates SOP13 rich-post dry-run payload and audit files; does not send
 - `POST /api/jobs/morning-motivation/dry-run` — generates morning motivation text dry-run payload and audit files; does not send
 - `POST /api/jobs/sop13/send?confirm=SEND` — gated live-send endpoint; blocked unless `LIVE_SEND_ENABLED=true`
@@ -62,6 +65,7 @@ The app writes:
 /data/outputs/automations/*/<YYYY-MM-DD>-dry-run.json
 /data/outputs/automations/*/<YYYY-MM-DD>-dry-run.md
 /data/outputs/automations/*/<YYYY-MM-DD>-sent.json
+/data/outputs/automations/ai-hot/ledger.json
 /data/outputs/automations/scheduler/<YYYY-MM-DD>.log.json
 ```
 
@@ -69,6 +73,7 @@ The app writes:
 
 The scheduler is dry-run only. It writes payload previews and audit files, and never sends Feishu messages.
 
+- `ai-hot` runs daily at 09:00 Asia/Shanghai when `AI_HOT_SCHEDULER_ENABLED=true`.
 - `morning-motivation` runs daily at 09:00 Asia/Shanghai.
 - `sop13` runs daily at 09:30 Asia/Shanghai.
 - Set `SCHEDULER_ENABLED=false` to disable scheduled dry-runs.
@@ -86,6 +91,37 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 ```
 
 `sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty, and row 0 contains the visible bold title plus `{ "tag": "at", "user_id": "all" }`.
+
+`ai-hot` sends Feishu `post`; the outer `zh_cn.title` stays empty, row 0 contains the visible bold title, every item keeps a native source link, and weak sources are labeled as X, repost, vendor self-claim, or unknown. It uses deterministic ranking rules and makes zero model calls.
+
+## AI HOT Setup
+
+AI HOT source access:
+
+```text
+AI_HOT_USER_AGENT=KaneAIHotAutomation/0.1 (+https://aihot.virxact.com/agent)
+```
+
+Optional dry-run fixture:
+
+```text
+AI_HOT_ITEMS_JSON_FILE=/path/to/selected-items.json
+AI_HOT_NOW=2026-07-16T03:30:00.000Z
+```
+
+Live send stays closed until all of these are deliberately set:
+
+```text
+LIVE_SEND_ENABLED=true
+AI_HOT_ENABLED=true
+AI_HOT_BOT_ROLE=<confirmed role>
+AI_HOT_CONNECTION_REF=<confirmed connection ref>
+AI_HOT_TARGET_CHAT_ID=<target chat id>
+FEISHU_CONNECTION_<REF>_APP_ID=<secret>
+FEISHU_CONNECTION_<REF>_APP_SECRET=<secret>
+```
+
+The live runner also checks recent group messages for the visible title `AI HOT 关注简报 · YYYY-MM-DD` before sending, then writes `/data/outputs/automations/ai-hot/ledger.json`.
 
 ## Controlled Live Send
 

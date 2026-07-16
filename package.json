@@ -10,6 +10,7 @@
     "test": "node --test",
     "fund:install": "node scripts/installFundPortfolioAssets.js",
     "fund:run": "node scripts/runFundPortfolioPipeline.js",
+    "fund:audit-config": "node scripts/auditFundPortfolioConfig.js",
     "fund:verify": "node scripts/verifyFundPortfolioAssets.js",
     "wisereads:refresh-source": "node scripts/refreshWisereadsSource.js",
     "cutover:verify": "node scripts/verifyCutover.js"

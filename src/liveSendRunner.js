@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
+import { buildAIHotDryRun, recordAIHotDelivered } from "./jobs/aiHot.js";
 import { buildFundPortfolioDailyPost } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
@@ -13,6 +14,11 @@ import {
 } from "./feishuClient.js";
 
 const LIVE_JOBS = {
+  "ai-hot": {
+    folder: "ai-hot",
+    build: buildAIHotDryRun,
+    enabledEnv: "AI_HOT_ENABLED"
+  },
   "morning-motivation": {
     folder: "morning-motivation",
     build: buildMorningMotivationDryRun
@@ -94,6 +100,17 @@ export async function runLiveSendJob({
     };
   }
 
+  if (draft.sendPolicy === "skip") {
+    return {
+      ...draft,
+      dryRun: false,
+      sent: false,
+      skipped: true,
+      sendSkippedReason: draft.sendSkippedReason || "send policy skipped",
+      files: { sentLog: sentLogFile }
+    };
+  }
+
   if (!draft.validation.ok) {
     return {
       ...draft,
@@ -107,8 +124,24 @@ export async function runLiveSendJob({
   }
 
   const messageSender = sender || await createFeishuClient({ config: jobFeishuConfig.config });
-  if (job === "wisereads-weekly" && draft.source?.vol && typeof messageSender.findRecentMessageContaining === "function") {
-    const existing = await messageSender.findRecentMessageContaining({ text: `Wisereads Vol. ${draft.source.vol}` });
+  const duplicateSearchText = draft.duplicateSearchText || (job === "wisereads-weekly" && draft.source?.vol ? `Wisereads Vol. ${draft.source.vol}` : "");
+  if (duplicateSearchText && typeof messageSender.findRecentMessageContaining === "function") {
+    const existing = await messageSender.findRecentMessageContaining({ text: duplicateSearchText });
+    if (existing) {
+      return {
+        ...draft,
+        dryRun: false,
+        sent: false,
+        skipped: true,
+        sendSkippedReason: "already delivered in Feishu",
+        existingMessageId: existing.message_id || existing.messageId || null,
+        files: { sentLog: sentLogFile }
+      };
+    }
+  }
+  if (job === "fund-portfolio-daily" && typeof messageSender.findRecentMessageContaining === "function") {
+    const titleToken = `【基金持仓日报 · ${draft.date}】`;
+    const existing = await messageSender.findRecentMessageContaining({ text: titleToken });
     if (existing) {
       return {
         ...draft,
@@ -146,6 +179,14 @@ export async function runLiveSendJob({
     await recordWisereadsDelivered({
       dataDir,
       vol: draft.source.vol,
+      messageId: sendResult.messageId,
+      deliveredAt: result.sentAt
+    });
+  }
+  if (job === "ai-hot" && draft.brief) {
+    await recordAIHotDelivered({
+      dataDir,
+      brief: draft.brief,
       messageId: sendResult.messageId,
       deliveredAt: result.sentAt
     });

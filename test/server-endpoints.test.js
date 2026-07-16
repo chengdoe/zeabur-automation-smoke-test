@@ -35,7 +35,7 @@ test("GET /api/jobs lists dry-run jobs", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
-  assert.deepEqual(body.jobs.map((job) => job.id), ["morning-motivation", "sop13", "fund-portfolio-daily", "wisereads-weekly"]);
+  assert.deepEqual(body.jobs.map((job) => job.id), ["ai-hot", "morning-motivation", "sop13", "fund-portfolio-daily", "wisereads-weekly"]);
 });
 
 test("GET /api/status reports the dry-run scheduler state", async () => {
@@ -60,6 +60,9 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.jobIdentity.sop13.hasAppSecret, false);
   assert.equal(body.jobIdentity["wisereads-weekly"].configured, false);
   assert.ok(body.jobIdentity["wisereads-weekly"].missing.includes("bot_role"));
+  assert.deepEqual(body.fundPortfolioReliability.retrySlots, ["13:50", "14:00", "14:10", "14:20"]);
+  assert.equal(body.fundPortfolioReliability.mostRecentAttempt, null);
+  assert.ok(allLeavesAreBoolean(body.fundPortfolioAudit));
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {
@@ -101,7 +104,7 @@ test("POST /api/jobs/fund-portfolio-daily/dry-run is safe when fund assets are m
   assert.equal(response.status, 200);
   assert.equal(body.ok, false);
   assert.equal(body.sent, false);
-  assert.equal(body.msgType, "markdown");
+  assert.equal(body.msgType, "post");
   assert.match(body.validation.errors.join("\n"), /no fund report markdown found/);
 });
 
@@ -162,4 +165,10 @@ async function waitForHealth() {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   throw new Error("server did not become healthy");
+}
+
+function allLeavesAreBoolean(value) {
+  if (typeof value === "boolean") return true;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  return Object.values(value).every(allLeavesAreBoolean);
 }

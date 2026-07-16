@@ -1,12 +1,18 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { buildAIHotDryRun } from "./jobs/aiHot.js";
 import { buildFundPortfolioDailyDryRun } from "./jobs/fundPortfolioDaily.js";
 import { buildMorningMotivationDryRun } from "./jobs/morningMotivation.js";
 import { buildSop13DryRun } from "./jobs/sop13.js";
 import { buildWisereadsWeeklyDryRun } from "./jobs/wisereadsWeekly.js";
 
 const JOBS = {
+  "ai-hot": {
+    key: "aiHot",
+    folder: "ai-hot",
+    build: buildAIHotDryRun
+  },
   "morning-motivation": {
     key: "morningMotivation",
     folder: "morning-motivation",
@@ -36,6 +42,13 @@ const JOBS = {
 
 export function listJobs() {
   return [
+    {
+      id: "ai-hot",
+      name: "AI HOT 关注简报",
+      schedule: "daily 09:00 Asia/Shanghai",
+      dryRunEndpoint: "/api/jobs/ai-hot/dry-run",
+      liveSendEndpoint: "/api/jobs/ai-hot/send"
+    },
     {
       id: "morning-motivation",
       name: "晨间激励",
