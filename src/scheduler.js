@@ -126,7 +126,8 @@ export async function runSchedulerTick({
           phase: error.phase || "prepare",
           error_class: error.errorClass || error.error_class || "prepare_failure",
           retryable: Boolean(error.retryable),
-          preparedSnapshot: error.preparedSnapshot
+          preparedSnapshot: error.preparedSnapshot,
+          prompt_hash_suffix: error.prompt_hash_suffix || error.promptHash?.slice?.(-12) || null
         };
       }
     }
@@ -149,6 +150,9 @@ export async function runSchedulerTick({
         next_retry_at: nextRetryAt,
         preparedSnapshot: prepared.preparedSnapshot || null,
         promoted: Boolean(prepared.promoted),
+        skipped: Boolean(prepared.skipped),
+        sendSkippedReason: prepared.sendSkippedReason || null,
+        prompt_hash_suffix: prepared.prompt_hash_suffix || prepared.promptHash?.slice?.(-12) || null,
         files: prepared.files || {}
       };
       if (nextRetryAt) {
@@ -276,7 +280,10 @@ async function appendSchedulerLog({ dataDir, now, result }) {
     error_class: result.error_class,
     next_retry_at: result.next_retry_at,
     sent: result.sent,
-    files: result.files || {}
+    skipped: Boolean(result.skipped),
+    sendSkippedReason: result.sendSkippedReason || null,
+    files: result.files || {},
+    prompt_hash_suffix: result.prompt_hash_suffix || null
   });
 
   await writeFile(file, JSON.stringify(existing, null, 2), "utf8");
@@ -326,7 +333,10 @@ async function recordSchedulerResult({ schedulerState, dataDir, now, job, result
     error_class: result.error_class,
     next_retry_at: result.next_retry_at,
     sent: result.sent,
-    files: result.files || {}
+    skipped: Boolean(result.skipped),
+    sendSkippedReason: result.sendSkippedReason || null,
+    files: result.files || {},
+    prompt_hash_suffix: result.prompt_hash_suffix || null
   });
   schedulerState.lastRuns = schedulerState.lastRuns.slice(0, 20);
   await appendSchedulerLog({ dataDir, now, result });

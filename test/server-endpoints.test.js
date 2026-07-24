@@ -1,23 +1,36 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { after, before, test } from "node:test";
 
 const port = 38_000 + Math.floor(Math.random() * 1000);
 const baseUrl = `http://127.0.0.1:${port}`;
+const fundReadPort = port + 1000;
+const fundReadBaseUrl = `http://127.0.0.1:${fundReadPort}`;
 let child;
+let dataDir;
 
 before(async () => {
-  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-server-"));
+  dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-server-"));
+  const fundReadRoot = path.join(dataDir, "fund-read-root");
+  const reportsDir = path.join(fundReadRoot, "outputs", "reports", "markdown");
+  await mkdir(reportsDir, { recursive: true });
+  await copyFile(
+    path.resolve(import.meta.dirname, "fixtures", "fund-daily-2026-07-15.md"),
+    path.join(reportsDir, "fund-daily-2026-07-15.md")
+  );
   child = spawn(process.execPath, ["src/server.js"], {
     cwd: path.resolve(import.meta.dirname, ".."),
     env: {
       ...process.env,
       PORT: String(port),
       DATA_DIR: dataDir,
-      HEARTBEAT_INTERVAL_MS: "600000"
+      HEARTBEAT_INTERVAL_MS: "600000",
+      FUND_READ_PORT: String(fundReadPort),
+      FUND_READ_API_CREDENTIAL: "test-readonly-credential",
+      FUND_READ_DATA_ROOT: fundReadRoot
     },
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -62,6 +75,9 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.ok(body.jobIdentity["wisereads-weekly"].missing.includes("bot_role"));
   assert.deepEqual(body.fundPortfolioReliability.retrySlots, ["13:50", "14:00", "14:10", "14:20"]);
   assert.equal(body.fundPortfolioReliability.mostRecentAttempt, null);
+  assert.equal(body.fundModelCostGovernance.thresholds.maxDailyRequests, 2);
+  assert.equal(body.fundModelCostGovernance.alerting.feishuEnabled, false);
+  assert.equal(body.fundModelCostGovernance.circuitBreaker.open, false);
   assert.ok(allLeavesAreBoolean(body.fundPortfolioAudit));
 });
 
@@ -120,6 +136,77 @@ test("GET /api/jobs/fund-portfolio-daily/status reports missing assets without s
   assert.ok(body.status.requiredFiles.some((file) => file.exists === false));
 });
 
+test("GET /api/jobs/fund-portfolio-daily/cost-governance exposes safe budget and alert state", async () => {
+  const response = await fetch(`${baseUrl}/api/jobs/fund-portfolio-daily/cost-governance?date=2026-07-15`);
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.date, "2026-07-15");
+  assert.equal(body.thresholds.maxDailyRequests, 2);
+  assert.equal(body.alerting.feishuEnabled, false);
+  assert.equal(body.alerting.feishuTargetConfigured, false);
+  assert.equal(body.usage.requests, 0);
+  assert.equal(body.circuitBreaker.open, false);
+  assert.doesNotMatch(JSON.stringify(body), /secret|Bearer|OPENROUTER_API_KEY|OPENAI_API_KEY/i);
+});
+
+test("fund read API denies missing credentials and non-GET methods", async () => {
+  const unauthorized = await fetch(`${fundReadBaseUrl}/api/readonly/fund/brief?as_of=2026-07-15`);
+  assert.equal(unauthorized.status, 401);
+  assert.equal((await unauthorized.json()).ok, false);
+
+  const wrongMethod = await fetch(`${fundReadBaseUrl}/api/readonly/fund/brief?as_of=2026-07-15`, {
+    method: "POST",
+    headers: { authorization: "Bearer test-readonly-credential" }
+  });
+  assert.equal(wrongMethod.status, 405);
+});
+
+test("fund read API returns only the reviewed brief projection", async () => {
+  const response = await fetch(`${fundReadBaseUrl}/api/readonly/fund/brief?as_of=2026-07-15`, {
+    headers: { authorization: "Bearer test-readonly-credential" }
+  });
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.as_of, "2026-07-15");
+  assert.deepEqual(Object.keys(body.brief).sort(), [
+    "confirmations",
+    "data_quality",
+    "portfolio_snapshot",
+    "stance",
+    "summary",
+    "triggers"
+  ]);
+  assert.equal(body.brief.confirmations.length, 2);
+  assert.equal("full_report_file" in body.brief, false);
+  assert.equal("sent" in body.brief, false);
+});
+
+test("fund read API serves only approved bounded report sections", async () => {
+  const headers = { authorization: "Bearer test-readonly-credential" };
+  const accepted = await fetch(
+    `${fundReadBaseUrl}/api/readonly/fund/report-section?as_of=2026-07-15&section=${encodeURIComponent("风险关注")}`,
+    { headers }
+  );
+  const acceptedBody = await accepted.json();
+  assert.equal(accepted.status, 200);
+  assert.equal(acceptedBody.ok, true);
+  assert.equal(acceptedBody.section, "风险关注");
+  assert.ok(Array.from(acceptedBody.content).length <= 1200);
+
+  const rejected = await fetch(
+    `${fundReadBaseUrl}/api/readonly/fund/report-section?as_of=2026-07-15&section=${encodeURIComponent("../../etc/passwd")}`,
+    { headers }
+  );
+  assert.equal(rejected.status, 400);
+
+  const unrelated = await fetch(`${fundReadBaseUrl}/api/status`, { headers });
+  assert.equal(unrelated.status, 404);
+});
+
 test("POST /api/jobs/sop13/send is blocked by default", async () => {
   const response = await fetch(`${baseUrl}/api/jobs/sop13/send?date=2026-07-03&confirm=SEND`, {
     method: "POST"
@@ -158,7 +245,8 @@ async function waitForHealth() {
   while (Date.now() < deadline) {
     try {
       const response = await fetch(`${baseUrl}/health`);
-      if (response.ok) return;
+      const fundResponse = await fetch(`${fundReadBaseUrl}/api/readonly/fund/brief?as_of=2026-07-15`);
+      if (response.ok && fundResponse.status === 401) return;
     } catch {
       // Keep waiting until the service is listening.
     }

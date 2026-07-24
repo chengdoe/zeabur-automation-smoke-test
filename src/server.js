@@ -8,7 +8,10 @@ import { FUND_RETRY_SLOTS, startDryRunScheduler } from "./scheduler.js";
 import { getFundPortfolioAssetStatus } from "./jobs/fundPortfolioDaily.js";
 import { createFundPortfolioAnalyzer } from "./jobs/fundPortfolioAnalyzer.js";
 import { runFundPortfolioPipeline } from "./jobs/fundPortfolioPipeline.js";
+import { getFundCostGovernanceStatus } from "./jobs/fundCostGovernance.js";
+import { handleFundReadonlyRequest } from "./jobs/fundReadonlyApi.js";
 import { getJobFeishuConfig, validateJobFeishuConfig } from "./feishuClient.js";
+import { shanghaiDateString } from "./date.js";
 
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.resolve(process.env.DATA_DIR || "data");
@@ -22,6 +25,9 @@ const fundPortfolioEnabled = process.env.FUND_PORTFOLIO_ENABLED === "true";
 const wisereadsWeeklyEnabled = process.env.WISEREADS_WEEKLY_ENABLED === "true";
 const wisereadsSchedulerEnabled = process.env.WISEREADS_WEEKLY_SCHEDULER_ENABLED === "true";
 const fundAnalysisProvider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.OPENROUTER_API_KEY ? "openrouter" : "openai");
+const fundReadPort = Number(process.env.FUND_READ_PORT || 0);
+const fundReadDataRoot = path.resolve(process.env.FUND_READ_DATA_ROOT || path.join(dataDir, "fund-portfolio-daily", "project"));
+const fundReadApiCredential = process.env.FUND_READ_API_CREDENTIAL || "";
 const startedAt = new Date();
 let scheduler;
 
@@ -142,6 +148,7 @@ async function status() {
         ? Boolean(process.env.OPENROUTER_API_KEY)
         : Boolean(process.env.OPENAI_API_KEY),
       hasFundAnalysisModel: Boolean(process.env.FUND_ANALYSIS_MODEL),
+      fundReadonlyApiConfigured: fundReadPort > 0 && Boolean(fundReadApiCredential),
       fundAnalysisProvider,
       hasOpenRouterApiKey: Boolean(process.env.OPENROUTER_API_KEY),
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
@@ -165,6 +172,11 @@ async function status() {
       retrySlots: FUND_RETRY_SLOTS,
       mostRecentAttempt: scheduler?.state?.lastRuns?.find((run) => run.job === "fund-portfolio-daily") || null
     },
+    fundModelCostGovernance: await getFundCostGovernanceStatus({
+      dataDir,
+      date: shanghaiDateString(),
+      env: process.env
+    }),
     scheduler: schedulerStatus(),
     folders: {
       memory: dirs.memory,
@@ -242,6 +254,9 @@ async function prepareScheduledJob({ job, date, attempt, preparedSnapshot }) {
     attempt,
     preparedSnapshot,
     promote: true,
+    scheduled: true,
+    env: process.env,
+    logger: console,
     analyzer: createFundPortfolioAnalyzer()
   });
 }
@@ -375,6 +390,13 @@ async function handle(req, res) {
         })
       });
     }
+    if (url.pathname === "/api/jobs/fund-portfolio-daily/cost-governance") {
+      return sendJson(res, 200, await getFundCostGovernanceStatus({
+        dataDir,
+        date: url.searchParams.get("date") || shanghaiDateString(),
+        env: process.env
+      }));
+    }
     if (url.pathname === "/") {
       const snapshot = await status();
       return sendHtml(res, `<!doctype html>
@@ -462,6 +484,24 @@ async function main() {
     console.log(`zeabur-automation-smoke-test listening on :${port}`);
     console.log(`data dir: ${dataDir}`);
   });
+
+  if (fundReadPort > 0) {
+    const fundReadServer = http.createServer((req, res) => {
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      handleFundReadonlyRequest({
+        req,
+        url,
+        dataRoot: fundReadDataRoot,
+        credential: fundReadApiCredential
+      }).then((result) => {
+        if (!result) return sendJson(res, 404, { ok: false, error_code: "not_found" });
+        return sendJson(res, result.status, result.body);
+      }).catch(() => sendJson(res, 500, { ok: false, error_code: "internal_error" }));
+    });
+    fundReadServer.listen(fundReadPort, "0.0.0.0", () => {
+      console.log(`fund read-only API listening on :${fundReadPort}`);
+    });
+  }
 }
 
 main().catch((error) => {

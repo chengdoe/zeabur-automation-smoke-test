@@ -39,7 +39,9 @@ test("fund analyzer sends preserved v8 context to the Responses API", async () =
 
   assert.match(request.url, /\/v1\/responses$/);
   assert.equal(request.body.model, "test-model");
-  assert.deepEqual(request.body.tools, [{ type: "web_search" }]);
+  assert.deepEqual(request.body.tools, [{ type: "web_search", search_context_size: "low", max_results: 3 }]);
+  assert.equal(request.body.max_output_tokens, 8000);
+  assert.deepEqual(request.body.reasoning, { effort: "low" });
   assert.match(request.body.input, /v8\.0 机会层/);
   assert.match(request.body.input, /风险提示和下一步盯什么/);
   assert.match(request.body.input, /2026-07-13/);
@@ -69,8 +71,10 @@ test("fund analyzer supports OpenRouter with Claude and server-side web search",
   assert.equal(request.body.model, "anthropic/claude-opus-4.8");
   assert.deepEqual(request.body.tools, [{
     type: "openrouter:web_search",
-    parameters: { max_results: 5 }
+    parameters: { max_results: 3, max_total_results: 6, max_characters: 6000 }
   }]);
+  assert.equal(request.body.max_tokens, 8000);
+  assert.deepEqual(request.body.reasoning, { effort: "low" });
   assert.equal(request.body.messages[0].role, "user");
   assert.equal(request.options.headers["x-openrouter-title"], "Kane Fund Portfolio Daily");
   assert.match(output, /今日结论/);
@@ -167,6 +171,7 @@ test("OpenRouter retries 429 and returns the successful output", async () => {
     provider: "openrouter",
     apiKey: "test-key",
     model: "test-model",
+    maxAttempts: 2,
     sleep: async () => {},
     random: () => 0,
     fetchImpl: async () => {
@@ -199,7 +204,7 @@ test("OpenAI 401 is permanent and is not retried", async () => {
   assert.equal(attempts, 1);
 });
 
-test("timeout aborts each request and retries only within the configured bound", async () => {
+test("timeout aborts request once and marks remote state unknown without blind retry", async () => {
   let attempts = 0;
   const analyzer = createFundPortfolioAnalyzer({
     apiKey: "test-key",
@@ -215,12 +220,13 @@ test("timeout aborts each request and retries only within the configured bound",
     }
   });
   await assert.rejects(analyzer({}), (error) => {
-    assert.equal(error.errorClass, "model_timeout");
-    assert.equal(error.attempt, 2);
-    assert.equal(error.retryable, true);
+    assert.equal(error.errorClass, "remote_state_unknown");
+    assert.equal(error.attempt, 1);
+    assert.equal(error.retryable, false);
+    assert.equal(error.remoteStateUnknown, true);
     return true;
   });
-  assert.equal(attempts, 2);
+  assert.equal(attempts, 1);
 });
 
 test("timeout remains active while reading the response body", async () => {
@@ -238,7 +244,7 @@ test("timeout remains active while reading the response body", async () => {
       })
     })
   });
-  await assert.rejects(analyzer({}), (error) => error.errorClass === "model_timeout");
+  await assert.rejects(analyzer({}), (error) => error.errorClass === "remote_state_unknown" && error.remoteStateUnknown === true);
 });
 
 test("malformed JSON and empty output have permanent structured classes", async () => {

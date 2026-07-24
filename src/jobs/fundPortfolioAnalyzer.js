@@ -8,7 +8,7 @@ const HTML_PREFIX = /^\s*(?:<!doctype\s+html|<html|<head|<body)/i;
 const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class FundAnalysisError extends Error {
-  constructor({ provider, status = null, responseType = "unknown", attempt = 1, errorClass, retryable = false, safeSummary = "" }) {
+  constructor({ provider, status = null, responseType = "unknown", attempt = 1, errorClass, retryable = false, safeSummary = "", remoteStateUnknown = false, requestId = null, generationId = null, durationMs = null }) {
     const statusText = status ?? "unknown";
     const summaryText = safeSummary ? ` summary="${safeSummary}"` : "";
     super(`Fund analysis ${provider} failed: ${errorClass} status=${statusText} response_type=${responseType} attempt=${attempt}${summaryText}`);
@@ -20,6 +20,10 @@ export class FundAnalysisError extends Error {
     this.errorClass = errorClass;
     this.retryable = retryable;
     this.safeSummary = safeSummary;
+    this.remoteStateUnknown = remoteStateUnknown;
+    this.requestId = requestId;
+    this.generationId = generationId;
+    this.durationMs = durationMs;
   }
 }
 
@@ -28,9 +32,14 @@ export function createFundPortfolioAnalyzer({
   apiKey,
   model = process.env.FUND_ANALYSIS_MODEL || "",
   fetchImpl = fetch,
-  timeoutMs = 45_000,
-  maxAttempts = 3,
+  timeoutMs = 180_000,
+  maxAttempts = 1,
   baseDelayMs = 500,
+  maxOutputTokens = Number(process.env.FUND_ANALYSIS_MAX_OUTPUT_TOKENS || 8000),
+  reasoningEffort = process.env.FUND_ANALYSIS_REASONING_EFFORT || "low",
+  webSearchMaxResults = Number(process.env.FUND_ANALYSIS_WEB_SEARCH_MAX_RESULTS || 3),
+  webSearchMaxTotalResults = Number(process.env.FUND_ANALYSIS_WEB_SEARCH_MAX_TOTAL_RESULTS || 6),
+  webSearchMaxCharacters = Number(process.env.FUND_ANALYSIS_WEB_SEARCH_MAX_CHARACTERS || 6000),
   sleep = defaultSleep,
   random = Math.random
 } = {}) {
@@ -58,24 +67,27 @@ export function createFundPortfolioAnalyzer({
     }
 
     const prompt = buildFundAnalysisPrompt(context);
+    const audit = context._modelGovernance || {};
     const request = provider === "openrouter"
-      ? buildOpenRouterRequest({ apiKey: resolvedApiKey, model, prompt })
-      : buildOpenAiRequest({ apiKey: resolvedApiKey, model, prompt });
+      ? buildOpenRouterRequest({ apiKey: resolvedApiKey, model, prompt, maxOutputTokens, reasoningEffort, webSearchMaxResults, webSearchMaxTotalResults, webSearchMaxCharacters })
+      : buildOpenAiRequest({ apiKey: resolvedApiKey, model, prompt, maxOutputTokens, reasoningEffort, webSearchMaxResults, webSearchMaxTotalResults, webSearchMaxCharacters });
 
     return requestWithRetry({
       provider,
+      model,
       request,
       fetchImpl,
       timeoutMs,
       maxAttempts,
       baseDelayMs,
       sleep,
-      random
+      random,
+      audit
     });
   };
 }
 
-function buildOpenAiRequest({ apiKey, model, prompt }) {
+function buildOpenAiRequest({ apiKey, model, prompt, maxOutputTokens, reasoningEffort, webSearchMaxResults }) {
   return {
     url: RESPONSES_URL,
     options: {
@@ -84,13 +96,20 @@ function buildOpenAiRequest({ apiKey, model, prompt }) {
         authorization: `Bearer ${apiKey}`,
         "content-type": "application/json"
       },
-      body: JSON.stringify({ model, tools: [{ type: "web_search" }], input: prompt })
+      body: JSON.stringify({
+        model,
+        tools: [{ type: "web_search", search_context_size: "low", max_results: webSearchMaxResults }],
+        input: prompt,
+        max_output_tokens: maxOutputTokens,
+        reasoning: { effort: reasoningEffort }
+      })
     },
-    extract: (body) => body.output_text || extractOutputText(body.output)
+    extract: (body) => body.output_text || extractOutputText(body.output),
+    metadata: (body, response) => extractResponseMetadata({ provider: "openai", body, response })
   };
 }
 
-function buildOpenRouterRequest({ apiKey, model, prompt }) {
+function buildOpenRouterRequest({ apiKey, model, prompt, maxOutputTokens, reasoningEffort, webSearchMaxResults, webSearchMaxTotalResults, webSearchMaxCharacters }) {
   return {
     url: OPENROUTER_URL,
     options: {
@@ -102,26 +121,61 @@ function buildOpenRouterRequest({ apiKey, model, prompt }) {
     },
     body: JSON.stringify({
       model,
-        messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: maxOutputTokens,
+      reasoning: { effort: reasoningEffort },
       tools: [{
         type: "openrouter:web_search",
-        parameters: { max_results: 5 }
+        parameters: {
+          max_results: webSearchMaxResults,
+          max_total_results: webSearchMaxTotalResults,
+          max_characters: webSearchMaxCharacters
+        }
       }]
     })
     },
-    extract: (body) => body?.choices?.[0]?.message?.content
+    extract: (body) => body?.choices?.[0]?.message?.content,
+    metadata: (body, response) => extractResponseMetadata({ provider: "openrouter", body, response })
   };
 }
 
-async function requestWithRetry({ provider, request, fetchImpl, timeoutMs, maxAttempts, baseDelayMs, sleep, random }) {
+async function requestWithRetry({ provider, model, request, fetchImpl, timeoutMs, maxAttempts, baseDelayMs, sleep, random, audit = {} }) {
   const configuredAttempts = Math.floor(maxAttempts);
-  const attempts = Number.isFinite(configuredAttempts) ? Math.max(1, configuredAttempts) : 3;
+  const attempts = Number.isFinite(configuredAttempts) ? Math.max(1, configuredAttempts) : 1;
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      return await requestOnce({ provider, request, fetchImpl, timeoutMs, attempt });
+      await audit.onAttemptStart?.({ provider, model, attempt });
+      const result = await requestOnce({ provider, model, request, fetchImpl, timeoutMs, attempt });
+      await audit.onAttemptTerminal?.({
+        provider,
+        model,
+        attempt,
+        ...result.audit,
+        terminal_state: "response_received",
+        error_class: null,
+        retryable: false,
+        remote_state_unknown: false
+      });
+      await audit.onResponse?.({ provider, model, attempt, text: result.text, ...result.audit });
+      return result.text;
     } catch (error) {
       lastError = normalizeRequestError(error, { provider, attempt });
+      await audit.onAttemptTerminal?.({
+        provider,
+        model,
+        attempt,
+        status: lastError.status,
+        responseType: lastError.responseType,
+        duration_ms: lastError.durationMs,
+        request_id: lastError.requestId,
+        generation_id: lastError.generationId,
+        terminal_state: terminalStateForError(lastError),
+        error_class: lastError.errorClass,
+        retryable: lastError.retryable,
+        remote_state_unknown: lastError.remoteStateUnknown,
+        safe_summary: lastError.safeSummary
+      });
       if (!lastError.retryable || attempt >= attempts) throw lastError;
       const exponential = baseDelayMs * (2 ** (attempt - 1));
       const jitter = Math.max(0, random()) * baseDelayMs;
@@ -131,9 +185,10 @@ async function requestWithRetry({ provider, request, fetchImpl, timeoutMs, maxAt
   throw lastError;
 }
 
-async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt }) {
+async function requestOnce({ provider, model, request, fetchImpl, timeoutMs, attempt }) {
   const controller = new AbortController();
   let timedOut = false;
+  const started = Date.now();
   const timer = setTimeout(() => {
     timedOut = true;
     controller.abort();
@@ -144,14 +199,16 @@ async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt })
     response = await fetchImpl(request.url, { ...request.options, signal: controller.signal });
     text = await response.text();
   } catch (error) {
+    const durationMs = Date.now() - started;
     if (timedOut || error?.name === "AbortError" || error?.name === "TimeoutError") {
-      throw new FundAnalysisError({ provider, attempt, errorClass: "model_timeout", retryable: true, safeSummary: "request timed out" });
+      throw new FundAnalysisError({ provider, attempt, errorClass: "remote_state_unknown", retryable: false, safeSummary: "request timed out; remote generation state unknown", remoteStateUnknown: true, durationMs });
     }
-    throw new FundAnalysisError({ provider, attempt, errorClass: "model_network_error", retryable: true, safeSummary: "network request failed" });
+    throw new FundAnalysisError({ provider, attempt, errorClass: "model_network_error", retryable: true, safeSummary: "network request failed before response", durationMs });
   } finally {
     clearTimeout(timer);
   }
 
+  const durationMs = Date.now() - started;
   const status = Number.isFinite(response.status) ? response.status : null;
   const contentType = response.headers?.get?.("content-type")?.split(";", 1)[0]?.trim().toLowerCase() || "unknown";
   const htmlLike = HTML_PREFIX.test(text);
@@ -165,7 +222,8 @@ async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt })
       attempt,
       errorClass: "model_non_json_response",
       retryable: retryableStatus,
-      safeSummary: redactSummary(text)
+      safeSummary: redactSummary(text),
+      durationMs
     });
   }
 
@@ -180,9 +238,11 @@ async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt })
       attempt,
       errorClass: "model_malformed_json",
       retryable: false,
-      safeSummary: "invalid JSON response"
+      safeSummary: "invalid JSON response",
+      durationMs
     });
   }
+  const metadata = request.metadata?.(body, response) || {};
 
   if (!response.ok) {
     throw new FundAnalysisError({
@@ -192,7 +252,10 @@ async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt })
       attempt,
       errorClass: "model_http_status",
       retryable: retryableStatus,
-      safeSummary: redactSummary(body?.error?.message || `HTTP ${status ?? "unknown"}`)
+      safeSummary: redactSummary(body?.error?.message || `HTTP ${status ?? "unknown"}`),
+      requestId: metadata.request_id,
+      generationId: metadata.generation_id,
+      durationMs
     });
   }
 
@@ -205,10 +268,25 @@ async function requestOnce({ provider, request, fetchImpl, timeoutMs, attempt })
       attempt,
       errorClass: "model_empty_output",
       retryable: false,
-      safeSummary: "model output was empty"
+      safeSummary: "model output was empty",
+      requestId: metadata.request_id,
+      generationId: metadata.generation_id,
+      durationMs
     });
   }
-  return stripMarkdownFence(outputText);
+  return {
+    text: stripMarkdownFence(outputText),
+    audit: {
+      status,
+      responseType: contentType,
+      duration_ms: durationMs,
+      request_id: metadata.request_id,
+      generation_id: metadata.generation_id,
+      provider_status: metadata.provider_status,
+      usage: metadata.usage,
+      cost: metadata.cost
+    }
+  };
 }
 
 function normalizeRequestError(error, { provider, attempt }) {
@@ -220,6 +298,12 @@ function normalizeRequestError(error, { provider, attempt }) {
     retryable: true,
     safeSummary: "network request failed"
   });
+}
+
+function terminalStateForError(error) {
+  if (error.remoteStateUnknown) return "remote_state_unknown";
+  if (error.retryable) return "pre_generation_retryable_failure";
+  return "failed";
 }
 
 function isRetryableStatus(status) {
@@ -247,7 +331,10 @@ export function buildFundAnalysisPrompt({
   currentDate = shanghaiDateString()
 }) {
   const isReplay = Boolean(date && currentDate && date < currentDate);
-  const analysisData = buildAnalysisData(rawData);
+  const analysisData = compactForPrompt(buildAnalysisData(rawData));
+  const compactPortfolio = compactForPrompt(portfolio);
+  const compactBasketConfig = compactForPrompt(basketConfig);
+  const compactScoringConfig = compactForPrompt(scoringConfig);
   const replayRules = isReplay ? `
 - 这是迁移回放预览，不发送、不执行交易、不构成交易指令。标题后第一行必须原样写：> 迁移回放预览，不发送，不执行交易。
 - 历史回放中的动作只能写成“当日规则会提示复核/观察”，不得写“必做”“必须买入”“必须卖出”或让用户现在补做历史交易。` : "";
@@ -291,20 +378,17 @@ export function buildFundAnalysisPrompt({
 【当日原始数据】
 ${JSON.stringify(analysisData)}
 
-【今日实时估值口径（今日持仓涨跌唯一来源）】
-${JSON.stringify(analysisData?.market_data?.fund_realtime || {})}
-
 【v7/v8 组合状态】
-${JSON.stringify(portfolioState ?? null)}
+${JSON.stringify(compactForPrompt(portfolioState))}
 
-【持仓配置】
-${JSON.stringify(portfolio ?? null)}
+【持仓配置摘要】
+${JSON.stringify({ summary: compactPortfolio, source_hash: hashSource(portfolio) })}
 
-【篮子与硬约束】
-${JSON.stringify(basketConfig ?? null)}
+【篮子与硬约束摘要】
+${JSON.stringify({ summary: compactBasketConfig, source_hash: hashSource(basketConfig) })}
 
-【评分方法】
-${JSON.stringify(scoringConfig ?? null)}
+【评分方法摘要】
+${JSON.stringify({ summary: compactScoringConfig, source_hash: hashSource(scoringConfig) })}
 `;
 }
 
@@ -315,6 +399,115 @@ function buildAnalysisData(rawData) {
     delete cloned.market_data.analytics.significant_movers;
   }
   return cloned;
+}
+
+export function estimatePromptBudget({ beforePrompt, afterPrompt }) {
+  const beforeChars = Array.from(String(beforePrompt || "")).length;
+  const afterChars = Array.from(String(afterPrompt || "")).length;
+  return {
+    before_chars: beforeChars,
+    after_chars: afterChars,
+    reduction_chars: beforeChars - afterChars,
+    reduction_pct: beforeChars ? Number((((beforeChars - afterChars) / beforeChars) * 100).toFixed(2)) : 0,
+    before_token_estimate: estimateTokens(beforePrompt),
+    after_token_estimate: estimateTokens(afterPrompt)
+  };
+}
+
+function compactForPrompt(value, depth = 0) {
+  if (value === null || value === undefined) return value ?? null;
+  if (typeof value === "string") return value.length > 600 ? `${value.slice(0, 600)}…[truncated ${value.length}; source_hash=${createTextHash(value)}]` : value;
+  if (typeof value !== "object") return value;
+  if (depth >= 6) return { _truncated: true, source_hash: hashSource(value) };
+  if (Array.isArray(value)) {
+    const limit = depth <= 2 ? 12 : 6;
+    const items = value.slice(0, limit).map((item) => compactForPrompt(item, depth + 1));
+    if (value.length > limit) items.push({ _truncated_items: value.length - limit, source_hash: hashSource(value) });
+    return items;
+  }
+  const noisyKeys = new Set(["html", "raw_html", "full_text", "raw_text", "content_html", "body", "paragraphs", "documents", "debug", "stack"]);
+  const summarizedKeys = new Set(["content", "text", "description"]);
+  const output = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (noisyKeys.has(key)) {
+      output[key] = { _omitted_for_prompt_budget: true, source_hash: hashSource(item) };
+      continue;
+    }
+    if (summarizedKeys.has(key) && typeof item === "string" && item.length > 600) {
+      output[key] = compactForPrompt(item, depth + 1);
+      continue;
+    }
+    output[key] = compactForPrompt(item, depth + 1);
+  }
+  return output;
+}
+
+function hashSource(value) {
+  return createTextHash(stableStringify(value ?? null));
+}
+
+function createTextHash(value) {
+  let hash = 0;
+  const text = String(value || "");
+  for (let index = 0; index < text.length; index += 1) {
+    hash = ((hash << 5) - hash + text.charCodeAt(index)) | 0;
+  }
+  return `hash32:${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+function estimateTokens(text) {
+  const chars = Array.from(String(text || "")).length;
+  return {
+    low: Math.ceil(chars / 4),
+    high: Math.ceil(chars / 2)
+  };
+}
+
+function extractResponseMetadata({ provider, body, response }) {
+  const usage = normalizeUsage(provider, body?.usage || {});
+  const requestId = body?.id || response.headers?.get?.("x-request-id") || response.headers?.get?.("x-openrouter-request-id") || null;
+  return {
+    request_id: requestId,
+    generation_id: body?.id || null,
+    provider_status: body?.status || body?.choices?.[0]?.finish_reason || null,
+    usage,
+    cost: {
+      total_usd: numericOrNull(body?.usage?.cost ?? body?.usage?.total_cost ?? body?.cost)
+    }
+  };
+}
+
+function normalizeUsage(provider, usage = {}) {
+  if (provider === "openai") {
+    return {
+      input_tokens: numericOrNull(usage.input_tokens),
+      output_tokens: numericOrNull(usage.output_tokens),
+      cached_tokens: numericOrNull(usage.input_tokens_details?.cached_tokens ?? usage.prompt_tokens_details?.cached_tokens),
+      reasoning_tokens: numericOrNull(usage.output_tokens_details?.reasoning_tokens ?? usage.completion_tokens_details?.reasoning_tokens),
+      tool_tokens: numericOrNull(usage.output_tokens_details?.tool_tokens),
+      web_search_requests: numericOrNull(usage.web_search_requests),
+      total_tokens: numericOrNull(usage.total_tokens)
+    };
+  }
+  return {
+    input_tokens: numericOrNull(usage.prompt_tokens ?? usage.input_tokens),
+    output_tokens: numericOrNull(usage.completion_tokens ?? usage.output_tokens),
+    cached_tokens: numericOrNull(usage.prompt_tokens_details?.cached_tokens ?? usage.cached_tokens),
+    reasoning_tokens: numericOrNull(usage.completion_tokens_details?.reasoning_tokens ?? usage.reasoning_tokens),
+    tool_tokens: numericOrNull(usage.tool_tokens),
+    web_search_requests: numericOrNull(usage.web_search_requests ?? usage.num_search_results),
+    total_tokens: numericOrNull(usage.total_tokens)
+  };
+}
+
+function numericOrNull(value) {
+  return Number.isFinite(Number(value)) ? Number(value) : null;
+}
+
+function stableStringify(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(",")}}`;
 }
 
 function extractOutputText(output) {

@@ -1,11 +1,23 @@
 import { execFile } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { cp, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { shanghaiDateString } from "../date.js";
+import { shanghaiDateString, weekdayForDate } from "../date.js";
+import { buildFundAnalysisPrompt } from "./fundPortfolioAnalyzer.js";
 import { validateFundReport } from "./fundPortfolioDaily.js";
+import { getFundCostGovernanceConfig, getFundCostGovernanceStatus, recordFundModelAlert } from "./fundCostGovernance.js";
+import {
+  buildFundPromptHash,
+  getDailyFundModelBudget,
+  loadFundModelResponseArtifact,
+  recordFundModelAttemptStart,
+  recordFundModelAttemptTerminal,
+  saveFundModelResponseArtifact,
+  withFundModelRequestLock
+} from "./fundModelRequestLedger.js";
 
 const execFileAsync = promisify(execFile);
 const COMMANDS = ["data_fetch_only.py", "portfolio_state_tracker.py", "v8_orchestrator.py"];
@@ -33,6 +45,10 @@ export async function runFundPortfolioPipeline({
   commandRunner = execFileAsync,
   preparedSnapshot,
   promote = false,
+  scheduled = false,
+  env = process.env,
+  logger = console,
+  replayModelArtifact,
   attempt = 1,
   runId = randomUUID()
 }) {
@@ -75,44 +91,103 @@ export async function runFundPortfolioPipeline({
       });
     }
 
-    phase = "model";
-    const markdown = await analyzer({ date, ...context });
-    phase = "validation";
-    const canonicalReport = path.join(canonicalRoot, "project", "outputs", "reports", "markdown", `fund-daily-${date}.md`);
-    const validation = validateFundReport({ file: canonicalReport, markdown }, {
-      isReplay: date < shanghaiDateString()
-    });
-    const sectionErrors = validateSectionOrder(markdown);
-    if (!validation.ok || sectionErrors.length) {
-      const validationErrors = [...validation.errors, ...sectionErrors];
-      throw Object.assign(new Error(`Fund report validation failed: ${validationErrors.join("; ")}`), {
-        errorClass: "report_validation_failure",
-        retryable: false,
-        validationErrors
-      });
-    }
+    const promptHash = buildFundPromptHash(buildFundAnalysisPrompt({ date, ...context }));
+    const lockedResult = await withFundModelRequestLock({ dataDir, date, promptHash }, async () => {
+      const preModelGate = replayModelArtifact
+        ? null
+        : await checkPreModelGate({
+          dataDir,
+          date,
+          promptHash,
+          scheduled,
+          env,
+          logger,
+          runId,
+          attempt
+        });
+      if (preModelGate) return preModelGate;
 
-    phase = promote ? "promotion" : "preview";
-    const output = promote
-      ? await promoteSnapshot({ date, canonicalRoot, snapshotRoot, markdown })
-      : await writePreview({ date, runId, automationRoot, snapshotRoot, markdown });
-    return {
-      ok: true,
-      job: "fundPortfolioDaily",
-      date,
-      dryRun: !promote,
-      sent: false,
-      phase: promote ? "promoted" : "validated-preview",
-      attempt,
-      preparedSnapshot: snapshotRoot,
-      promoted: promote,
-      ...output,
-      validation: {
-        ok: true,
-        errors: [],
-        preservedSections: REQUIRED_SECTIONS.slice(1)
+      phase = replayModelArtifact ? "model-replay" : "model";
+      let responseArtifact = replayModelArtifact ? { markdownFile: replayModelArtifact } : null;
+      const markdown = replayModelArtifact
+        ? await loadFundModelResponseArtifact(replayModelArtifact)
+        : await analyzer({
+          date,
+          ...context,
+          _modelGovernance: buildModelGovernanceCallbacks({
+            dataDir,
+            date,
+            runId,
+            promptHash,
+            attempt,
+            setResponseArtifact: (artifact) => {
+              responseArtifact = artifact;
+            }
+          })
+        });
+
+      if (!responseArtifact) {
+        responseArtifact = await saveFundModelResponseArtifact({
+          dataDir,
+          date,
+          runId,
+          attempt,
+          text: markdown,
+          metadata: {
+            date,
+            job: "fund-portfolio-daily",
+            runId,
+            prompt_hash: promptHash,
+            attempt,
+            provider: replayModelArtifact ? "replay" : "unknown",
+            model: replayModelArtifact ? "replay-artifact" : "unknown"
+          }
+        });
       }
-    };
+
+      phase = "validation";
+      const canonicalReport = path.join(canonicalRoot, "project", "outputs", "reports", "markdown", `fund-daily-${date}.md`);
+      const validation = validateFundReport({ file: canonicalReport, markdown }, {
+        isReplay: date < shanghaiDateString()
+      });
+      const sectionErrors = validateSectionOrder(markdown);
+      if (!validation.ok || sectionErrors.length) {
+        const validationErrors = [...validation.errors, ...sectionErrors];
+        throw Object.assign(new Error(`Fund report validation failed: ${validationErrors.join("; ")}`), {
+          errorClass: "report_validation_failure",
+          retryable: false,
+          validationErrors,
+          promptHash,
+          responseArtifact
+        });
+      }
+
+      phase = promote ? "promotion" : "preview";
+      const output = promote
+        ? await promoteSnapshot({ date, canonicalRoot, snapshotRoot, markdown })
+        : await writePreview({ date, runId, automationRoot, snapshotRoot, markdown });
+      return {
+        ok: true,
+        job: "fundPortfolioDaily",
+        date,
+        dryRun: !promote,
+        sent: false,
+        phase: promote ? "promoted" : "validated-preview",
+        attempt,
+        preparedSnapshot: snapshotRoot,
+        promoted: promote,
+        promptHash,
+        prompt_hash_suffix: promptHash.slice(-12),
+        modelResponseArtifact: responseArtifact,
+        ...output,
+        validation: {
+          ok: true,
+          errors: [],
+          preservedSections: REQUIRED_SECTIONS.slice(1)
+        }
+      };
+    });
+    return lockedResult;
   } catch (error) {
     const failure = classifyFailure(error, phase);
     await writeFailureEvidence({
@@ -122,6 +197,8 @@ export async function runFundPortfolioPipeline({
       phase,
       attempt,
       preparedSnapshot: snapshotRoot,
+      promptHash: error.promptHash,
+      responseArtifact: error.responseArtifact,
       ...failure
     });
     error.phase = phase;
@@ -132,6 +209,150 @@ export async function runFundPortfolioPipeline({
     error.preparedSnapshot = snapshotRoot;
     throw error;
   }
+}
+
+function buildModelGovernanceCallbacks({ dataDir, date, runId, promptHash, attempt, setResponseArtifact }) {
+  return {
+    date,
+    job: "fund-portfolio-daily",
+    runId,
+    promptHash,
+    attempt,
+    onAttemptStart: async (event) => {
+      await recordFundModelAttemptStart({
+        dataDir,
+        date,
+        job: "fund-portfolio-daily",
+        runId,
+        promptHash,
+        attempt: event.attempt || attempt,
+        provider: event.provider,
+        model: event.model
+      });
+    },
+    onAttemptTerminal: async (event) => {
+      await recordFundModelAttemptTerminal({
+        dataDir,
+        date,
+        entry: {
+          job: "fund-portfolio-daily",
+          runId,
+          prompt_hash: promptHash,
+          attempt: event.attempt || attempt,
+          provider: event.provider,
+          model: event.model,
+          request_id: event.request_id,
+          generation_id: event.generation_id,
+          http_status: event.status,
+          provider_status: event.provider_status,
+          content_type: event.responseType,
+          duration_ms: event.duration_ms,
+          phase: "model",
+          terminal_state: event.terminal_state,
+          remote_state_unknown: Boolean(event.remote_state_unknown),
+          usage: event.usage,
+          cost: event.cost,
+          error_class: event.error_class,
+          retryable: event.retryable,
+          safe_summary: event.safe_summary
+        }
+      });
+    },
+    onResponse: async (event) => {
+      const artifact = await saveFundModelResponseArtifact({
+        dataDir,
+        date,
+        runId,
+        attempt: event.attempt || attempt,
+        text: event.text,
+        metadata: {
+          date,
+          job: "fund-portfolio-daily",
+          runId,
+          prompt_hash: promptHash,
+          attempt: event.attempt || attempt,
+          provider: event.provider,
+          model: event.model,
+          request_id: event.request_id,
+          generation_id: event.generation_id
+        }
+      });
+      setResponseArtifact(artifact);
+    }
+  };
+}
+
+async function checkPreModelGate({ dataDir, date, promptHash, scheduled, env, logger, runId, attempt }) {
+  const config = getFundCostGovernanceConfig(env);
+  const block = async ({ reason, errorClass = "model_request_blocked", retryable = false, requestCount = null }) => {
+    await recordFundModelAlert({
+      dataDir,
+      date,
+      env,
+      logger,
+      alert: {
+        job: "fund-portfolio-daily",
+        severity: "block",
+        reason,
+        phase: "pre_model_gate",
+        error_class: errorClass,
+        request_count: requestCount,
+        runId
+      }
+    });
+    return {
+      ok: false,
+      job: "fundPortfolioDaily",
+      date,
+      dryRun: true,
+      sent: false,
+      skipped: true,
+      phase: "pre_model_gate",
+      attempt,
+      error_class: errorClass,
+      retryable,
+      sendSkippedReason: reason,
+      next_retry_at: null,
+      promptHash,
+      prompt_hash_suffix: promptHash.slice(-12),
+      promoted: false,
+      files: {}
+    };
+  };
+
+  if (env.FUND_PORTFOLIO_ENABLED !== "true") {
+    return block({ reason: "fund gate closed" });
+  }
+  if (scheduled && [0, 6].includes(weekdayForDate(date))) {
+    return block({ reason: "weekend fund schedule closed" });
+  }
+  if (isFundSent({ dataDir, date })) {
+    return block({ reason: "already sent" });
+  }
+
+  const budget = await getDailyFundModelBudget({
+    dataDir,
+    date,
+    promptHash,
+    maxDailyRequests: config.maxDailyRequests,
+    cooldownMs: config.remoteUnknownCooldownMs
+  });
+  if (!budget.maySubmit) {
+    return block({
+      reason: budget.reason || "daily model budget blocked",
+      requestCount: budget.submitted
+    });
+  }
+
+  const status = await getFundCostGovernanceStatus({ dataDir, date, env });
+  if (status.circuitBreaker.open && status.circuitBreaker.reasons.some((reason) => reason !== "response_already_received")) {
+    return block({
+      reason: status.circuitBreaker.reasons.join(","),
+      requestCount: status.usage.requests
+    });
+  }
+
+  return null;
 }
 
 async function prepareSnapshot({ date, runId, canonicalRoot, automationRoot, commandRunner }) {
@@ -247,7 +468,7 @@ function classifyFailure(error, phase) {
   return { error_class: errorClass, retryable };
 }
 
-async function writeFailureEvidence({ automationRoot, date, runId, phase, attempt, preparedSnapshot, error_class, retryable }) {
+async function writeFailureEvidence({ automationRoot, date, runId, phase, attempt, preparedSnapshot, promptHash, responseArtifact, error_class, retryable }) {
   const dir = path.join(automationRoot, "failed-runs", `${date}-${runId}`);
   await mkdir(dir, { recursive: true });
   await atomicWrite(path.join(dir, "failure.json"), JSON.stringify({
@@ -258,9 +479,15 @@ async function writeFailureEvidence({ automationRoot, date, runId, phase, attemp
     error_class,
     retryable,
     preparedSnapshot: preparedSnapshot || null,
+    prompt_hash_suffix: promptHash ? promptHash.slice(-12) : null,
+    responseArtifact: responseArtifact || null,
     promoted: false,
     sent: false
   }, null, 2));
+}
+
+function isFundSent({ dataDir, date }) {
+  return existsSync(path.join(dataDir, "outputs", "automations", "fund-portfolio-daily", `${date}-sent.json`));
 }
 
 async function atomicWrite(file, content) {

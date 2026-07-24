@@ -105,7 +105,7 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
     sender
   });
 
-  assert.equal(second.sent, true);
+  assert.equal(second.sent, false);
   assert.equal(second.skipped, true);
   assert.equal(second.sendSkippedReason, "already sent");
   assert.equal(sendCount, 1);

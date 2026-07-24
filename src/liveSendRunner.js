@@ -82,10 +82,14 @@ export async function runLiveSendJob({
   const sentLogFile = path.join(outputDir, `${sentKey}-sent.json`);
   if (!force && existsSync(sentLogFile)) {
     const existing = JSON.parse(await readFile(sentLogFile, "utf8"));
+    const { messageId, sentAt, ...previous } = existing;
     return {
-      ...existing,
+      ...previous,
+      sent: false,
       skipped: true,
-      sendSkippedReason: "already sent"
+      sendSkippedReason: "already sent",
+      existingMessageId: messageId || null,
+      previousSentAt: sentAt || null
     };
   }
 

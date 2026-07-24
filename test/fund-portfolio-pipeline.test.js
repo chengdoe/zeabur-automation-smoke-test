@@ -9,6 +9,7 @@ import { runFundPortfolioPipeline } from "../src/jobs/fundPortfolioPipeline.js";
 function validReport(date = "2026-07-16") {
   return [
     `# 基金日报 ${date}`, "",
+    "> 迁移回放预览，不发送，不执行交易", "",
     "## 今日结论", "今天不操作。", "",
     "## 今天怎么做", "今天不操作。", "",
     "## 今天系统帮你盯到的机会", "暂无。", "",
@@ -86,6 +87,7 @@ test("fund pipeline runs data, v7, v8 and writes an exact-date report", async ()
   const result = await runFundPortfolioPipeline({
     date: "2026-07-13",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     commandRunner: async (command, args, options) => {
       commands.push({ command, args, env: options.env });
       if (args[0].endsWith("data_fetch_only.py")) {
@@ -157,6 +159,7 @@ test("fund pipeline refuses analyzer output missing preserved sections", async (
   await assert.rejects(() => runFundPortfolioPipeline({
     date: "2026-07-13",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     commandRunner: async (_command, args, options) => {
       if (args[0].endsWith("data_fetch_only.py")) {
         const stagedRawDir = path.join(options.env.FUND_OUTPUTS_ROOT, "reports", "raw-data");
@@ -186,6 +189,7 @@ test("fund pipeline rejects replay output without a replay warning", async () =>
   await assert.rejects(() => runFundPortfolioPipeline({
     date: "2026-07-10",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     commandRunner: async (_command, args, options) => {
       if (args[0].endsWith("data_fetch_only.py")) {
         const stagedRawDir = path.join(options.env.FUND_OUTPUTS_ROOT, "reports", "raw-data");
@@ -224,6 +228,7 @@ test("model retry reuses a prepared snapshot and does not rerun data, v7, or v8"
   await assert.rejects(() => runFundPortfolioPipeline({
     date: "2026-07-16",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     commandRunner: stagingCommandRunner(commands),
     analyzer: async () => {
       const error = new Error("temporary model outage");
@@ -239,6 +244,7 @@ test("model retry reuses a prepared snapshot and does not rerun data, v7, or v8"
   const result = await runFundPortfolioPipeline({
     date: "2026-07-16",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     preparedSnapshot,
     promote: true,
     attempt: 2,
@@ -261,6 +267,7 @@ for (const failureKind of ["analyzer", "validation"]) {
     await assert.rejects(() => runFundPortfolioPipeline({
       date: "2026-07-16",
       dataDir,
+      env: { FUND_PORTFOLIO_ENABLED: "true" },
       commandRunner: stagingCommandRunner([]),
       analyzer
     }));
@@ -275,7 +282,7 @@ for (const failureKind of ["analyzer", "validation"]) {
     const evidence = JSON.parse(await readFile(path.join(failedRoot, failedRuns[0], "failure.json")));
     assert.equal(evidence.date, "2026-07-16");
     assert.equal(typeof evidence.error_class, "string");
-    assert.doesNotMatch(JSON.stringify(evidence), /upstream failed|payload|prompt/);
+    assert.doesNotMatch(JSON.stringify(evidence), /upstream failed|payload|canonical-portfolio|canonical-state/);
   });
 }
 
@@ -284,6 +291,7 @@ test("successful staging promotes raw data, report, and prepared state only afte
   const result = await runFundPortfolioPipeline({
     date: "2026-07-16",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     promote: true,
     commandRunner: stagingCommandRunner([]),
     analyzer: async () => validReport()
@@ -306,6 +314,7 @@ test("successful default dry-run writes a preview without promoting canonical st
   const result = await runFundPortfolioPipeline({
     date: "2026-07-16",
     dataDir,
+    env: { FUND_PORTFOLIO_ENABLED: "true" },
     commandRunner: stagingCommandRunner([]),
     analyzer: async () => validReport()
   });

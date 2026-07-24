@@ -269,9 +269,10 @@ test("fund scheduler records a retryable 13:50 prepare failure and reuses its sn
   assert.equal(sends, 0);
   const log = JSON.parse(await readFile(path.join(dataDir, "outputs", "automations", "scheduler", "2026-07-16.log.json")));
   assert.deepEqual(Object.keys(log.entries[0]).sort(), [
-    "attempt", "dryRun", "error_class", "files", "job", "next_retry_at", "ok", "phase", "sent", "ts"
+    "attempt", "dryRun", "error_class", "files", "job", "next_retry_at", "ok", "phase",
+    "prompt_hash_suffix", "sendSkippedReason", "sent", "skipped", "ts"
   ]);
-  assert.doesNotMatch(JSON.stringify(log), /payload|prompt|secret/i);
+  assert.doesNotMatch(JSON.stringify(log), /payload|secret|full_prompt|raw_holdings/i);
 
   const second = await runSchedulerTick({ now: new Date("2026-07-16T06:00:00Z"), state, dataDir, liveSendEnabled: true, env: FUND_ENV, prepareJob, sender });
   assert.deepEqual(prepareCalls, [{ attempt: 1, reused: undefined }, { attempt: 2, reused: preparedSnapshot }]);
@@ -355,4 +356,38 @@ test("already-sent fund date skips prepare and send", async () => {
   assert.equal(result.ran[0].sent, false);
   assert.equal(prepares, 0);
   assert.equal(sends, 0);
+});
+
+test("a sent ledger reused after restart is logged as skipped, never as a new send", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "scheduler-ledger-reuse-"));
+  const sentDir = path.join(dataDir, "outputs", "automations", "sop13");
+  await mkdir(sentDir, { recursive: true });
+  await writeFile(path.join(sentDir, "2026-07-04-sent.json"), JSON.stringify({
+    ok: true,
+    job: "sop13",
+    date: "2026-07-04",
+    dryRun: false,
+    sent: true,
+    files: { sentLog: path.join(sentDir, "2026-07-04-sent.json") }
+  }));
+  let sends = 0;
+  const result = await runSchedulerTick({
+    now: new Date("2026-07-04T01:30:00.000Z"),
+    state: createSchedulerState(),
+    dataDir,
+    liveSendEnabled: true,
+    env: SOP_ENV,
+    sender: { async sendMessage() { sends += 1; } }
+  });
+
+  assert.equal(result.ran[0].sent, false);
+  assert.equal(result.ran[0].skipped, true);
+  assert.equal(result.ran[0].sendSkippedReason, "already sent");
+  assert.equal(sends, 0);
+  const log = JSON.parse(await readFile(
+    path.join(dataDir, "outputs", "automations", "scheduler", "2026-07-04.log.json")
+  ));
+  assert.equal(log.entries[0].sent, false);
+  assert.equal(log.entries[0].skipped, true);
+  assert.equal(log.entries[0].sendSkippedReason, "already sent");
 });

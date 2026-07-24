@@ -310,7 +310,7 @@ test("writes a Vol-scoped sent ledger and state after successful send", async ()
 
   assert.equal(first.sent, true);
   assert.match(first.files.sentLog, /outputs\/automations\/wisereads-weekly\/vol-151-sent\.json$/);
-  assert.equal(second.sent, true);
+  assert.equal(second.sent, false);
   assert.equal(second.skipped, true);
   assert.equal(sendCount, 1);
 
