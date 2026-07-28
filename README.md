@@ -114,9 +114,9 @@ Live send stays closed until all of these are deliberately set:
 ```text
 LIVE_SEND_ENABLED=true
 AI_HOT_ENABLED=true
-AI_HOT_BOT_ROLE=<confirmed role>
-AI_HOT_CONNECTION_REF=<confirmed connection ref>
-AI_HOT_TARGET_CHAT_ID=<target chat id>
+AI_HOT_BOT_ROLE=zhiwei_agent
+AI_HOT_CONNECTION_REF=zhiwei_agent
+AI_HOT_TARGET_CHAT_ID=<拾叁事务所 chat id>
 FEISHU_CONNECTION_<REF>_APP_ID=<secret>
 FEISHU_CONNECTION_<REF>_APP_SECRET=<secret>
 ```
