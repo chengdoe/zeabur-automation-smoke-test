@@ -73,7 +73,7 @@ The app writes:
 
 The scheduler is dry-run only. It writes payload previews and audit files, and never sends Feishu messages.
 
-- `ai-hot` runs daily at 09:00 Asia/Shanghai when `AI_HOT_SCHEDULER_ENABLED=true`.
+- `ai-hot` runs daily at 10:00 Asia/Shanghai when `AI_HOT_SCHEDULER_ENABLED=true`.
 - `morning-motivation` runs daily at 09:00 Asia/Shanghai.
 - `sop13` runs daily at 09:30 Asia/Shanghai.
 - Set `SCHEDULER_ENABLED=false` to disable scheduled dry-runs.
@@ -92,7 +92,7 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 
 `sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty, and row 0 contains the visible bold title plus `{ "tag": "at", "user_id": "all" }`.
 
-`ai-hot` sends Feishu `post`; the outer `zh_cn.title` stays empty, row 0 contains the visible bold title, every item keeps a native source link, and weak sources are labeled as X, repost, vendor self-claim, or unknown. It uses deterministic ranking rules and makes zero model calls.
+`ai-hot` sends Feishu `post`; the outer `zh_cn.title` stays empty, row 0 contains the visible bold title, every item title is a native source link, weak sources are labeled as X, repost, vendor self-claim, or unknown, and the footer preserves AI HOT attribution. It uses deterministic ranking rules and makes zero model calls.
 
 ## AI HOT Setup
 

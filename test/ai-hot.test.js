@@ -146,6 +146,7 @@ test("validates native Feishu post payload structure and source links", async ()
   assert.equal(result.payload.zh_cn.title, "");
   assert.equal(result.payload.zh_cn.content[0][0].text, "AI HOT 关注简报 · 2026-07-16");
   assert.ok(result.payload.zh_cn.content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === "https://openai.com/index/codex-remote-runner")));
+  assert.ok(result.payload.zh_cn.content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === "https://aihot.virxact.com")));
 
   const brokenBrief = structuredClone(result.brief);
   brokenBrief.items[0].sourceUrl = "";

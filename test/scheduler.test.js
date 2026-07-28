@@ -32,8 +32,18 @@ test("scheduler marks morning motivation due at 09:00 Asia/Shanghai", () => {
     state: createSchedulerState()
   });
 
-  assert.deepEqual(due.map((job) => job.id), ["ai-hot", "morning-motivation"]);
-  assert.equal(due[1].date, "2026-07-04");
+  assert.deepEqual(due.map((job) => job.id), ["morning-motivation"]);
+  assert.equal(due[0].date, "2026-07-04");
+});
+
+test("scheduler marks AI HOT due at 10:00 Asia/Shanghai", () => {
+  const due = getDueDryRunJobs({
+    now: new Date("2026-07-04T02:00:00.000Z"),
+    state: createSchedulerState()
+  });
+
+  assert.deepEqual(due.map((job) => job.id), ["ai-hot"]);
+  assert.equal(due[0].date, "2026-07-04");
 });
 
 test("scheduler marks SOP13 due at 09:30 Asia/Shanghai", () => {
@@ -79,7 +89,7 @@ test("scheduler marks Wisereads due every 30 minutes in the Monday-Tuesday retry
     state: createSchedulerState()
   });
 
-  assert.deepEqual(mondayStart.map((job) => job.id), ["ai-hot", "morning-motivation", "wisereads-weekly"]);
+  assert.deepEqual(mondayStart.map((job) => job.id), ["morning-motivation", "wisereads-weekly"]);
   assert.deepEqual(mondaySlot.map((job) => job.id), ["sop13", "wisereads-weekly"]);
   assert.deepEqual(afterWindow, []);
 });

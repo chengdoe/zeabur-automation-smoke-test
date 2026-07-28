@@ -45,7 +45,7 @@ export function listJobs() {
     {
       id: "ai-hot",
       name: "AI HOT 关注简报",
-      schedule: "daily 09:00 Asia/Shanghai",
+      schedule: "daily 10:00 Asia/Shanghai",
       dryRunEndpoint: "/api/jobs/ai-hot/dry-run",
       liveSendEndpoint: "/api/jobs/ai-hot/send"
     },

@@ -250,6 +250,11 @@ export function buildAIHotPostPayload(brief) {
     addHeading("立即行动");
     for (const action of brief.actions) rows.push([{ tag: "text", text: action }]);
   }
+  addSpacer();
+  rows.push([
+    { tag: "text", text: "数据源：" },
+    { tag: "a", text: "AI HOT", href: "https://aihot.virxact.com" }
+  ]);
 
   return { zh_cn: { title: "", content: rows } };
 }
@@ -280,6 +285,8 @@ export function validateAIHotPost(payload, brief) {
     }
   }
   if (brief.items.length && !brief.judgment) errors.push("missing daily judgment");
+  const hasAttribution = content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === "https://aihot.virxact.com"));
+  if (!hasAttribution) errors.push("missing AI HOT attribution");
   return { ok: errors.length === 0, errors };
 }
 

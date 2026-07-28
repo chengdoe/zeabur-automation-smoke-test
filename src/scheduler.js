@@ -11,7 +11,7 @@ export const FUND_RETRY_SLOTS = ["13:50", "14:00", "14:10", "14:20"];
 const SCHEDULED_DRY_RUN_JOBS = [
   {
     id: "ai-hot",
-    hour: "09",
+    hour: "10",
     minute: "00"
   },
   {
