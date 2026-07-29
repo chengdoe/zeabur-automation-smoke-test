@@ -130,6 +130,7 @@ export async function findRecentFeishuMessageContaining({ config, fetchImpl, ten
     const url = new URL(`${config.baseUrl}/open-apis/im/v1/messages`);
     url.searchParams.set("container_id_type", "chat");
     url.searchParams.set("container_id", config.targetChatId);
+    url.searchParams.set("sort_type", "ByCreateTimeDesc");
     url.searchParams.set("page_size", String(Math.min(limit - scanned, 50)));
     if (pageToken) url.searchParams.set("page_token", pageToken);
     const response = await fetchImpl(url, {

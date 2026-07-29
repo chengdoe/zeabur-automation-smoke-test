@@ -5,10 +5,12 @@ import { findRecentFeishuMessageContaining } from "../src/feishuClient.js";
 
 test("Feishu duplicate scan follows pagination within its bound", async () => {
   const requestedTokens = [];
+  const requestedSortTypes = [];
   const fetchImpl = async (url) => {
     const parsed = new URL(url);
     const token = parsed.searchParams.get("page_token") || "";
     requestedTokens.push(token);
+    requestedSortTypes.push(parsed.searchParams.get("sort_type"));
     const secondPage = token === "next-page";
     return {
       ok: true,
@@ -32,5 +34,6 @@ test("Feishu duplicate scan follows pagination within its bound", async () => {
   });
 
   assert.deepEqual(requestedTokens, ["", "next-page"]);
+  assert.deepEqual(requestedSortTypes, ["ByCreateTimeDesc", "ByCreateTimeDesc"]);
   assert.equal(match.message_id, "om_vol_151");
 });
