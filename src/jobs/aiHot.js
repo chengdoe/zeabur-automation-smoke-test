@@ -11,6 +11,8 @@ export const AI_HOT_DEFAULT_USER_AGENT = "KaneAIHotAutomation/0.1 (+https://aiho
 const SPACER = "　";
 const MAX_BRIEF_ITEMS = 8;
 const HIGH_VALUE_THRESHOLD = 45;
+const HAPPENED_CHAR_LIMIT = 128;
+const NARRATIVE_CHAR_LIMIT = 190;
 
 const SOURCE_PRIMARY_DOMAINS = [
   "openai.com",
@@ -183,7 +185,7 @@ export function selectHighValueAIHotItems(items, { date, now = new Date() } = {}
 }
 
 export function buildStructuredAIHotBrief({ date, now = new Date(), items, source, sourceStatus }) {
-  const title = `AI HOT 关注简报 · ${date}`;
+  const title = `【AI HOT 关注简报 · ${date}】`;
   const window = source?.window || shanghaiDayWindow({ date, now });
   const brief = {
     title,
@@ -212,49 +214,22 @@ export function buildStructuredAIHotBrief({ date, now = new Date(), items, sourc
 export function buildAIHotPostPayload(brief) {
   const rows = [];
   const addSpacer = () => rows.push([{ tag: "text", text: SPACER }]);
-  const addHeading = (text) => rows.push([{ tag: "text", text, style: ["bold"] }]);
 
   rows.push([{ tag: "text", text: brief.title, style: ["bold"] }]);
-  addSpacer();
-  rows.push([{ tag: "md", text: `*窗口：${brief.window.start} 至 ${brief.window.end} · ${brief.items.length} 条*` }]);
   addSpacer();
 
   if (!brief.items.length) {
     rows.push([{ tag: "text", text: "今天暂未筛出足够高信号的 AI HOT 条目；不凑数。" }]);
   } else {
     for (const [index, item] of brief.items.entries()) {
-      rows.push([
-        { tag: "text", text: `${item.rank}. ` },
-        { tag: "a", text: item.title, href: item.sourceUrl },
-        { tag: "text", text: ` · ${item.source} · ${item.sourceLabel}` }
-      ]);
+      rows.push([{ tag: "md", text: buildBoldTitleMarkdownLink(item) }]);
       addSpacer();
-      rows.push([{ tag: "text", text: `发生了什么：${item.happened}` }]);
-      rows.push([{ tag: "text", text: `为什么关注：${item.whyWatch}` }]);
-      if (item.flags.length) {
-        rows.push([{ tag: "md", text: `> 标签：${item.flags.join(" / ")}` }]);
-      }
+      rows.push([{ tag: "text", text: buildItemNarrative(item) }]);
       if (index !== brief.items.length - 1) {
-        addSpacer();
-        rows.push([{ tag: "hr" }]);
         addSpacer();
       }
     }
   }
-
-  addSpacer();
-  addHeading("今日判断");
-  rows.push([{ tag: "text", text: brief.judgment }]);
-  if (brief.actions.length) {
-    addSpacer();
-    addHeading("立即行动");
-    for (const action of brief.actions) rows.push([{ tag: "text", text: action }]);
-  }
-  addSpacer();
-  rows.push([
-    { tag: "text", text: "数据源：" },
-    { tag: "a", text: "AI HOT", href: "https://aihot.virxact.com" }
-  ]);
 
   return { zh_cn: { title: "", content: rows } };
 }
@@ -269,24 +244,62 @@ export function validateAIHotPost(payload, brief) {
   if (content[0]?.[0]?.tag !== "text" || content[0]?.[0]?.text !== brief.title || !content[0]?.[0]?.style?.includes("bold")) {
     errors.push("row 0 must contain the bold AI HOT title");
   }
+  if (!/^【AI HOT 关注简报 · \d{4}-\d{2}-\d{2}】$/.test(brief.title)) {
+    errors.push("visible title must use bracketed AI HOT format");
+  }
   if (brief.items.length > MAX_BRIEF_ITEMS) errors.push("brief must not exceed eight items");
   if (brief.actions.length > 2) errors.push("brief must not exceed two actions");
   if (JSON.stringify(payload).match(/\/api\/public|mode=|take=|cursor|hasNext/)) {
     errors.push("payload must not expose API internals");
   }
+  const cells = content.flatMap((row) => row);
+  const textCells = cells.map((cell) => String(cell.text || ""));
+  if (textCells.some((text) => /^窗口：/.test(text) || /^\*窗口：/.test(text))) {
+    errors.push("payload must not show the execution window line");
+  }
+  if (textCells.some((text) => /^(发生了什么|为什么关注|标签)：/.test(text) || /^>\s*标签：/.test(text))) {
+    errors.push("payload must use direct item prose without section labels or tag rows");
+  }
+  if (content.some((row) => row.some((cell) => hasDisallowedRawUrlCell(cell, row, brief)))) {
+    errors.push("payload text must not expose raw URLs outside title markdown links");
+  }
+  if (content.some((row) => row.some((cell) => cell.tag === "hr"))) {
+    errors.push("payload must not use item divider lines");
+  }
+  if (textCells.some((text) => /^(今日判断|立即行动|数据源)：?$/.test(text) || /^今日判断：|^立即行动：|^数据源：/.test(text))) {
+    errors.push("payload must not show trailing judgment, actions, or source block");
+  }
+  if (content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === "https://aihot.virxact.com"))) {
+    errors.push("payload must not include trailing AI HOT attribution link");
+  }
+  if (textCells.some((text) => /X，需核验|厂商自评|一手来源|来源待核验|转载/.test(text))) {
+    errors.push("payload must not show source-strength labels");
+  }
+  const bodyTexts = content
+    .filter((row) => row.length === 1 && row[0]?.tag === "text" && row[0].text !== brief.title && row[0].text !== SPACER)
+    .map((row) => String(row[0]?.text || ""));
+  if (bodyTexts.some((text) => /…|\.\.\./.test(text))) {
+    errors.push("payload item prose must not use ellipsis truncation");
+  }
+  if (bodyTexts.some((text) => /更多开源福利|了解更多[:：]?/i.test(text))) {
+    errors.push("payload item prose must not include low-information source boilerplate");
+  }
 
   for (const item of brief.items) {
     if (!item.sourceUrl) errors.push(`missing source URL: ${item.title}`);
-    const hasLink = content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === item.sourceUrl));
-    if (!hasLink) errors.push(`missing native link: ${item.title}`);
+    const linkRow = content.find((row) => isBoldTitleMarkdownLinkRow(row, item));
+    if (!linkRow) errors.push(`missing native link: ${item.title}`);
+    if (linkRow && !isBoldTitleMarkdownLinkRow(linkRow, item)) {
+      errors.push(`item title row must be bold: ${item.title}`);
+    }
+    if (linkRow?.some((cell) => / · /.test(String(cell.text || "")))) {
+      errors.push(`item title row must not show source tail: ${item.title}`);
+    }
     if (!item.happened || !item.whyWatch) errors.push(`missing explanation: ${item.title}`);
     if (["x", "repost", "vendor"].includes(item.sourceCredibility) && !item.sourceLabel) {
       errors.push(`missing weak-source label: ${item.title}`);
     }
   }
-  if (brief.items.length && !brief.judgment) errors.push("missing daily judgment");
-  const hasAttribution = content.some((row) => row.some((cell) => cell.tag === "a" && cell.href === "https://aihot.virxact.com"));
-  if (!hasAttribution) errors.push("missing AI HOT attribution");
   return { ok: errors.length === 0, errors };
 }
 
@@ -429,7 +442,7 @@ function toBriefItem(item, rank) {
     sourceLabel: item.sourceLabel,
     needsVerification: item.needsVerification,
     flags,
-    happened: trimSentence(item.summary || item.title, 120),
+    happened: summarizeHappened(item),
     whyWatch: whyWatch(item)
   };
 }
@@ -447,12 +460,28 @@ function flagsForItem(item) {
 
 function whyWatch(item) {
   const signals = item.ranking.signals;
-  if (signals.security) return "涉及仓库、token、权限或代理越权边界，值得先看风险面，再决定是否试用。";
-  if (signals.agentCoding) return "和 Agent 编码、远程开发或仓库级自动化直接相关，可能改变日常开发工作流。";
-  if (signals.model) return "模型能力变化会影响编码工具、Agent 选型和后续评测优先级。";
-  if (signals.workflow) return "有机会直接复用到数据连接、报告生成或自动化交付流程。";
-  if (signals.research) return "会影响对长期 Agent 权限、可靠性和安全边界的判断。";
-  return "信息信号高于普通营销稿，值得保留原始链接后续核验。";
+  const text = `${item.title || ""}\n${item.summary || ""}`;
+  if (signals.security || /攻击|入侵|防御|逃逸|零日|漏洞/i.test(text)) {
+    return "重点看执行权限、沙箱、token 与外部连接边界，先隔离评估再试用。";
+  }
+  if (signals.agentCoding) return "这会直接影响 Agent 编码、远程开发或仓库级自动化流程。";
+  if (signals.model && signals.industry && /政府|社会|节奏|监管|合作|行业/i.test(text)) {
+    return "它会影响模型发布节奏、监管沟通和产品接入时机。";
+  }
+  if (signals.workflow) return "可关注能否接进数据连接、报告生成或自动化交付流程。";
+  if (signals.model) return "它会影响工具选型和后续评测优先级。";
+  if (signals.research) return "适合用来校准长期 Agent 权限、可靠性和安全边界判断。";
+  if (signals.industry) return "它可能影响平台合作、监管沟通或行业资源配置。";
+  return "信号高于普通营销稿，值得保留原始链接后续核验。";
+}
+
+function buildItemNarrative(item) {
+  const rationale = trimReadableSentence(item.whyWatch || "", 64);
+  const remaining = Math.max(80, NARRATIVE_CHAR_LIMIT - charLength(rationale));
+  const summary = trimReadableSentence(item.happened || item.title, remaining);
+  if (!summary) return rationale;
+  if (!rationale) return summary;
+  return trimReadableSentence(`${summary}${rationale}`, NARRATIVE_CHAR_LIMIT);
 }
 
 function buildDailyJudgment(items) {
@@ -604,26 +633,39 @@ function duplicateKey(item) {
 function renderAIHotPreview(brief) {
   const lines = [
     brief.title,
-    `窗口：${brief.window.start} 至 ${brief.window.end}`,
     ""
   ];
   if (!brief.items.length) {
     lines.push("今天暂未筛出足够高信号的 AI HOT 条目；不凑数。");
   } else {
     for (const item of brief.items) {
-      lines.push(`${item.rank}. ${item.title} — ${item.source}（${item.sourceLabel}）`);
-      lines.push(`发生了什么：${item.happened}`);
-      lines.push(`为什么关注：${item.whyWatch}`);
-      lines.push(item.sourceUrl);
+      lines.push(`${item.rank}. [${item.title}](${item.sourceUrl})`);
+      lines.push(buildItemNarrative(item));
       lines.push("");
     }
   }
-  lines.push(`今日判断：${brief.judgment}`);
-  if (brief.actions.length) {
-    lines.push("立即行动：");
-    for (const action of brief.actions) lines.push(`- ${action}`);
-  }
-  return lines.join("\n");
+  return lines.join("\n").trimEnd();
+}
+
+function buildBoldTitleMarkdownLink(item) {
+  return `**${item.rank}. [${escapeMarkdownText(item.title)}](${item.sourceUrl})**`;
+}
+
+function isBoldTitleMarkdownLinkRow(row, item) {
+  return row.length === 1
+    && row[0]?.tag === "md"
+    && row[0]?.text === buildBoldTitleMarkdownLink(item);
+}
+
+function hasDisallowedRawUrlCell(cell, row, brief) {
+  const text = String(cell.text || "");
+  if (!/https?:\/\//i.test(text)) return false;
+  if (cell.tag !== "md") return true;
+  return !brief.items.some((item) => isBoldTitleMarkdownLinkRow(row, item));
+}
+
+function escapeMarkdownText(text) {
+  return String(text || "").replace(/([\\[\]])/g, "\\$1");
 }
 
 function formatShanghaiDateTime(value) {
@@ -652,8 +694,97 @@ function cleanText(text) {
   return String(text || "").replace(/\s+/g, " ").trim();
 }
 
-function trimSentence(text, limit) {
-  const cleaned = cleanText(text);
-  if (Array.from(cleaned).length <= limit) return cleaned;
-  return `${Array.from(cleaned).slice(0, limit - 1).join("")}…`;
+function stripInlineUrls(text) {
+  return cleanText(text).replace(/https?:\/\/\S+/gi, "").replace(/\s+([，。；：,.!?])/g, "$1").trim();
+}
+
+function summarizeHappened(item) {
+  const actor = inferSourceActor(item);
+  const cleaned = stripInlineUrls(item.summary || item.title)
+    .replace(/^(更多开源福利|更多细节|好消息|快讯|重磅发布)[。！!：:\s]+/i, "")
+    .replace(/^我们使命的核心，是研究如何确保日益强大的\s*AI\s*惠及所有人。\s*我们相信，/, `${actor} 认为，`)
+    .replace(/^首次自主智能体网络攻击是一次前所未有的事件，理应获得前所未有的透明度。今天，我们尽可能分享一切：/, `${actor} 公开了自主智能体网络攻击复盘，包括`)
+    .replace(/^我们刚刚发布了一个/, `${actor} 发布了一个`)
+    .replace(/^我们刚刚发布了/, `${actor} 发布了`)
+    .replace(/^我们发布了一个/, `${actor} 发布了一个`)
+    .replace(/^我们发布了/, `${actor} 发布了`)
+    .replace(/^我们刚刚推出了/, `${actor} 推出了`)
+    .replace(/^我们推出了/, `${actor} 推出了`)
+    .replace(/^我们在 API 中引入了/, `${actor} 在 API 中引入了`)
+    .replace(/我们的研究人员/g, "研究人员")
+    .replace(/\s*我们希望[^。！？]*[。！？]?$/g, "")
+    .replace(/以及我们如何利用开放模型进行防御/g, "以及利用开放模型进行防御的做法")
+    .replace(/\s*了解更多[:：]?.*$/i, "")
+    .replace(/--/g, "，")
+    .replace(/\s*[•·]\s*/g, "；")
+    .replace(/HuggingFace/g, "Hugging Face")
+    .replace(/([\u4e00-\u9fa5])AI([\u4e00-\u9fa5])/g, "$1 AI $2")
+    .replace(/客户点/g, "客户")
+    .replace(/后，继攻击/g, "后，继续攻击")
+    .replace(/又入侵了第二家科技公司/g, "又入侵了第二家公司");
+  return trimReadableSentence(cleaned, HAPPENED_CHAR_LIMIT);
+}
+
+function inferSourceActor(item) {
+  const text = `${item.title || ""} ${item.source || ""}`;
+  if (/Hugging Face/i.test(text)) return "Hugging Face";
+  if (/OpenAI/i.test(text)) return "OpenAI";
+  if (/Anthropic|Claude/i.test(text)) return "Anthropic";
+  if (/Google|Gemini|DeepMind/i.test(text)) return "Google DeepMind";
+  if (/Microsoft|GitHub|Copilot/i.test(text)) return "GitHub";
+  if (/xAI|Grok/i.test(text)) return "xAI";
+  if (/MiniMax/i.test(text)) return "MiniMax";
+  if (/OpenRouter/i.test(text)) return "OpenRouter";
+  if (/Qwen|通义|阿里/i.test(text)) return "通义团队";
+  return "相关团队";
+}
+
+function trimReadableSentence(text, limit) {
+  const cleaned = normalizeNarrativeText(text);
+  if (!cleaned) return "";
+  if (charLength(cleaned) <= limit) return ensureTerminalPunctuation(cleaned);
+
+  const sliced = Array.from(cleaned).slice(0, limit).join("");
+  const sentenceCut = lastBoundaryIndex(sliced, /[。！？!?；;]/g, Math.min(48, Math.floor(limit * 0.45)));
+  if (sentenceCut >= 0) return ensureTerminalPunctuation(sliced.slice(0, sentenceCut + 1));
+
+  const clauseCut = lastBoundaryIndex(sliced, /[，,、]/g, Math.min(56, Math.floor(limit * 0.55)));
+  if (clauseCut >= 0) return ensureTerminalPunctuation(sliced.slice(0, clauseCut));
+
+  return ensureTerminalPunctuation(dropDanglingTail(sliced));
+}
+
+function normalizeNarrativeText(text) {
+  return stripInlineUrls(text)
+    .replace(/(?:\.\.\.|…+)/g, "。")
+    .replace(/\s*([。！？!?；;])\s*/g, "$1")
+    .replace(/\s+([，、：:,.])/g, "$1")
+    .replace(/([。！？!?；;])[，,。；;]+/g, "$1")
+    .trim();
+}
+
+function lastBoundaryIndex(text, pattern, minIndex) {
+  let last = -1;
+  for (const match of text.matchAll(pattern)) {
+    if (match.index >= minIndex) last = match.index;
+  }
+  return last;
+}
+
+function ensureTerminalPunctuation(text) {
+  const cleaned = dropDanglingTail(text);
+  if (!cleaned) return "";
+  if (/[。！？!?]$/.test(cleaned)) return cleaned;
+  return `${cleaned}。`;
+}
+
+function dropDanglingTail(text) {
+  return cleanText(text)
+    .replace(/[，、：:；;,. ]+$/g, "")
+    .replace(/(?:但|并|又|以及|同时|此外|其中|通过|用于|以便|因为|如果|包括|例如|让|把|被|在|向)$/g, "")
+    .trim();
+}
+
+function charLength(text) {
+  return Array.from(String(text || "")).length;
 }
