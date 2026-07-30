@@ -169,11 +169,12 @@ function positiveNumber(value, fallback) {
 }
 
 function numberOrNull(value) {
+  if (value === null || value === undefined || value === "") return null;
   return Number.isFinite(Number(value)) ? Number(value) : null;
 }
 
 function sumKnown(entries, getter) {
-  const values = entries.map(getter).filter((value) => Number.isFinite(Number(value)));
+  const values = entries.map(getter).filter((value) => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value)));
   return {
     known: values.length > 0,
     value: values.reduce((sum, value) => sum + Number(value), 0)

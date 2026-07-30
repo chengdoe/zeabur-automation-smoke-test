@@ -11,6 +11,7 @@ import { runFundPortfolioPipeline } from "./jobs/fundPortfolioPipeline.js";
 import { getFundCostGovernanceStatus } from "./jobs/fundCostGovernance.js";
 import { handleFundReadonlyRequest } from "./jobs/fundReadonlyApi.js";
 import { getJobFeishuConfig, validateJobFeishuConfig } from "./feishuClient.js";
+import { getSentinelStatus } from "./ops/sentinelService.js";
 import { shanghaiDateString } from "./date.js";
 
 const port = Number(process.env.PORT || 3000);
@@ -28,6 +29,7 @@ const fundAnalysisProvider = process.env.FUND_ANALYSIS_PROVIDER || (process.env.
 const fundReadPort = Number(process.env.FUND_READ_PORT || 0);
 const fundReadDataRoot = path.resolve(process.env.FUND_READ_DATA_ROOT || path.join(dataDir, "fund-portfolio-daily", "project"));
 const fundReadApiCredential = process.env.FUND_READ_API_CREDENTIAL || "";
+const sentinelStatusApiCredential = process.env.SENTINEL_STATUS_API_CREDENTIAL || "";
 const startedAt = new Date();
 let scheduler;
 
@@ -149,6 +151,7 @@ async function status() {
         : Boolean(process.env.OPENAI_API_KEY),
       hasFundAnalysisModel: Boolean(process.env.FUND_ANALYSIS_MODEL),
       fundReadonlyApiConfigured: fundReadPort > 0 && Boolean(fundReadApiCredential),
+      sentinelStatusApiConfigured: Boolean(sentinelStatusApiCredential),
       fundAnalysisProvider,
       hasOpenRouterApiKey: Boolean(process.env.OPENROUTER_API_KEY),
       hasFeishuAppId: Boolean(process.env.FEISHU_APP_ID),
@@ -294,6 +297,25 @@ async function handle(req, res) {
     }
     if (url.pathname === "/api/jobs") {
       return sendJson(res, 200, { ok: true, jobs: listJobs() });
+    }
+    if (url.pathname === "/api/sentinel/monitor-status" && req.method === "GET") {
+      if (!sentinelStatusApiCredential) {
+        return sendJson(res, 503, { ok: false, error: "sentinel_status_api_disabled" });
+      }
+      if (req.headers.authorization !== `Bearer ${sentinelStatusApiCredential}`) {
+        return sendJson(res, 401, { ok: false, error: "unauthorized" });
+      }
+      return sendJson(res, 200, {
+        ok: true,
+        service: "zeabur-automation-smoke-test",
+        now: nowIso(),
+        scheduler: schedulerStatus(),
+        sentinel: await getSentinelStatus({
+          dataDir,
+          date: url.searchParams.get("date") || shanghaiDateString(),
+          env: process.env
+        })
+      });
     }
     if (url.pathname === "/api/jobs/ai-hot/dry-run" && req.method === "POST") {
       return sendJson(res, 200, await runDryRunJob({

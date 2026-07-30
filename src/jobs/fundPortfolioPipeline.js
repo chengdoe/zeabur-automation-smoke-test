@@ -207,6 +207,20 @@ export async function runFundPortfolioPipeline({
     error.retryable = failure.retryable;
     error.attempt = attempt;
     error.preparedSnapshot = snapshotRoot;
+    try {
+      const governance = await getFundCostGovernanceStatus({ dataDir, date, env });
+      error.request_count = governance.usage.requests;
+      error.total_tokens = governance.usage.tokens.total_tokens.known
+        ? governance.usage.tokens.total_tokens.value
+        : null;
+      error.cost_usd = governance.usage.cost.total_usd.known
+        ? governance.usage.cost.total_usd.value
+        : null;
+    } catch {
+      error.request_count = null;
+      error.total_tokens = null;
+      error.cost_usd = null;
+    }
     throw error;
   }
 }

@@ -12,6 +12,7 @@ It checks:
 - gated Feishu live-send runner
 - outbound network access
 - AI HOT daily intelligence dry-run
+- Automation Sentinel task-level circuit breakers and standalone zero-model watchdog
 
 ## Endpoints
 
@@ -27,6 +28,14 @@ It checks:
 - `POST /api/jobs/sop13/send?confirm=SEND` — gated live-send endpoint; blocked unless `LIVE_SEND_ENABLED=true`
 - `POST /api/jobs/morning-motivation/send?confirm=SEND` — gated live-send endpoint; blocked unless `LIVE_SEND_ENABLED=true`
 - `POST /api/heartbeat` — writes one manual heartbeat
+- `GET /api/sentinel/monitor-status` — credentialed, redacted monitor snapshot for the standalone Watchdog
+
+The standalone Sentinel process uses `npm run sentinel:start` and exposes:
+
+- `GET /health`
+- `GET /api/sentinel/status`
+- `POST /api/sentinel/watchdog/dry-run`
+- `POST /api/sentinel/watchdog/send?confirm=SEND` — still blocked unless every Sentinel send gate and identity field is configured
 
 ## Zeabur Setup
 
@@ -150,6 +159,52 @@ Safety behavior:
 - A sent log at `/data/outputs/automations/<job>/<YYYY-MM-DD>-sent.json` blocks duplicate sends.
 - Use `force=true` only for deliberate manual recovery.
 - The scheduler remains dry-run only.
+
+## Automation Sentinel
+
+Sentinel is deterministic and makes zero LLM/OpenRouter calls. Its task-level state, events, incidents, model-request budgets, and alert deliveries live under:
+
+```text
+/data/outputs/ops/sentinel/
+```
+
+The monitored automation service should start in shadow mode:
+
+```text
+SENTINEL_ENABLED=false
+SENTINEL_MODE=shadow
+SENTINEL_STATUS_API_CREDENTIAL=<independent random secret>
+```
+
+The standalone Watchdog service uses the same codebase with `npm run sentinel:start` and separate configuration:
+
+```text
+SENTINEL_ENABLED=false
+SENTINEL_MODE=shadow
+SENTINEL_WATCHDOG_ENABLED=false
+SENTINEL_WATCHDOG_INTERVAL_MS=60000
+SENTINEL_MONITORED_STATUS_URL=<automation service URL>/api/sentinel/monitor-status
+SENTINEL_MONITORED_STATUS_CREDENTIAL=<same monitor credential>
+SENTINEL_MONITOR_TIMEOUT_MS=5000
+
+SENTINEL_FEISHU_ENABLED=false
+SENTINEL_LIVE_SEND_ENABLED=false
+SENTINEL_BOT_ROLE=sentinel
+SENTINEL_CONNECTION_REF=sentinel
+SENTINEL_TARGET_CHAT_ID=<Kane and Sentinel P2P chat id>
+FEISHU_CONNECTION_SENTINEL_APP_ID=<Zeabur secret>
+FEISHU_CONNECTION_SENTINEL_APP_SECRET=<Zeabur secret>
+```
+
+All gates default closed. `SENTINEL_LIVE_SEND_ENABLED=true` is independent from the business-task send gates. The first Feishu version only needs bot scope `im:message:send_as_bot` and a known P2P `chat_id`; receiving recovery commands is a later permission expansion and is not required for alert-only shadow mode.
+
+Local verification does not send messages or call a model:
+
+```text
+npm run sentinel:dry-run
+npm run sentinel:benchmark
+node --test test/sentinel*.test.js
+```
 
 ## Local Test
 

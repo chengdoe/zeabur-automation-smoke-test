@@ -1,10 +1,17 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 import { shanghaiDateTimeParts, weekdayForDate } from "./date.js";
 import { runDryRunJob } from "./dryRunRunner.js";
 import { runLiveSendJob } from "./liveSendRunner.js";
+import {
+  preflightSentinelJob,
+  recordSentinelRunResult,
+  recordSentinelRunStarted
+} from "./ops/sentinelGuard.js";
+import { getSentinelPolicy, getSentinelRuntimeConfig } from "./ops/sentinelPolicy.js";
 
 export const FUND_RETRY_SLOTS = ["13:50", "14:00", "14:10", "14:20"];
 
@@ -82,8 +89,73 @@ export async function runSchedulerTick({
   schedulerState.lastTickAt = now.toISOString();
   const dueJobs = getDueDryRunJobs({ now, state: schedulerState, enabledJobs });
   const ran = [];
+  const sentinelConfig = getSentinelRuntimeConfig(env);
 
   for (const job of dueJobs) {
+    const runId = randomUUID();
+    const sentinelPolicy = getSentinelPolicy(job.id);
+    const sentinelContext = { config: sentinelConfig, policy: sentinelPolicy, runId };
+    const preflight = await preflightSentinelJob({
+      dataDir,
+      jobId: job.id,
+      config: sentinelConfig,
+      policy: sentinelPolicy
+    });
+    if (!preflight.allowed) {
+      const result = {
+        ok: false,
+        job: job.id,
+        date: job.date,
+        dryRun: !liveSendEnabled,
+        sent: false,
+        skipped: true,
+        sendSkippedReason: preflight.reason,
+        attempt: job.id === "fund-portfolio-daily" ? FUND_RETRY_SLOTS.indexOf(job.slot) + 1 : 1,
+        phase: "sentinel_guard",
+        error_class: preflight.error_class || null,
+        next_retry_at: null,
+        files: {}
+      };
+      await recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext });
+      ran.push(result);
+      continue;
+    }
+    try {
+      await recordSentinelRunStarted({
+        dataDir,
+        date: job.date,
+        jobId: job.id,
+        runId,
+        now,
+        config: sentinelConfig,
+        policy: sentinelPolicy
+      });
+    } catch (error) {
+      schedulerState.lastSentinelError = {
+        ts: now.toISOString(),
+        job: job.id,
+        error_class: error.code || "sentinel_record_failure"
+      };
+      if (sentinelPolicy.paidModel) {
+        const result = {
+          ok: false,
+          job: job.id,
+          date: job.date,
+          dryRun: !liveSendEnabled,
+          sent: false,
+          skipped: true,
+          sendSkippedReason: "sentinel_state_unavailable",
+          attempt: job.id === "fund-portfolio-daily" ? FUND_RETRY_SLOTS.indexOf(job.slot) + 1 : 1,
+          phase: "sentinel_guard",
+          error_class: "state_store_unavailable",
+          next_retry_at: null,
+          files: {}
+        };
+        await recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext });
+        ran.push(result);
+        continue;
+      }
+    }
     const runLive = liveSendEnabled && (liveEnabledJobs ? liveEnabledJobs[job.id] !== false : true);
     const attempt = job.id === "fund-portfolio-daily"
       ? FUND_RETRY_SLOTS.indexOf(job.slot) + 1
@@ -104,7 +176,7 @@ export async function runSchedulerTick({
         files: {}
       };
       schedulerState.fundRetries.delete(job.date);
-      await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
+      await recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext });
       ran.push(result);
       continue;
     }
@@ -127,7 +199,10 @@ export async function runSchedulerTick({
           error_class: error.errorClass || error.error_class || "prepare_failure",
           retryable: Boolean(error.retryable),
           preparedSnapshot: error.preparedSnapshot,
-          prompt_hash_suffix: error.prompt_hash_suffix || error.promptHash?.slice?.(-12) || null
+          prompt_hash_suffix: error.prompt_hash_suffix || error.promptHash?.slice?.(-12) || null,
+          request_count: error.request_count ?? null,
+          total_tokens: error.total_tokens ?? null,
+          cost_usd: error.cost_usd ?? null
         };
       }
     }
@@ -153,6 +228,9 @@ export async function runSchedulerTick({
         skipped: Boolean(prepared.skipped),
         sendSkippedReason: prepared.sendSkippedReason || null,
         prompt_hash_suffix: prepared.prompt_hash_suffix || prepared.promptHash?.slice?.(-12) || null,
+        request_count: prepared.request_count ?? null,
+        total_tokens: prepared.total_tokens ?? null,
+        cost_usd: prepared.cost_usd ?? null,
         files: prepared.files || {}
       };
       if (nextRetryAt) {
@@ -164,7 +242,7 @@ export async function runSchedulerTick({
       } else {
         schedulerState.fundRetries.delete(job.date);
       }
-      await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
+      await recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext });
       ran.push(result);
       continue;
     }
@@ -209,7 +287,7 @@ export async function runSchedulerTick({
       };
     }
     if (job.id === "fund-portfolio-daily") schedulerState.fundRetries.delete(job.date);
-    await recordSchedulerResult({ schedulerState, dataDir, now, job, result });
+    await recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext });
     ran.push(result);
   }
 
@@ -228,6 +306,7 @@ export function startDryRunScheduler({
   liveEnabledJobs,
   enabledJobs = {},
   prepareJob,
+  env = process.env,
   logger = console
 } = {}) {
   const state = createSchedulerState();
@@ -242,7 +321,7 @@ export function startDryRunScheduler({
   }
 
   const tick = () => {
-    runSchedulerTick({ state, dataDir, liveSendEnabled, liveEnabledJobs, enabledJobs, prepareJob }).catch((error) => {
+    runSchedulerTick({ state, dataDir, liveSendEnabled, liveEnabledJobs, enabledJobs, prepareJob, env }).catch((error) => {
       logger.error("scheduler dry-run tick failed", error);
     });
   };
@@ -321,7 +400,7 @@ function nextFundRetryAt(date, attempt) {
   return nextSlot ? `${date}T${nextSlot}:00+08:00` : null;
 }
 
-async function recordSchedulerResult({ schedulerState, dataDir, now, job, result }) {
+async function recordSchedulerResult({ schedulerState, dataDir, now, job, result, sentinelContext }) {
   schedulerState.ranKeys.add(schedulerKey(job.id, job.date, job.slot));
   schedulerState.lastRuns.unshift({
     ts: now.toISOString(),
@@ -340,4 +419,24 @@ async function recordSchedulerResult({ schedulerState, dataDir, now, job, result
   });
   schedulerState.lastRuns = schedulerState.lastRuns.slice(0, 20);
   await appendSchedulerLog({ dataDir, now, result });
+  if (sentinelContext?.config?.enabled) {
+    try {
+      await recordSentinelRunResult({
+        dataDir,
+        date: job.date,
+        jobId: job.id,
+        runId: sentinelContext.runId,
+        result,
+        now,
+        config: sentinelContext.config,
+        policy: sentinelContext.policy
+      });
+    } catch (error) {
+      schedulerState.lastSentinelError = {
+        ts: now.toISOString(),
+        job: job.id,
+        error_class: error.code || "sentinel_record_failure"
+      };
+    }
+  }
 }

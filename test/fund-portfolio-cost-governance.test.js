@@ -11,6 +11,7 @@ import { readFundModelLedger } from "../src/jobs/fundModelRequestLedger.js";
 function validReport(date = "2026-07-24") {
   return [
     `# 基金日报 ${date}`, "",
+    "> 迁移回放预览，不发送，不执行交易", "",
     "## 今日结论", "今天不操作。", "",
     "## 今天怎么做", "今天不操作。", "",
     "## 今天系统帮你盯到的机会", "暂无。", "",

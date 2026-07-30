@@ -30,7 +30,8 @@ before(async () => {
       HEARTBEAT_INTERVAL_MS: "600000",
       FUND_READ_PORT: String(fundReadPort),
       FUND_READ_API_CREDENTIAL: "test-readonly-credential",
-      FUND_READ_DATA_ROOT: fundReadRoot
+      FUND_READ_DATA_ROOT: fundReadRoot,
+      SENTINEL_STATUS_API_CREDENTIAL: "test-sentinel-status-credential"
     },
     stdio: ["ignore", "pipe", "pipe"]
   });
@@ -79,6 +80,22 @@ test("GET /api/status reports the dry-run scheduler state", async () => {
   assert.equal(body.fundModelCostGovernance.alerting.feishuEnabled, false);
   assert.equal(body.fundModelCostGovernance.circuitBreaker.open, false);
   assert.ok(allLeavesAreBoolean(body.fundPortfolioAudit));
+});
+
+test("Sentinel monitor snapshot is credentialed, read-only, and secret-safe", async () => {
+  const unauthorized = await fetch(`${baseUrl}/api/sentinel/monitor-status?date=2026-07-30`);
+  assert.equal(unauthorized.status, 401);
+
+  const response = await fetch(`${baseUrl}/api/sentinel/monitor-status?date=2026-07-30`, {
+    headers: { authorization: "Bearer test-sentinel-status-credential" }
+  });
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.service, "zeabur-automation-smoke-test");
+  assert.equal(body.sentinel.modelCalls, 0);
+  assert.equal(body.sentinel.jobs.length, 5);
+  assert.doesNotMatch(JSON.stringify(body), /test-sentinel-status-credential|APP_SECRET|authorization/i);
 });
 
 test("POST /api/jobs/sop13/dry-run returns rich post payload without sending", async () => {

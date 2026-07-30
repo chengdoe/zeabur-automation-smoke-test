@@ -7,6 +7,10 @@
   "scripts": {
     "start": "node src/server.js",
     "check": "node src/server.js --check",
+    "sentinel:start": "node src/sentinelServer.js",
+    "sentinel:check": "node src/sentinelServer.js --check",
+    "sentinel:dry-run": "node scripts/runSentinelDryRun.js",
+    "sentinel:benchmark": "node scripts/benchmarkSentinel.js",
     "test": "node --test",
     "fund:install": "node scripts/installFundPortfolioAssets.js",
     "fund:run": "node scripts/runFundPortfolioPipeline.js",

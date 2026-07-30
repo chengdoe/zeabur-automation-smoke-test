@@ -1,8 +1,16 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 import { shanghaiDateString } from "../date.js";
+import {
+  buildSentinelPromptHash,
+  getSentinelModelBudget,
+  recordSentinelModelAttemptStart,
+  recordSentinelModelAttemptTerminal,
+  withSentinelModelRequestLock
+} from "../ops/sentinelModelBudget.js";
 
 export const WISEREADS_JOB_ID = "wisereads-weekly";
 export const DEFAULT_WISEREADS_RSS_URL = "https://wise.readwise.io/feed/";
@@ -40,7 +48,8 @@ export async function buildWisereadsWeeklyDryRun({
   const enrichment = await getEnrichedIssue({
     dataDir,
     issue: source.issue,
-    analyzer: analyzer ?? createWisereadsAnalyzer({ env, fetchImpl })
+    analyzer: analyzer ?? createWisereadsAnalyzer({ env, fetchImpl }),
+    env
   });
   if (!enrichment.ok) {
     return buildAnalysisUnavailableResult({ date, source, previousDeliveredVol, error: enrichment.error, env });
@@ -92,35 +101,73 @@ export function createWisereadsAnalyzer({
   model = env.WISEREADS_ANALYSIS_MODEL || env.FUND_ANALYSIS_MODEL || ""
 } = {}) {
   if (env.WISEREADS_ANALYSIS_JSON_FILE) {
-    return async function analyzeWisereadsFromFixture(issue) {
+    const analyzeWisereadsFromFixture = async function analyzeWisereadsFromFixture(issue) {
       const analysis = JSON.parse(await readFile(env.WISEREADS_ANALYSIS_JSON_FILE, "utf8"));
       return applyWisereadsAnalysis(issue, analysis);
     };
+    analyzeWisereadsFromFixture.sentinelModelCall = false;
+    analyzeWisereadsFromFixture.provider = "fixture";
+    analyzeWisereadsFromFixture.model = "fixture";
+    return analyzeWisereadsFromFixture;
   }
   if (!apiKey || !model) return null;
-  return async function analyzeWisereads(issue) {
-    const response = await fetchImpl("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        "content-type": "application/json",
-        "x-openrouter-title": "Kane Wisereads Weekly"
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.2,
-        messages: [{ role: "user", content: buildWisereadsAnalysisPrompt(issue) }],
-        response_format: { type: "json_object" }
-      })
-    });
-    const body = await response.json();
-    if (!response.ok) {
-      throw new Error(`Wisereads analysis failed (${response.status}): ${body?.error?.message || "unknown error"}`);
+  const analyzeWisereads = async function analyzeWisereads(issue) {
+    const controller = new AbortController();
+    const timeoutMs = positiveNumber(env.WISEREADS_ANALYSIS_TIMEOUT_MS, 60_000);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    let response;
+    try {
+      response = await fetchImpl("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          "content-type": "application/json",
+          "x-openrouter-title": "Kane Wisereads Weekly"
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.2,
+          messages: [{ role: "user", content: buildWisereadsAnalysisPrompt(issue) }],
+          response_format: { type: "json_object" }
+        }),
+        signal: controller.signal
+      });
+      const body = await response.json();
+      if (!response.ok) {
+        const error = new Error(`Wisereads analysis failed (${response.status}): ${body?.error?.message || "unknown error"}`);
+        error.error_class = "model_http_status";
+        error.http_status = response.status;
+        error.retryable = false;
+        throw error;
+      }
+      const text = body?.choices?.[0]?.message?.content;
+      if (!text) {
+        const error = new Error("Wisereads analysis returned empty output");
+        error.error_class = "model_empty_output";
+        error.retryable = false;
+        throw error;
+      }
+      return {
+        ...applyWisereadsAnalysis(issue, parseJsonObject(text)),
+        analysisModel: model,
+        analysisUsage: normalizeWisereadsUsage(body?.usage),
+        analysisRequestId: body?.id || null
+      };
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        error.error_class = "remote_state_unknown";
+        error.remote_state_unknown = true;
+        error.retryable = false;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
     }
-    const text = body?.choices?.[0]?.message?.content;
-    if (!text) throw new Error("Wisereads analysis returned empty output");
-    return { ...applyWisereadsAnalysis(issue, parseJsonObject(text)), analysisModel: model };
   };
+  analyzeWisereads.sentinelModelCall = true;
+  analyzeWisereads.provider = "openrouter";
+  analyzeWisereads.model = model;
+  return analyzeWisereads;
 }
 
 export async function getLatestWisereadsSource({
@@ -364,6 +411,7 @@ function buildAnalysisUnavailableResult({ date, source, previousDeliveredVol, er
     sourceStatus: "analysis_unavailable",
     source: { type: "rss", vol: source.issue.vol, title: source.issue.title, link: source.issue.link, pubDate: source.issue.pubDate },
     previousDeliveredVol,
+    analysis: { status: "unavailable", error },
     payload: { zh_cn: { content: [] } },
     validation: { ok: false, errors: [error] },
     preview: renderPreview(source.issue),
@@ -373,7 +421,7 @@ function buildAnalysisUnavailableResult({ date, source, previousDeliveredVol, er
   };
 }
 
-async function getEnrichedIssue({ dataDir, issue, analyzer }) {
+async function getEnrichedIssue({ dataDir, issue, analyzer, env = process.env }) {
   const cacheFile = dataDir
     ? path.join(dataDir, "outputs", "automations", WISEREADS_JOB_ID, "generated", `wisereads-vol-${issue.vol}-enriched.json`)
     : null;
@@ -389,6 +437,73 @@ async function getEnrichedIssue({ dataDir, issue, analyzer }) {
   if (!analyzer) {
     return { ok: false, error: "OPENROUTER_API_KEY and WISEREADS_ANALYSIS_MODEL (or FUND_ANALYSIS_MODEL) are required" };
   }
+  const requiresModelBudget = Boolean(dataDir) && analyzer.sentinelModelCall !== false;
+  if (requiresModelBudget) {
+    const businessKey = `vol-${issue.vol}`;
+    const maxRequests = Math.min(1, positiveNumber(env.WISEREADS_MODEL_MAX_REQUESTS_PER_VOL, 1));
+    const runId = randomUUID();
+    const promptHash = buildSentinelPromptHash(buildWisereadsAnalysisPrompt(issue));
+    try {
+      return await withSentinelModelRequestLock({ dataDir, jobId: WISEREADS_JOB_ID, businessKey }, async () => {
+        const budget = await getSentinelModelBudget({ dataDir, jobId: WISEREADS_JOB_ID, businessKey, maxRequests });
+        if (!budget.maySubmit) {
+          return { ok: false, error: `model request blocked by Sentinel budget: ${budget.reason}` };
+        }
+        await recordSentinelModelAttemptStart({
+          dataDir,
+          jobId: WISEREADS_JOB_ID,
+          businessKey,
+          runId,
+          provider: analyzer.provider || "unknown",
+          model: analyzer.model || env.WISEREADS_ANALYSIS_MODEL || env.FUND_ANALYSIS_MODEL || "unknown",
+          promptHash
+        });
+        try {
+          const enriched = await analyzer(issue);
+          validateEnrichedIssue(enriched);
+          await recordSentinelModelAttemptTerminal({
+            dataDir,
+            jobId: WISEREADS_JOB_ID,
+            businessKey,
+            entry: {
+              run_id: runId,
+              terminal_state: "response_received",
+              request_id: enriched.analysisRequestId,
+              input_tokens: enriched.analysisUsage?.input_tokens,
+              output_tokens: enriched.analysisUsage?.output_tokens,
+              total_tokens: enriched.analysisUsage?.total_tokens,
+              cost_usd: enriched.analysisUsage?.cost_usd,
+              retryable: false
+            }
+          });
+          if (cacheFile) {
+            await mkdir(path.dirname(cacheFile), { recursive: true });
+            await writeFile(cacheFile, JSON.stringify(enriched, null, 2), "utf8");
+          }
+          return { ok: true, issue: enriched, cached: false, model: enriched.analysisModel || analyzer.model || null };
+        } catch (error) {
+          const remoteUnknown = error?.error_class === "remote_state_unknown" || error?.remote_state_unknown === true;
+          await recordSentinelModelAttemptTerminal({
+            dataDir,
+            jobId: WISEREADS_JOB_ID,
+            businessKey,
+            entry: {
+              run_id: runId,
+              terminal_state: remoteUnknown ? "remote_state_unknown" : "request_failed",
+              remote_state_unknown: remoteUnknown,
+              http_status: error?.http_status,
+              error_class: error?.error_class || "model_request_failure",
+              retryable: false,
+              safe_summary: String(error?.message || "model request failure").slice(0, 240)
+            }
+          });
+          return { ok: false, error: error.message };
+        }
+      });
+    } catch (error) {
+      return { ok: false, error: error.message };
+    }
+  }
   try {
     const enriched = await analyzer(issue);
     validateEnrichedIssue(enriched);
@@ -400,6 +515,25 @@ async function getEnrichedIssue({ dataDir, issue, analyzer }) {
   } catch (error) {
     return { ok: false, error: error.message };
   }
+}
+
+function normalizeWisereadsUsage(usage = {}) {
+  return {
+    input_tokens: numericOrNull(usage.prompt_tokens ?? usage.input_tokens),
+    output_tokens: numericOrNull(usage.completion_tokens ?? usage.output_tokens),
+    total_tokens: numericOrNull(usage.total_tokens),
+    cost_usd: numericOrNull(usage.cost ?? usage.total_cost)
+  };
+}
+
+function numericOrNull(value) {
+  if (value === null || value === undefined || value === "") return null;
+  return Number.isFinite(Number(value)) ? Number(value) : null;
+}
+
+function positiveNumber(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : fallback;
 }
 
 function buildWisereadsAnalysisPrompt(issue) {
