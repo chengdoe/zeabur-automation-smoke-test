@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 153 — You Can Just Do Things by Cate Hall, Ryan Holiday on How To Read 100 Books in a Year, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-153/</link><description>
-Last week, we shared an exclusive full copy of Andrew Taggart's new book, The Art of Inquiry. This week, we're sharing a preview of the just-released debut from Cate Hall, written with her husband, Sasha Chapin: You Can Just Do Things: How High-Agency People Get What They Want Out of Life.
+<item><title>Wisereads Vol. 154 — Noticing by Richard Louv, Emily Wilson's review of The Odyssey, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-154/</link><description>
+Last week, we shared a preview of Cate Hall's debut, written with her husband, Sasha Chapin: You Can Just Do Things: How High-Agency People Get What They Want Out of Life. This week, we're sharing a preview of Richard Louv's latest release: Noticing: Intimate Encounters With the Natural World.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 26 Jul 2026 15:04:12 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-153/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 02 Aug 2026 14:26:31 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-154/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 153 — You Can Just Do Things by Cate Hall, Ryan Holiday on How To Read 100 Books in a Year, and more</h1>
+    <h1>Wisereads Vol. 154 — Noticing by Richard Louv, Emily Wilson's review of The Odyssey, and more</h1>
     
     <p></p>
-<p>Last week, we shared an exclusive full copy of Andrew Taggart's new book, <em>The Art of Inquiry</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of the just-released debut from Cate Hall, written with her husband, Sasha Chapin: <em>You Can Just Do Things: How High-Agency People Get What They Want Out of Life</em>.</span></p>
+<p>Last week, we shared a preview of Cate Hall's debut, written with her husband, Sasha Chapin: <em>You Can Just Do Things: How High-Agency People Get What They Want Out of Life</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of Richard Louv's latest release: <em>Noticing: Intimate Encounters With the Natural World</em>.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://openai.com/index/hugging-face-model-evaluation-security-incident/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/openai-and-hugging-face-partne/cover_image_JQ2Ksiw.webp" alt="None" />
+        <a href="https://theguardian.com/us-news/ng-interactive/2026/jul/26/age-of-decadence-pleasure-ai/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-does-everything-feel-so-jo/cover_image.avif" alt="None" />
         </a>
 
         <h3>
-            <a href="https://openai.com/index/hugging-face-model-evaluation-security-incident/">OpenAI and Hugging Face partner to address security incident during model evaluation</a>
+            <a href="https://theguardian.com/us-news/ng-interactive/2026/jul/26/age-of-decadence-pleasure-ai/">Why does everything feel so joyless? Welcome to the age of decadence without pleasure</a>
         </h3>
         <p class="author">
-            OpenAI · OpenAI
+            Michèle Mendelssohn and Charlie Tyson · The Guardian
         </p>
-        <p>OpenAI's GPT-5.6 Sol and an unreleased model broke out of their sandbox during a cyber evaluation and breached Hugging Face's infrastructure. Their account of what went wrong: <span style="background-color: #fbeeb8;">"AI is accelerating the discovery and exploitation of vulnerabilities. The primary lesson from this incident is that model security and safety must keep pace with rapidly advancing capabilities. We are strengthening the containment, monitoring, access controls, and evaluation practices used during model development."</span></p>
+        <p>Tracing decadence as a marker of cultural decline, Oxford literature professor Mich&egrave;le Mendelssohn and Harvard's Charlie Tyson diagnose why modern abundance feels so joyless. <span style="background-color: #fbeeb8;">"Why strive for pleasure? Why long for it? Because &ndash; contra the Bryan Johnsons of the world &ndash; we will die. 'A counted number of pulses only,' Pater writes, 'is given to us of a variegated, dramatic life.'"</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://stratechery.com/2026/whos-afraid-of-chinese-models/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/whos-afraid-of-chinese-models/cover_image.avif" alt="None" />
+        <a href="https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-new-rules-of-context-engin/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://stratechery.com/2026/whos-afraid-of-chinese-models/">Who's Afraid of Chinese Models?</a>
+            <a href="https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/">The new rules of context engineering for Claude 5 generation models</a>
         </h3>
         <p class="author">
-            Ben Thompson · Stratechery
+            Thariq Shihipar · claude
         </p>
-        <p>Ben Thompson thinks the panic over China's open weights models is overblown, with one exception: cybersecurity. <span style="background-color: #fbeeb8;">"Let the frontier labs win by being better; don't let them define safety or security, or pull up the ladder of humanity's collective knowledge. China is already hard enough to compete with; letting them carry the standard for openness and innovation is simply giving away our biggest advantage."</span></p>
+        <p>Less is more, according to Anthropic&rsquo;s Thariq Shihipar, who explains how context engineering best practices have shifted with the newest Claude 5 models. <span style="background-color: #fbeeb8;">"The number one rule for tool usage was to give Claude examples on how to use them. With our newest models, we&rsquo;ve found that giving examples actually constrains them to a certain exploration space."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://cursor.com/blog/agent-swarm-model-economics">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/agent-swarms-and-the-new-model/cover_image.webp" alt="None" />
+        <a href="https://lrb.co.uk/the-paper/v48/n14/emily-wilson/an-uncomplicated-man/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/an-uncomplicated-man/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://cursor.com/blog/agent-swarm-model-economics">Agent swarms and the new model economics</a>
+            <a href="https://lrb.co.uk/the-paper/v48/n14/emily-wilson/an-uncomplicated-man/">An Uncomplicated Man</a>
         </h3>
         <p class="author">
-            Wilson Lin · Cursor
+            Emily Wilson · London Review of Books
         </p>
-        <p>Cursor had swarms of agents rebuild SQLite in Rust from the manual alone. Quality held steady across model mixes, although cost did not. <span style="background-color: #fbeeb8;">"In the run that used GPT-5.5 for both planners and workers, the workers alone cost $9,373. In the run where Opus 4.8 did the planning and Composer 2.5 did the work, the entire worker fleet cost $411."</span></p>
+        <p>Christopher Nolan's Odyssey drew on <a href="https://www.amazon.com/Odyssey-Homer/dp/0393356256">Emily Wilson's translation</a> and has sent it flying off the shelves. Wilson says she'd be ashamed to have written a line of the script, but she's grateful it's sending people back to Homer.&nbsp;<span style="background-color: #fbeeb8;">"Perhaps more surprising from the director of <em>Oppenheimer</em>, Damon&rsquo;s lummoxy Odysseus also seems to lack technological intelligence (<em>polymēchania</em>). He does not build a marriage bed out of a tree growing in his house (it would be a waste of effort, since he so rarely seems to sleep or have sex)."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://www.youtube.com/watch?v=VA6kJoUEqPY">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-read-100-books-in-a-yea/cover_image.jpg"
+        <a href="https://youtube.com/watch/?v=c8_BIamLESg">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/improve-your-speaking/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://www.youtube.com/watch?v=VA6kJoUEqPY">How To Read 100 Books in a Year (Speed Reading is a SCAM)</a>
+            <a href="https://youtube.com/watch/?v=c8_BIamLESg">Improve Your Speaking</a>
         </h3>
-        <p class="author">Ryan Holiday</p>
-        <p>Reading widely and reading deeply are usually framed as a tradeoff. Ryan Holiday, author of <em>The Daily Stoic</em>, has built a set of habits around doing both. <span style="background-color: #fbeeb8;">"I think spilling food on a book is a sign of respect. Some of the best meals of my life occurred over a book, and the stains will prove it... reading is a way to have conversations with the dead. And honestly, when you are reading and eating alone, you are not alone. You're having a meal with a great person from history, with a great thinker, with a hilarious person, with a beautiful person, with a tragic person."</span></p>
+        <p class="author">Conor Neill</p>
+        <p>Ten days, a few minutes at the camera each day. That's the challenge Conor Neill sets for the MBA students in his leadership communications course. <span style="background-color: #fbeeb8;">"What is it that leads to excellence?... 10,000 hours of practice. No matter where you start from, no matter how talented a kid was in school, it's the kid that practices 8 hours a day."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/jeremygiffon/status/2079280687346295184/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/grip-strength/cover_image.jpeg"
+        <a href="https://x.com/thedankoe/status/2081415714636996844/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-remember-everything-you/cover_image.jpeg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/jeremygiffon/status/2079280687346295184/">GRIP STRENGTH</a>
+            <a href="https://x.com/thedankoe/status/2081415714636996844/?rw_tt_thread=True">How to remember everything you read (stop trying)</a>
         </h3>
-        <p class="author">Jeremy Giffon</p>
-        <p>The documentary <em>Comedian</em> follows Jerry Seinfeld starting over with new material, alongside Orny Adams, a comic desperate to make it. Investor Jeremy Giffon reads the contrast as a lesson about ambition: <span style="background-color: #fbeeb8;">"I think it is something of a fucking miracle that graspingness is not causative to greatness. It's somewhat incredible that the top 10% in the world have to completely white knuckle it at the cost of their well-being and sanity but the very best are totally effortless."</span></p>
+        <p class="author">Dan Koe</p>
+        <p>Dan Koe takes issue with reading as knowledge hoarding: the notes, the bookmarks, the second brain nobody revisits. His fix is to let projects decide what's worth learning: <span style="background-color: #fbeeb8;">"Don't start learning. The life you want lies at the end of a series of meaningful projects... when you want to learn something new, don&rsquo;t start learning, take the first step toward the goal instead."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/open-weights-and-american-ai-l/Open-Weights-and-American-AI-Leadership.pdf">Open Weights and American AI Leadership</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/llms-can-t-jump/1365.pdf">LLMs Can&#x27;t Jump</a>
         </h3>
-        <p class="author">American Innovators Network, Andreessen Horowitz, Arcee AI, and more</p>
-        <p>Nvidia, Microsoft, Meta, and dozens of others signed an open letter this week urging policymakers not to restrict open weight models. <span style="background-color: #fbeeb8;">"Relying solely on closed models is not inherently safe: they can be breached, misused, or fail in ways that outsiders cannot detect... Just as open-source software demonstrated that transparency can be more secure than obscurity, AI safety may depend on giving more people the ability to test and strengthen the models on which society relies."</span></p>
+        <p class="author">Tom Zahavy</p>
+        <p>In a personal position paper, Google DeepMind researcher Tom Zahavy argues that scientific discovery takes a cognitive leap LLMs can't make. <span style="background-color: #fbeeb8;">"How do we fundamentally discover new things? In a letter to Maurice Solovine, Albert Einstein conceptualized discovery as a cyclical process involving an intuitive 'jump' from sensory experience to axioms, followed by logical deduction. While Generative AI has mastered Induction (statistical pattern matching) and is rapidly conquering Deduction (formal proof), we argue it lacks the mechanism for Abduction&mdash;the generation of novel explanatory hypotheses."</span></p>
     
 
     <!-- epub -->
@@ -116,19 +116,19 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/479901933">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/you-can-just-do-things/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/482292858">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/noticing/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/479901933">You Can Just Do Things</a>
+            <a href="https://readwise.io/reader/fd/482292858">Noticing</a>
         </h3>
-        <p class="author">Cate Hall with Sasha Chapin</p>
-        <p>Cate Hall's essay "<a href="https://wise.readwise.io/save?url=https://usefulfictions.substack.com/p/how-to-be-more-agentic">How to be More Agentic</a>" went viral two years ago (longtime Wisereads readers may remember it). She left law just before making partner, became the world's top-ranked female poker player, and went on to lead the Astera Institute. With her husband, Sasha Chapin, she has turned that essay into <em>You Can Just Do Things</em>, a pragmatic guide to getting things done in the face of constraints, real or imagined.</p>
-<p><span style="background-color: #fbeeb8;">"Imagine you're a character in what seems like a linear video game, one where you progress through a predefined sequence of levels. Your mission: Survive the gradually escalating challenges and work your way toward the inevitable conclusion. There's a kind of comfort in this predictability, a sense of orientation, but a hollowness and constriction, too. Then, one day, you explore a mysterious unmarked door, and you realize you're actually in an open-world game: You can go in an entirely different direction, discover new worlds, set out on wholly unrelated quests. These possibilities were just concealed by your game map, which painted a false picture of a straight-line world.</span></p>
-<p><span style="background-color: #fbeeb8;">This is what learning agency is like: You figure out how to move in new directions. In the process, you learn that many of the supposed rules in life are imaginary boundaries."</span></p>
-<p>If you enjoy the preview of <em>You Can Just Do Things</em>, you can <a href="https://www.amazon.com/dp/0063488450">buy a copy</a> wherever you get your books.</p>
+        <p class="author">Richard Louv</p>
+        <p>Richard Louv coined "nature-deficit disorder" in <a href="https://www.hachettebookgroup.com/titles/richard-louv/last-child-in-the-woods/9781565126053/"><em>Last Child in the Woods</em></a>, then spent two decades championing children's need for the outdoors. <a href="https://www.hachettebookgroup.com/titles/richard-louv/noticing/9781643753034/"><em>Noticing</em></a> extends the argument to adults, himself included: essays written from his own backyard in the most biodiverse county in the country, built on the premise that humans have thirty or more senses rather than five. He calls the practice bioenchantment, though what he describes is less a method than a form of intimacy.</p>
+<p><span style="background-color: #fbeeb8;">"In the clearing of my woods, a rivulet of water flowed through the marsh. When the water reached the trees, it grew into a creek. I would venture into the trees to sit on the creek bank and watch the minnows, frogs, and water spiders do their dipping and sliding dance.</span></p>
+<p><span style="background-color: #fbeeb8;">Thinking of that place is like remembering the back of my mother's gentle hand."</span></p>
+<p>If you enjoy the preview of Louv's new release, you can grab the full copy of <em>Noticing</em> <a href="https://www.hachettebookgroup.com/titles/richard-louv/noticing/9781643753034/">wherever you buy your books</a>.</p>
     
 
     <!-- feed -->
@@ -137,15 +137,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://wangcong.org/feed.xml">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/a-geek-s-page/cover_image.png"
+            <a href="https://deepfix.substack.com/feed/">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/deep-fix/cover_image.avif"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://wangcong.org/feed.xml">A Geek&#x27;s Page</a>
+            <a href="https://deepfix.substack.com/feed/">Deep Fix</a>
         </h3>
-        <p>Software engineer and indoor bouldering enthusiast Cong Wang writes about tech and life on his personal blog. His recent piece, <a href="https://wise.readwise.io/save?url=https://wangcong.org/2026-06-30-why-i-stopped-arguing-with-people.html">Why I Stopped Arguing With People</a>, was an honorable mention among this week's most-highlighted articles: <span style="background-color: #fbeeb8;">"I only discuss pros and cons with smart people; I don't argue right and wrong with ego-driven ones. With the first kind, a disagreement is a joint search for the better answer, and both of us walk away sharper. With the second, there is no answer being sought, only a self to be defended."</span></p>
+        <p>Alex Olshonsky, an executive coach and somatic therapist, writes essays on culture, psychology, addiction, and spiritual inquiry, sometimes drawing on his own "gonzo misadventures." From <a href="https://wise.readwise.io/save?url=https://deepfix.substack.com/p/youre-probably-addicted-to-thinking">You&rsquo;re probably addicted to thinking</a>: <span style="background-color: #fbeeb8;">"The object shifts from opiates to Instagram to productivity, but the move is always the same: escape the feeling and reach for the next thing that promises relief."</span></p>
     
 </main>
  ]]></content:encoded></item>
