@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 154 — Noticing by Richard Louv, Emily Wilson's review of The Odyssey, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-154/</link><description>
-Last week, we shared a preview of Cate Hall's debut, written with her husband, Sasha Chapin: You Can Just Do Things: How High-Agency People Get What They Want Out of Life. This week, we're sharing a preview of Richard Louv's latest release: Noticing: Intimate Encounters With the Natural World.
+<item><title>Wisereads Vol. 155 — Big Time Off by DJ DiDonna, Patrick Collison on aesthetics, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-155/</link><description>
+Last week, we shared a preview of Richard Louv's latest release: Noticing: Intimate Encounters With the Natural World. This week's preview comes from DJ DiDonna's debut, Big Time Off, on the case for extended time away from work.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 02 Aug 2026 14:26:31 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-154/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 09 Aug 2026 15:20:47 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-155/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 154 — Noticing by Richard Louv, Emily Wilson's review of The Odyssey, and more</h1>
+    <h1>Wisereads Vol. 155 — Big Time Off by DJ DiDonna, Patrick Collison on aesthetics, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of Cate Hall's debut, written with her husband, Sasha Chapin: <em>You Can Just Do Things: How High-Agency People Get What They Want Out of Life</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of Richard Louv's latest release: <em>Noticing: Intimate Encounters With the Natural World</em>.</span></p>
+<p>Last week, we shared a preview of Richard Louv's latest release: <em>Noticing: Intimate Encounters With the Natural World</em>. <span style="background-color: #fbeeb8;">This week's preview comes from DJ DiDonna's debut, <em>Big Time Off</em>, on the case for extended time away from work.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://theguardian.com/us-news/ng-interactive/2026/jul/26/age-of-decadence-pleasure-ai/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-does-everything-feel-so-jo/cover_image.avif" alt="None" />
+        <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-shape-of-things-to-come/cover_image_5key8Ig.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://theguardian.com/us-news/ng-interactive/2026/jul/26/age-of-decadence-pleasure-ai/">Why does everything feel so joyless? Welcome to the age of decadence without pleasure</a>
+            <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come</a>
         </h3>
         <p class="author">
-            Michèle Mendelssohn and Charlie Tyson · The Guardian
+            Steve Yegge · yegge.ai
         </p>
-        <p>Tracing decadence as a marker of cultural decline, Oxford literature professor Mich&egrave;le Mendelssohn and Harvard's Charlie Tyson diagnose why modern abundance feels so joyless. <span style="background-color: #fbeeb8;">"Why strive for pleasure? Why long for it? Because &ndash; contra the Bryan Johnsons of the world &ndash; we will die. 'A counted number of pulses only,' Pater writes, 'is given to us of a variegated, dramatic life.'"</span></p>
+        <p>Steve Yegge turned dozens of agents loose on his 30-year-old online game, and thinks the system that grew up around them is where every engineering team is headed. <span style="background-color: #fbeeb8;">"That's the shape of things to come. It ain't gonna be a framework you download, or a harness from someone who's not building an actual thing. You're going to be building a whole civilization, plank by plank, with colleagues who happen to run on datacenter silicon."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-new-rules-of-context-engin/cover_image.jpg" alt="None" />
+        <a href="https://gruhn.me/blog/2026-08-03/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/don-t-be-a-meat-proxy/cover_image.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models/">The new rules of context engineering for Claude 5 generation models</a>
+            <a href="https://gruhn.me/blog/2026-08-03/">Don't be a meat proxy</a>
         </h3>
         <p class="author">
-            Thariq Shihipar · claude
+            Niklas Gruhn · gruhn.me
         </p>
-        <p>Less is more, according to Anthropic&rsquo;s Thariq Shihipar, who explains how context engineering best practices have shifted with the newest Claude 5 models. <span style="background-color: #fbeeb8;">"The number one rule for tool usage was to give Claude examples on how to use them. With our newest models, we&rsquo;ve found that giving examples actually constrains them to a certain exploration space."</span></p>
+        <p>"Meat proxy" is Niklas Gruhn's term for the colleague who answers a Slack question by pasting in whatever Claude said. <span style="background-color: #fbeeb8;">"By all means, prompt AI. But don't just relay the output. Read it, understand it, validate it, and then write a response in your own words (a decent certificate that you've done the prior steps). Making that effort is value you can add."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://lrb.co.uk/the-paper/v48/n14/emily-wilson/an-uncomplicated-man/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/an-uncomplicated-man/cover_image.jpg" alt="None" />
+        <a href="https://seangoedecke.com/llms-reward-expertise/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/llms-reward-expertise/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://lrb.co.uk/the-paper/v48/n14/emily-wilson/an-uncomplicated-man/">An Uncomplicated Man</a>
+            <a href="https://seangoedecke.com/llms-reward-expertise/">LLMs reward expertise</a>
         </h3>
         <p class="author">
-            Emily Wilson · London Review of Books
+            Sean Goedecke · seangoedecke.com
         </p>
-        <p>Christopher Nolan's Odyssey drew on <a href="https://www.amazon.com/Odyssey-Homer/dp/0393356256">Emily Wilson's translation</a> and has sent it flying off the shelves. Wilson says she'd be ashamed to have written a line of the script, but she's grateful it's sending people back to Homer.&nbsp;<span style="background-color: #fbeeb8;">"Perhaps more surprising from the director of <em>Oppenheimer</em>, Damon&rsquo;s lummoxy Odysseus also seems to lack technological intelligence (<em>polymēchania</em>). He does not build a marriage bed out of a tree growing in his house (it would be a waste of effort, since he so rarely seems to sleep or have sex)."</span></p>
+        <p>LLMs made everyone a generalist, but GitHub engineer Sean Goedecke argues the people who already know a domain get far more out of the same model. <span style="background-color: #fbeeb8;">"For many tasks, the human is the bottleneck, not the model, because the difficult part is in communicating to the model exactly what kind of solution the human wants. The information is 'in the model' already, but it takes a very smart human to pull it out."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/watch/?v=c8_BIamLESg">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/improve-your-speaking/cover_image.jpg"
+        <a href="https://youtube.com/watch/?v=oCVq-wAPqSs">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-make-work-optional-the-/cover_image_uwdIJk5.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/watch/?v=c8_BIamLESg">Improve Your Speaking</a>
+            <a href="https://youtube.com/watch/?v=oCVq-wAPqSs">How to Make Your Job Optional - The Freedom Profile Matrix</a>
         </h3>
-        <p class="author">Conor Neill</p>
-        <p>Ten days, a few minutes at the camera each day. That's the challenge Conor Neill sets for the MBA students in his leadership communications course. <span style="background-color: #fbeeb8;">"What is it that leads to excellence?... 10,000 hours of practice. No matter where you start from, no matter how talented a kid was in school, it's the kid that practices 8 hours a day."</span></p>
+        <p class="author">Ali Abdaal</p>
+        <p>Financial independence usually gets framed as an exit. Ali Abdaal, who left medicine to work for himself, uses his Freedom Profile Matrix to argue for something less dramatic. <span style="background-color: #fbeeb8;">"The ideal situation that a lot of us are aspiring to is where work is optional. That doesn't mean we're going to quit our jobs. That doesn't mean we're going to stop running our business. That doesn't mean we're going to just stop working because work is a thing that generates fun, flexibility, fulfillment, and some amount of finances."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/thedankoe/status/2081415714636996844/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-remember-everything-you/cover_image.jpeg"
+        <a href="https://x.com/patrickc/status/2083931939673878592/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/someone-asked-me-recently-why-/cover_image.png"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/thedankoe/status/2081415714636996844/?rw_tt_thread=True">How to remember everything you read (stop trying)</a>
+            <a href="https://x.com/patrickc/status/2083931939673878592/?rw_tt_thread=True">Someone asked me recently why I’ve become interested in aesthetics...</a>
         </h3>
-        <p class="author">Dan Koe</p>
-        <p>Dan Koe takes issue with reading as knowledge hoarding: the notes, the bookmarks, the second brain nobody revisits. His fix is to let projects decide what's worth learning: <span style="background-color: #fbeeb8;">"Don't start learning. The life you want lies at the end of a series of meaningful projects... when you want to learn something new, don&rsquo;t start learning, take the first step toward the goal instead."</span></p>
+        <p class="author">Patrick Collison</p>
+        <p>Patrick Collison, who has been funding New Aesthetics grants with Tyler Cowen, traces his interest in beauty back to Stripe. <span style="background-color: #fbeeb8;">"We've always tried to do things well at Stripe. I've come to see that attempting to do them beautifully is often a helpful way to break out of standard practices and to do something with greater novelty and in a way that might have other benefits besides."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/llms-can-t-jump/1365.pdf">LLMs Can&#x27;t Jump</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/shape-up-stop-running-in-circl/1373.pdf">Shape Up: Stop Running In Circles And Ship Work That Matters</a>
         </h3>
-        <p class="author">Tom Zahavy</p>
-        <p>In a personal position paper, Google DeepMind researcher Tom Zahavy argues that scientific discovery takes a cognitive leap LLMs can't make. <span style="background-color: #fbeeb8;">"How do we fundamentally discover new things? In a letter to Maurice Solovine, Albert Einstein conceptualized discovery as a cyclical process involving an intuitive 'jump' from sensory experience to axioms, followed by logical deduction. While Generative AI has mastered Induction (statistical pattern matching) and is rapidly conquering Deduction (formal proof), we argue it lacks the mechanism for Abduction&mdash;the generation of novel explanatory hypotheses."</span></p>
+        <p class="author">Ryan Singer</p>
+        <p><em>Shape Up</em> is from 2019, before planning was the bottleneck. Ryan Singer's fixed-time, variable-scope method is now finding a second audience among teams whose agents write code faster than anyone can plan it. <span style="background-color: #fbeeb8;">"Scope creep isn't the fault of bad clients, bad managers, or bad programmers. Projects are opaque at the macro scale. Rather than trying to stop scope from growing, give teams the tools, authority, and responsibility to constantly cut it down."</span></p>
     
 
     <!-- epub -->
@@ -116,19 +116,19 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/482292858">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/noticing/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/482286861">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/big-time-off/cover_image_lx7MxvL.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/482292858">Noticing</a>
+            <a href="https://readwise.io/reader/fd/482286861">Big Time Off</a>
         </h3>
-        <p class="author">Richard Louv</p>
-        <p>Richard Louv coined "nature-deficit disorder" in <a href="https://www.hachettebookgroup.com/titles/richard-louv/last-child-in-the-woods/9781565126053/"><em>Last Child in the Woods</em></a>, then spent two decades championing children's need for the outdoors. <a href="https://www.hachettebookgroup.com/titles/richard-louv/noticing/9781643753034/"><em>Noticing</em></a> extends the argument to adults, himself included: essays written from his own backyard in the most biodiverse county in the country, built on the premise that humans have thirty or more senses rather than five. He calls the practice bioenchantment, though what he describes is less a method than a form of intimacy.</p>
-<p><span style="background-color: #fbeeb8;">"In the clearing of my woods, a rivulet of water flowed through the marsh. When the water reached the trees, it grew into a creek. I would venture into the trees to sit on the creek bank and watch the minnows, frogs, and water spiders do their dipping and sliding dance.</span></p>
-<p><span style="background-color: #fbeeb8;">Thinking of that place is like remembering the back of my mother's gentle hand."</span></p>
-<p>If you enjoy the preview of Louv's new release, you can grab the full copy of <em>Noticing</em> <a href="https://www.hachettebookgroup.com/titles/richard-louv/noticing/9781643753034/">wherever you buy your books</a>.</p>
+        <p class="author">DJ DiDonna</p>
+        <p>On his sabbatical, DJ DiDonna walked 900 miles on a pilgrimage across Shikoku, Japan. His experience eventually led him to found the Sabbatical Project, where he studies what happens when people step away from work for an extended period. <em>Big Time Off</em> is the result.</p>
+<p>In his debut, the Harvard Business School senior lecturer argues that a sabbatical is more than a long vacation, and that people too often wait until something goes wrong before taking one.</p>
+<p><span style="background-color: #fbeeb8;">"The strongest case for sabbaticals lies in one of the most common phrases in my research: feeling human again. Not like a machine whose habits and schedule revolve around work but a living, loving, sensitive individual seeking meaning, fulfillment, and joy in the day-to-day."</span></p>
+<p>If you enjoy the preview of <em>Big Time Off</em>, you can pick up a full copy<em> </em><a href="https://www.simonandschuster.com/books/Big-Time-Off/DJ-DiDonna/9781668060919">wherever you buy your books</a>.</p>
     
 
     <!-- feed -->
@@ -137,15 +137,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://deepfix.substack.com/feed/">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/deep-fix/cover_image.avif"
+            <a href="https://stevekamb.substack.com/feed">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/trying-again/cover_image.webp"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://deepfix.substack.com/feed/">Deep Fix</a>
+            <a href="https://stevekamb.substack.com/feed">Trying Again</a>
         </h3>
-        <p>Alex Olshonsky, an executive coach and somatic therapist, writes essays on culture, psychology, addiction, and spiritual inquiry, sometimes drawing on his own "gonzo misadventures." From <a href="https://wise.readwise.io/save?url=https://deepfix.substack.com/p/youre-probably-addicted-to-thinking">You&rsquo;re probably addicted to thinking</a>: <span style="background-color: #fbeeb8;">"The object shifts from opiates to Instagram to productivity, but the move is always the same: escape the feeling and reach for the next thing that promises relief."</span></p>
+        <p><em>Trying Again</em> is a weekly newsletter about starting over, from Steve Kamb, who built Nerd Fitness and then demoted himself twice to write <a href="https://stevekamb.com/howtotryagain/"><em>How to Try Again</em></a>. From <a href="https://wise.readwise.io/save?url=https://stevekamb.substack.com/p/the-beautiful-art-of-starting-ugly">The Beautiful Art of Starting Ugly</a>: <span style="background-color: #fbeeb8;">"We can't write a masterpiece without first writing a draft that's described as 'gobbledygook.' We can't play the violin beautifully without first making it sound like an asthmatic cat. We can't become a gourmet chef if we first don't burn a meal or two or ten."</span></p>
     
 </main>
  ]]></content:encoded></item>
