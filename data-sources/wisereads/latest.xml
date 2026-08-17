@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 155 — Big Time Off by DJ DiDonna, Patrick Collison on aesthetics, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-155/</link><description>
-Last week, we shared a preview of Richard Louv's latest release: Noticing: Intimate Encounters With the Natural World. This week's preview comes from DJ DiDonna's debut, Big Time Off, on the case for extended time away from work.
+<item><title>Wisereads Vol. 156 — Don't Be Evil by Claire Stapleton, Netflix CPTO on AI and the future of product and tech roles, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-156/</link><description>
+Last week, we shared a preview of DJ DiDonna's debut, Big Time Off, on the case for extended time away from work. This week, it's Claire Stapleton's memoir of her years at Google, Don't Be Evil, tracing her path from in-house bard to walkout organizer.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 09 Aug 2026 15:20:47 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-155/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 16 Aug 2026 22:34:40 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-156/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 155 — Big Time Off by DJ DiDonna, Patrick Collison on aesthetics, and more</h1>
+    <h1>Wisereads Vol. 156 — Don't Be Evil by Claire Stapleton, Netflix CPTO on AI and the future of product and tech roles, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of Richard Louv's latest release: <em>Noticing: Intimate Encounters With the Natural World</em>. <span style="background-color: #fbeeb8;">This week's preview comes from DJ DiDonna's debut, <em>Big Time Off</em>, on the case for extended time away from work.</span></p>
+<p>Last week, we shared a preview of DJ DiDonna's debut, <em>Big Time Off</em>, on the case for extended time away from work. <span style="background-color: #fbeeb8;">This week, it's Claire Stapleton's memoir of her years at Google, <em>Don't Be Evil</em>, tracing her path from in-house bard to walkout organizer.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-shape-of-things-to-come/cover_image_5key8Ig.png" alt="None" />
+        <a href="https://www.theguardian.com/books/ng-interactive/2026/aug/08/i-hate-what-ai-is-doing-to-the-minds-and-happiness-of-the-young-katherine-rundell-on-the-view-from-the-classroom">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-hate-what-ai-is-doing-to-the/cover_image.avif" alt="None" />
         </a>
 
         <h3>
-            <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come</a>
+            <a href="https://www.theguardian.com/books/ng-interactive/2026/aug/08/i-hate-what-ai-is-doing-to-the-minds-and-happiness-of-the-young-katherine-rundell-on-the-view-from-the-classroom">'I hate what AI is doing to the minds and happiness of the young': Katherine Rundell on the view from the classroom</a>
         </h3>
         <p class="author">
-            Steve Yegge · yegge.ai
+            Katherine Rundell · The Guardian
         </p>
-        <p>Steve Yegge turned dozens of agents loose on his 30-year-old online game, and thinks the system that grew up around them is where every engineering team is headed. <span style="background-color: #fbeeb8;">"That's the shape of things to come. It ain't gonna be a framework you download, or a harness from someone who's not building an actual thing. You're going to be building a whole civilization, plank by plank, with colleagues who happen to run on datacenter silicon."</span></p>
+        <p>Generative AI is threatening young people's relationship with reading, observes Katherine Rundell, a children&rsquo;s author and Oxford fellow. <span style="background-color: #fbeeb8;">"We also need to talk to young people about reading to outrun and outfight injustice. Reading to get faster, swifter and tougher; to develop powers of scrutiny and criticism and huge creative imagination. Reading human work to insist that we are human. Reading for liberation and emancipation; reading for intellectual freedom, and to have the strength to fight in the arenas of the mind, because when we let a computer think for us, we put a gun to the head of civilisation."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://gruhn.me/blog/2026-08-03/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/don-t-be-a-meat-proxy/cover_image.png" alt="None" />
+        <a href="https://meta.com/thefutureisforeveryone/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-future-is-for-everyone/cover_image.jpeg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://gruhn.me/blog/2026-08-03/">Don't be a meat proxy</a>
+            <a href="https://meta.com/thefutureisforeveryone/">The Future is for Everyone</a>
         </h3>
         <p class="author">
-            Niklas Gruhn · gruhn.me
+            Mark Zuckerberg, Founder and CEO, Meta · meta.com
         </p>
-        <p>"Meat proxy" is Niklas Gruhn's term for the colleague who answers a Slack question by pasting in whatever Claude said. <span style="background-color: #fbeeb8;">"By all means, prompt AI. But don't just relay the output. Read it, understand it, validate it, and then write a response in your own words (a decent certificate that you've done the prior steps). Making that effort is value you can add."</span></p>
+        <p>Mark Zuckerberg's pitch for personal superintelligence: the technology should end up in everyone's hands rather than concentrated in a few institutions. <span style="background-color: #fbeeb8;">"It is surprising that the discourse from many developing AI is so filled with doom. I do not understand why anyone who believes that AI will eliminate most jobs and much of humanity's relevance would rush to build that future."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://seangoedecke.com/llms-reward-expertise/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/llms-reward-expertise/cover_image.jpg" alt="None" />
+        <a href="https://noemamag.com/why-is-everyone-in-tech-so-sad/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-is-everyone-in-tech-so-sad/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://seangoedecke.com/llms-reward-expertise/">LLMs reward expertise</a>
+            <a href="https://noemamag.com/why-is-everyone-in-tech-so-sad/">Why Is Everyone In Tech So Sad?</a>
         </h3>
         <p class="author">
-            Sean Goedecke · seangoedecke.com
+            Aaron Horwath · NOEMA
         </p>
-        <p>LLMs made everyone a generalist, but GitHub engineer Sean Goedecke argues the people who already know a domain get far more out of the same model. <span style="background-color: #fbeeb8;">"For many tasks, the human is the bottleneck, not the model, because the difficult part is in communicating to the model exactly what kind of solution the human wants. The information is 'in the model' already, but it takes a very smart human to pull it out."</span></p>
+        <p>AI is breaking the spell of Workism, argues Aaron Horwath, director of AI operations at Creative Force. <span style="background-color: #fbeeb8;">"It is the opiate of commuters in quarter zips. And it works. It keeps talented people showing up at the office to argue over reports and strategy documents and rebrandings with the seriousness of pediatric heart surgery."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/watch/?v=oCVq-wAPqSs">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-make-work-optional-the-/cover_image_uwdIJk5.jpg"
+        <a href="https://youtube.com/watch/?v=t0GiTyz4syY">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/netflix-cpto-on-ai-and-the-fut/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/watch/?v=oCVq-wAPqSs">How to Make Your Job Optional - The Freedom Profile Matrix</a>
+            <a href="https://youtube.com/watch/?v=t0GiTyz4syY">Netflix CPTO on AI and the future of product and tech roles | Elizabeth Stone</a>
         </h3>
-        <p class="author">Ali Abdaal</p>
-        <p>Financial independence usually gets framed as an exit. Ali Abdaal, who left medicine to work for himself, uses his Freedom Profile Matrix to argue for something less dramatic. <span style="background-color: #fbeeb8;">"The ideal situation that a lot of us are aspiring to is where work is optional. That doesn't mean we're going to quit our jobs. That doesn't mean we're going to stop running our business. That doesn't mean we're going to just stop working because work is a thing that generates fun, flexibility, fulfillment, and some amount of finances."</span></p>
+        <p class="author">Lenny&#x27;s Podcast</p>
+        <p>Netflix's Elizabeth Stone tells Lenny Rachitsky which skills AI has not commoditized. <span style="background-color: #fbeeb8;">"There's still something that is not replaceable when I think about the craft and how they think about what good looks like. I still find great engineering to be scarce, great data science to be scarce, great creativity to be scarce."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/patrickc/status/2083931939673878592/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/someone-asked-me-recently-why-/cover_image.png"
+        <a href="https://x.com/vasuman/status/2085806422072418632/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/ai-adoption-is-a-myth/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/patrickc/status/2083931939673878592/?rw_tt_thread=True">Someone asked me recently why I’ve become interested in aesthetics...</a>
+            <a href="https://x.com/vasuman/status/2085806422072418632/?rw_tt_thread=True">AI Adoption is a Myth</a>
         </h3>
-        <p class="author">Patrick Collison</p>
-        <p>Patrick Collison, who has been funding New Aesthetics grants with Tyler Cowen, traces his interest in beauty back to Stripe. <span style="background-color: #fbeeb8;">"We've always tried to do things well at Stripe. I've come to see that attempting to do them beautifully is often a helpful way to break out of standard practices and to do something with greater novelty and in a way that might have other benefits besides."</span></p>
+        <p class="author">vas</p>
+        <p>The gap inside companies is skill, not access, says Vas, CEO of AI agent company Varick. <span style="background-color: #fbeeb8;">"The AI ninjas inside your company have no incentive to fix it either. Their leverage IS the chasm. They're doing their work 70% faster, then get to coast. Or they do the work of 3 people. But the moment everyone's on that wave, they lose their edge."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/shape-up-stop-running-in-circl/1373.pdf">Shape Up: Stop Running In Circles And Ship Work That Matters</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-tragedy-of-the-cognitive-c/1381.pdf">The Tragedy of the Cognitive Commons</a>
         </h3>
-        <p class="author">Ryan Singer</p>
-        <p><em>Shape Up</em> is from 2019, before planning was the bottleneck. Ryan Singer's fixed-time, variable-scope method is now finding a second audience among teams whose agents write code faster than anyone can plan it. <span style="background-color: #fbeeb8;">"Scope creep isn't the fault of bad clients, bad managers, or bad programmers. Projects are opaque at the macro scale. Rather than trying to stop scope from growing, give teams the tools, authority, and responsibility to constantly cut it down."</span></p>
+        <p class="author">Nolan Lovett</p>
+        <p>Nolan Lovett of NATO Special Operations University applies commons theory to the pipelines that produce senior experts. <span style="background-color: #fbeeb8;">"Each organization that eliminates an entry-level position captures 100% of the efficiency gains while distributing the expertise depletion cost across all organizations that depend on profession-wide expert availability. The rational calculation favors appropriation over contribution."</span></p>
     
 
     <!-- epub -->
@@ -116,19 +116,18 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/482286861">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/big-time-off/cover_image_lx7MxvL.jpg"
+            <a href="https://readwise.io/reader/fd/487289718">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/don-t-be-evil-bad-bosses-fake-/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/482286861">Big Time Off</a>
+            <a href="https://readwise.io/reader/fd/487289718">Don&#x27;t Be Evil: Bad Bosses, Fake Promises, and My Escape from Big Tech</a>
         </h3>
-        <p class="author">DJ DiDonna</p>
-        <p>On his sabbatical, DJ DiDonna walked 900 miles on a pilgrimage across Shikoku, Japan. His experience eventually led him to found the Sabbatical Project, where he studies what happens when people step away from work for an extended period. <em>Big Time Off</em> is the result.</p>
-<p>In his debut, the Harvard Business School senior lecturer argues that a sabbatical is more than a long vacation, and that people too often wait until something goes wrong before taking one.</p>
-<p><span style="background-color: #fbeeb8;">"The strongest case for sabbaticals lies in one of the most common phrases in my research: feeling human again. Not like a machine whose habits and schedule revolve around work but a living, loving, sensitive individual seeking meaning, fulfillment, and joy in the day-to-day."</span></p>
-<p>If you enjoy the preview of <em>Big Time Off</em>, you can pick up a full copy<em> </em><a href="https://www.simonandschuster.com/books/Big-Time-Off/DJ-DiDonna/9781668060919">wherever you buy your books</a>.</p>
+        <p class="author">Claire Stapleton</p>
+        <p>Claire Stapleton joined Google as a true believer and went on to help organize its 2018 walkout over the company's handling of sexual harassment. <em>Don't Be Evil</em> is her newly released memoir, following that turn from the inside.</p>
+<p><span style="background-color: #fbeeb8;">"It was 9:00 a.m. at YouTube headquarters in San Bruno, California, where my team&mdash;YouTube&rsquo;s social media managers&mdash;had been summoned from all around the country for a mandatory day of 'self-care.' This was, by my calculation, the twenty-fifth off-site I&rsquo;d attended in my eleven-plus years at Google and my third that year alone, thanks to the steadfast commitment of my manager, Marion, to using every dollar of her events budget. 'You don&rsquo;t get a gold star for coming in under budget' was something of a mantra for Marion, which paired well with a memory I had of her at an off-site we&rsquo;d once done on Alcatraz, the storied defunct prison-island in San Francisco, forking over her Google credit card at the gift shop to buy the team a round of sweatshirts that no one asked for or wanted. They were roomy crewnecks in a sooty shade of gray and depicted the 'skyline' of Alcatraz, a phallic lighthouse jutting up from the block of cell houses (metaphor for Google?). I thrust it in the Goodwill bag as soon as I got home to New York."</span></p>
+<p>If you enjoy the preview of Claire's writing about Big Tech from the inside, you can pick up a copy <a href="https://www.harpercollins.com/products/dont-be-evil-claire-stapleton?variant=44575042338850">wherever you get your books</a>.</p>
     
 
     <!-- feed -->
@@ -137,15 +136,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://stevekamb.substack.com/feed">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/trying-again/cover_image.webp"
+            <a href="https://adamgrant.substack.com/">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/granted/cover_image.jpeg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://stevekamb.substack.com/feed">Trying Again</a>
+            <a href="https://adamgrant.substack.com/">Granted</a>
         </h3>
-        <p><em>Trying Again</em> is a weekly newsletter about starting over, from Steve Kamb, who built Nerd Fitness and then demoted himself twice to write <a href="https://stevekamb.com/howtotryagain/"><em>How to Try Again</em></a>. From <a href="https://wise.readwise.io/save?url=https://stevekamb.substack.com/p/the-beautiful-art-of-starting-ugly">The Beautiful Art of Starting Ugly</a>: <span style="background-color: #fbeeb8;">"We can't write a masterpiece without first writing a draft that's described as 'gobbledygook.' We can't play the violin beautifully without first making it sound like an asthmatic cat. We can't become a gourmet chef if we first don't burn a meal or two or ten."</span></p>
+        <p>Organizational psychologist and <em>Think Again</em> author Adam Grant writes <em>Granted</em>, a newsletter unpacking the science behind work, motivation, and human behavior. From <a href="https://wise.readwise.io/save?url=https://adamgrant.substack.com/p/the-truth-about-people-pleasing">The Truth About People Pleasing</a>: <span style="background-color: #fbeeb8;">"The root of chronic people pleasing is not concern for others. It&rsquo;s concern for their acceptance and approval... Saying no is not a display of disrespect. It&rsquo;s an expression of self-respect."</span></p>
     
 </main>
  ]]></content:encoded></item>
