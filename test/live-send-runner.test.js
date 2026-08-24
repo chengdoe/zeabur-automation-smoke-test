@@ -14,6 +14,15 @@ const SOP_ENV = {
   FEISHU_CONNECTION_AHENG_APP_SECRET: "secret_test"
 };
 
+const SOP_PRIVATE_ENV = {
+  SOP13_BOT_ROLE: "aheng_agent",
+  SOP13_CONNECTION_REF: "aheng_agent",
+  SOP13_RECEIVE_ID_TYPE: "open_id",
+  SOP13_TARGET_RECEIVE_ID: "ou_kane_fixture",
+  FEISHU_CONNECTION_AHENG_AGENT_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_AGENT_APP_SECRET: "secret_test"
+};
+
 const FUND_ENV = {
   FUND_PORTFOLIO_DAILY_BOT_ROLE: "aheng",
   FUND_PORTFOLIO_DAILY_CONNECTION_REF: "aheng",
@@ -109,6 +118,34 @@ test("live-send runner sends once and skips duplicates by sent log", async () =>
   assert.equal(second.skipped, true);
   assert.equal(second.sendSkippedReason, "already sent");
   assert.equal(sendCount, 1);
+});
+
+test("SOP13 private delivery removes group-only @all while preserving the content", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-sop-private-"));
+
+  const result = await runLiveSendJob({
+    job: "sop13",
+    date: "2026-07-03",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    env: SOP_PRIVATE_ENV,
+    sender: {
+      async sendMessage({ payload }) {
+        assert.deepEqual(payload.zh_cn.content[0], [{
+          tag: "text",
+          text: "【每日遇见】 今日 SOP：项目复盘 ",
+          style: ["bold"]
+        }]);
+        assert.doesNotMatch(JSON.stringify(payload), /\"user_id\":\"all\"/);
+        return { ok: true, messageId: "om_private_sop" };
+      }
+    }
+  });
+
+  assert.equal(result.sent, true);
+  assert.equal(result.messageId, "om_private_sop");
+  assert.equal(result.payload.zh_cn.content[0].length, 1);
 });
 
 test("live-send runner blocks a globally enabled job without task-level bot mapping", async () => {

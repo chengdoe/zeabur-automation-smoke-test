@@ -1,10 +1,13 @@
 const FEISHU_BASE_URL = "https://open.feishu.cn";
 
 export function getFeishuConfig(env = process.env) {
+  const targetChatId = env.FEISHU_TARGET_CHAT_ID || "";
   return {
     appId: env.FEISHU_APP_ID || "",
     appSecret: env.FEISHU_APP_SECRET || "",
-    targetChatId: env.FEISHU_TARGET_CHAT_ID || "",
+    targetChatId,
+    receiveIdType: env.FEISHU_RECEIVE_ID_TYPE || "chat_id",
+    targetReceiveId: env.FEISHU_TARGET_RECEIVE_ID || targetChatId,
     baseUrl: env.FEISHU_BASE_URL || FEISHU_BASE_URL
   };
 }
@@ -14,6 +17,8 @@ export function getJobFeishuConfig(job, env = process.env) {
   const botRole = env[`${prefix}_BOT_ROLE`] || "";
   const connectionRef = env[`${prefix}_CONNECTION_REF`] || "";
   const targetChatId = env[`${prefix}_TARGET_CHAT_ID`] || "";
+  const receiveIdType = env[`${prefix}_RECEIVE_ID_TYPE`] || "chat_id";
+  const targetReceiveId = env[`${prefix}_TARGET_RECEIVE_ID`] || targetChatId;
   const connectionPrefix = connectionRef
     ? `FEISHU_CONNECTION_${envToken(connectionRef)}`
     : "";
@@ -25,6 +30,8 @@ export function getJobFeishuConfig(job, env = process.env) {
       appId: connectionPrefix ? env[`${connectionPrefix}_APP_ID`] || "" : "",
       appSecret: connectionPrefix ? env[`${connectionPrefix}_APP_SECRET`] || "" : "",
       targetChatId,
+      receiveIdType,
+      targetReceiveId,
       baseUrl: env.FEISHU_BASE_URL || FEISHU_BASE_URL
     }
   };
@@ -34,7 +41,7 @@ export function validateJobFeishuConfig(jobConfig) {
   const missing = [];
   if (!jobConfig.botRole) missing.push("bot_role");
   if (!jobConfig.connectionRef) missing.push("connection_ref");
-  if (!jobConfig.config.targetChatId) missing.push("target_chat");
+  if (!jobConfig.config.targetReceiveId && !jobConfig.config.targetChatId) missing.push("target_recipient");
   missing.push(...validateFeishuConfig(jobConfig.config));
   return [...new Set(missing)];
 }
@@ -43,7 +50,10 @@ export function validateFeishuConfig(config) {
   const missing = [];
   if (!config.appId) missing.push("FEISHU_APP_ID");
   if (!config.appSecret) missing.push("FEISHU_APP_SECRET");
-  if (!config.targetChatId) missing.push("FEISHU_TARGET_CHAT_ID");
+  if (!config.targetReceiveId && !config.targetChatId) missing.push("FEISHU_TARGET_RECEIVE_ID");
+  if (!["chat_id", "open_id"].includes(config.receiveIdType || "chat_id")) {
+    missing.push("FEISHU_RECEIVE_ID_TYPE");
+  }
   return missing;
 }
 
@@ -99,14 +109,16 @@ async function fetchTenantAccessToken({ config, fetchImpl }) {
 }
 
 async function sendFeishuMessage({ config, fetchImpl, tenantAccessToken, msgType, payload, uuid }) {
-  const response = await fetchImpl(`${config.baseUrl}/open-apis/im/v1/messages?receive_id_type=chat_id`, {
+  const receiveIdType = config.receiveIdType || "chat_id";
+  const targetReceiveId = config.targetReceiveId || config.targetChatId;
+  const response = await fetchImpl(`${config.baseUrl}/open-apis/im/v1/messages?receive_id_type=${encodeURIComponent(receiveIdType)}`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${tenantAccessToken}`,
       "content-type": "application/json; charset=utf-8"
     },
     body: JSON.stringify({
-      receive_id: config.targetChatId,
+      receive_id: targetReceiveId,
       msg_type: msgType,
       content: JSON.stringify(payload),
       uuid

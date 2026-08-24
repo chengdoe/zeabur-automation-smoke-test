@@ -160,14 +160,20 @@ export async function runLiveSendJob({
   }
 
   const uuid = draft.idempotencyKey || `${job}-${draft.date}`;
+  const deliveryPayload = prepareDeliveryPayload({
+    job,
+    payload: draft.payload,
+    receiveIdType: jobFeishuConfig.config.receiveIdType
+  });
   const sendResult = await messageSender.sendMessage({
     msgType: draft.msgType,
-    payload: draft.payload,
+    payload: deliveryPayload,
     uuid
   });
 
   const result = {
     ...draft,
+    payload: deliveryPayload,
     dryRun: false,
     sent: true,
     sentAt: new Date().toISOString(),
@@ -196,6 +202,19 @@ export async function runLiveSendJob({
     });
   }
   return result;
+}
+
+function prepareDeliveryPayload({ job, payload, receiveIdType }) {
+  if (job !== "sop13" || receiveIdType === "chat_id") return payload;
+
+  const directPayload = structuredClone(payload);
+  const titleRow = directPayload?.zh_cn?.content?.[0];
+  if (Array.isArray(titleRow)) {
+    directPayload.zh_cn.content[0] = titleRow.filter(
+      (item) => !(item?.tag === "at" && item.user_id === "all")
+    );
+  }
+  return directPayload;
 }
 
 function blockedResult({ job, date, reason, missingIdentity = [] }) {

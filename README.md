@@ -99,7 +99,7 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 <short Chinese body><at user_id="all"></at>
 ```
 
-`sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty, and row 0 contains the visible bold title plus `{ "tag": "at", "user_id": "all" }`.
+`sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty. Group delivery keeps the native `@all`; private delivery uses `SOP13_RECEIVE_ID_TYPE=open_id` plus `SOP13_TARGET_RECEIVE_ID` and removes the group-only `@all` at send time.
 
 `ai-hot` sends Feishu `post`; the outer `zh_cn.title` stays empty, row 0 contains the visible bold title `【AI HOT 关注简报 · YYYY-MM-DD】`, and every item title row is a Feishu markdown bold link like `**1. [Title](source-url)**`. The visible item title row only contains the rank and linked title; source and credibility metadata stay internal. Item prose is sentence-boundary trimmed, uses direct Chinese wording, and rejects ellipsis-style truncation or source boilerplate such as `了解更多`. It does not include a trailing judgment, action list, or data-source footer. It uses deterministic ranking rules and makes zero model calls.
 
