@@ -205,14 +205,16 @@ export async function runLiveSendJob({
 }
 
 function prepareDeliveryPayload({ job, payload, receiveIdType }) {
-  if (job !== "sop13" || receiveIdType === "chat_id") return payload;
+  if (receiveIdType === "chat_id" || !new Set(["sop13", "morning-motivation"]).has(job)) {
+    return payload;
+  }
 
   const directPayload = structuredClone(payload);
-  const titleRow = directPayload?.zh_cn?.content?.[0];
-  if (Array.isArray(titleRow)) {
-    directPayload.zh_cn.content[0] = titleRow.filter(
-      (item) => !(item?.tag === "at" && item.user_id === "all")
-    );
+  const rows = directPayload?.zh_cn?.content;
+  if (Array.isArray(rows)) {
+    directPayload.zh_cn.content = rows.map((row) => Array.isArray(row)
+      ? row.filter((item) => !(item?.tag === "at" && item.user_id === "all"))
+      : row);
   }
   return directPayload;
 }

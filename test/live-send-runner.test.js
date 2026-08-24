@@ -5,6 +5,7 @@ import path from "node:path";
 import { test } from "node:test";
 
 import { runLiveSendJob } from "../src/liveSendRunner.js";
+import { buildMorningMotivationDryRun } from "../src/jobs/morningMotivation.js";
 
 const SOP_ENV = {
   SOP13_BOT_ROLE: "aheng",
@@ -19,6 +20,15 @@ const SOP_PRIVATE_ENV = {
   SOP13_CONNECTION_REF: "aheng_agent",
   SOP13_RECEIVE_ID_TYPE: "open_id",
   SOP13_TARGET_RECEIVE_ID: "ou_kane_fixture",
+  FEISHU_CONNECTION_AHENG_AGENT_APP_ID: "cli_test",
+  FEISHU_CONNECTION_AHENG_AGENT_APP_SECRET: "secret_test"
+};
+
+const MORNING_PRIVATE_ENV = {
+  MORNING_MOTIVATION_BOT_ROLE: "aheng_agent",
+  MORNING_MOTIVATION_CONNECTION_REF: "aheng_agent",
+  MORNING_MOTIVATION_RECEIVE_ID_TYPE: "open_id",
+  MORNING_MOTIVATION_TARGET_RECEIVE_ID: "ou_kane_fixture",
   FEISHU_CONNECTION_AHENG_AGENT_APP_ID: "cli_test",
   FEISHU_CONNECTION_AHENG_AGENT_APP_SECRET: "secret_test"
 };
@@ -146,6 +156,38 @@ test("SOP13 private delivery removes group-only @all while preserving the conten
   assert.equal(result.sent, true);
   assert.equal(result.messageId, "om_private_sop");
   assert.equal(result.payload.zh_cn.content[0].length, 1);
+});
+
+test("morning motivation private delivery removes only group @all", async () => {
+  const dataDir = await mkdtemp(path.join(os.tmpdir(), "zeabur-live-morning-private-"));
+  const original = buildMorningMotivationDryRun({ date: "2026-07-03" }).payload;
+  const expected = structuredClone(original);
+  expected.zh_cn.content[4] = expected.zh_cn.content[4].filter(
+    (item) => !(item?.tag === "at" && item.user_id === "all")
+  );
+
+  const result = await runLiveSendJob({
+    job: "morning-motivation",
+    date: "2026-07-03",
+    dataDir,
+    enabled: true,
+    confirm: "SEND",
+    env: MORNING_PRIVATE_ENV,
+    sender: {
+      async sendMessage({ msgType, payload, uuid }) {
+        assert.equal(msgType, "post");
+        assert.equal(uuid, "morning-motivation-2026-07-03");
+        assert.deepEqual(payload, expected);
+        assert.doesNotMatch(JSON.stringify(payload), /"user_id":"all"/);
+        return { ok: true, messageId: "om_private_morning" };
+      }
+    }
+  });
+
+  assert.equal(result.sent, true);
+  assert.equal(result.messageId, "om_private_morning");
+  assert.equal(result.payload.zh_cn.content.length, 5);
+  assert.equal(result.payload.zh_cn.content[4].length, 1);
 });
 
 test("live-send runner blocks a globally enabled job without task-level bot mapping", async () => {

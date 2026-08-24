@@ -89,7 +89,7 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 
 ## Message Formats
 
-`morning-motivation` sends Feishu `text` and mirrors the current HappyCapy format:
+`morning-motivation` sends Feishu `post` and mirrors the current HappyCapy format:
 
 ```text
 【晨间激励 · YYYY-MM-DD】
@@ -98,6 +98,11 @@ The scheduler is dry-run only. It writes payload previews and audit files, and n
 
 <short Chinese body><at user_id="all"></at>
 ```
+
+Group delivery keeps the native `@all`; private delivery uses
+`MORNING_MOTIVATION_RECEIVE_ID_TYPE=open_id` plus
+`MORNING_MOTIVATION_TARGET_RECEIVE_ID` and removes only the group-only `@all`
+at send time.
 
 `sop13` sends Feishu `post`; the outer `zh_cn.title` stays empty. Group delivery keeps the native `@all`; private delivery uses `SOP13_RECEIVE_ID_TYPE=open_id` plus `SOP13_TARGET_RECEIVE_ID` and removes the group-only `@all` at send time.
 
