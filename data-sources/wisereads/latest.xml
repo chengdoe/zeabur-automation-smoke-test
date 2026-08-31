@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 157 — Hope for Cynics by Jamil Zaki, Jordan Dworkin on Ordinary Abundance, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-157/</link><description>
-Last week, we shared Claire Stapleton's memoir of her years at Google, Don't Be Evil, tracing her path from in-house bard to walkout organizer. This week's pick is on sale: Hope for Cynics by Jamil Zaki.
+<item><title>Wisereads Vol. 158 — Richard Feynman's Six Easy Pieces, Derek Sivers on building without predicting, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-158/</link><description>
+Last week, we shared Hope for Cynics by Jamil Zaki, which is still on sale if you missed it. This week, we're sharing a preview of Six Easy Pieces, a short collection drawn from Richard Feynman's famous physics lectures.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 23 Aug 2026 20:16:31 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-157/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 30 Aug 2026 15:08:20 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-158/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 157 — Hope for Cynics by Jamil Zaki, Jordan Dworkin on Ordinary Abundance, and more</h1>
+    <h1>Wisereads Vol. 158 — Richard Feynman's Six Easy Pieces, Derek Sivers on building without predicting, and more</h1>
     
     <p></p>
-<p>Last week, we shared Claire Stapleton's memoir of her years at Google, <em>Don't Be Evil</em>, tracing her path from in-house bard to walkout organizer. <span style="background-color: #fbeeb8;">This week's pick is on sale: <em>Hope for Cynics</em> by Jamil Zaki.</span></p>
+<p>Last week, we shared <em>Hope for Cynics</em> by Jamil Zaki, which is still on sale if you missed it. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of <em>Six Easy Pieces</em>, a short collection drawn from Richard Feynman's famous physics lectures.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://craigmod.com/essays/robot_blood/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/a-swarm-of-blood-robots/cover_image.jpg" alt="None" />
+        <a href="https://paulgraham.com/prepare.html">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-universities-should-prepar/cover_image.webp" alt="None" />
         </a>
 
         <h3>
-            <a href="https://craigmod.com/essays/robot_blood/">A Swarm of Blood Robots</a>
+            <a href="https://paulgraham.com/prepare.html">How Universities Should Prepare Founders</a>
         </h3>
         <p class="author">
-            Craig Mod · Craig Mod
+            Paul Graham · paulgraham.com
         </p>
-        <p>The strangest thing Craig Mod has done with an LLM is genealogical. A dozen or so agents spent fifteen hours building out his family tree, and Claude later ran down the newspaper article behind the middle name on his birth certificate. <span style="background-color: #fbeeb8;">"The middle name on my original birth certificate comes from a random guy who was murdered at a house party outside of Chicago. Or, more precisely: a car crash outside the party that led to a stabbing. My birth mother claimed on the adoption papers that this person was my birth father. That is, until I met my birth mother and she explained that she had just plucked a dead seventeen-year-old stranger from a newspaper clipping and said: <em>That's the dad</em>... Now I've printed it out and it hangs on my wall: a dead stranger&rsquo;s final moments, a totem of the oddness of life."</span></p>
+        <p>Universities should stop teaching entrepreneurship, says Y Combinator cofounder Paul Graham, and turn out students with the expertise and the itch to build things. <span style="background-color: #fbeeb8;">"Would-be founders should be doing exactly the opposite of what students do in business plan competitions. Instead of thinking about startups without building anything, they should be building things without thinking about whether they'll turn into startups."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://defector.com/humanists-have-done-nothing-wrong/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/humanists-have-done-nothing-wr/cover_image.jpg" alt="None" />
+        <a href="https://nappertime.com/the-golden-rule-of-becoming-a-better-writer/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-golden-rule-for-becoming-a/cover_image.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://defector.com/humanists-have-done-nothing-wrong/">Humanists Have Done Nothing Wrong</a>
+            <a href="https://nappertime.com/the-golden-rule-of-becoming-a-better-writer/">The Golden Rule for Becoming a Better Writer</a>
         </h3>
         <p class="author">
-            David Hollingshead · defector.com
+            T. R. Napper · Nappertime.com
         </p>
-        <p>The case against the humanities usually opens with a sentence nobody can parse. David Hollingshead, who taught in Princeton's writing program, thinks the critics are quoting in bad faith, and declines to apologize for scholarship being difficult. <span style="background-color: #fbeeb8;">"Just as the end of reading coincides with a massive arms race for text, the end of universities coincides with a voracious cultural desire for message board&ndash;style soundbites of streamlined information. The internet is full of hapless would-be Deleuzians who want things explained to them right now."</span></p>
+        <p>There's no shortage of advice for aspiring authors. T. R. Napper, who writes <a href="https://nappertime.com/my-books/">cyberpunk standalones</a>, says most of it is optional. Except reading. <span style="background-color: #fbeeb8;">"Go look at your phone, and tell me what your average screen time is per day. Two hours? Five? Seven? If so &ndash; shut up: you've time to read."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://ordinaryabundance.com/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/ordinary-abundance/cover_image.jpg" alt="None" />
+        <a href="https://sive.rs/fit/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/building-without-predicting/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://ordinaryabundance.com/">Ordinary Abundance</a>
+            <a href="https://sive.rs/fit/">Building without predicting</a>
         </h3>
         <p class="author">
-            Jordan Dworkin · ordinaryabundance.com
+            Derek Sivers · sive.rs
         </p>
-        <p>Jordan Dworkin takes inventory of an ordinary evening at home, and makes the case for noticing what it took to make it ordinary. <span style="background-color: #fbeeb8;">"All the items in this room were once out of reach; some not yet invented, others too rare or costly for the vast majority of people&hellip; It serves us, and honors them, to recapture whenever possible the old sense of awe at these wonders that have long since become commonplace."</span></p>
+        <p>Writer Derek Sivers is building his off-grid home piece by piece, adding each part only after he and his son find they need it. The principle comes from urban planning. <span style="background-color: #fbeeb8;">"They built a new park and argued about where to put the walkways. Around the edges? Through the middle? The winning answer: Open the park with no walkways. After a year, look where people have been walking. Find paths where the grass is worn away. Pave there. Don't predict."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/watch/?v=yahyL3ABjjo">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-break-the-spell-of-powe/cover_image.jpg"
+        <a href="https://youtube.com/watch/?v=OHu1FY1R-x0">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/it-took-me-37-years-to-realize/cover_image_PmCrfQd.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/watch/?v=yahyL3ABjjo">How to break the spell of powerful emotions | Lisa Damour: Full Interview</a>
+            <a href="https://youtube.com/watch/?v=OHu1FY1R-x0">It took me 37 years to realize what I&#x27;ll tell you in 18 minutes.</a>
         </h3>
-        <p class="author">Big Think</p>
-        <p>Clinical psychologist Lisa Damour defines mental health as having feelings that fit the circumstances and a way to manage them, which means it sometimes involves feeling bad. The managing part, she says, starts with vocabulary: <span style="background-color: #fbeeb8;">"When we come up with a label for a feeling, we feel that feeling less intensely. If I'm sad and I tell you I feel sad, I actually feel less sad. If I'm anxious and I say I'm feeling anxious, my anxiety goes down."</span></p>
+        <p class="author">Alex Hormozi</p>
+        <p>On his birthday, founder Alex Hormozi takes stock of the futures he gave up to get the one he has. <span style="background-color: #fbeeb8;">"&hellip;until you exercise them, they are valueless. At some point, you have to pull the trigger. You have to make the call. You have to make the decision. You have to cut off one future."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/0xhvdes/status/2088562056580464764/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-principles-of-better-decis/cover_image.jpeg"
+        <a href="https://x.com/dzhng/status/2090252351533973768/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/building-software-factories-wi/cover_image_VQwFLs3.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/0xhvdes/status/2088562056580464764/?rw_tt_thread=True">The Principles of Better Decisions.</a>
+            <a href="https://x.com/dzhng/status/2090252351533973768/?rw_tt_thread=True">Building software factories (with no slop)</a>
         </h3>
-        <p class="author">Hades</p>
-        <p>Hades maps seven mental models for better decisions, including the one that rewards patience above all. <span style="background-color: #fbeeb8;">"Compounding works whether you&rsquo;re building good habits or bad ones&hellip; Nobody becomes exceptional because of one extraordinary day. They become exceptional because ordinary days were repeated for years."</span></p>
+        <p class="author">David</p>
+        <p>Duet cofounder David Zhang argues AI slop is a review problem, not a model problem, and offers a four-step loop instead. First: <span style="background-color: #fbeeb8;">"Map the fog: interview the idea quadrant by quadrant until you know what you're building."</span> Next: <span style="background-color: #fbeeb8;">"Codify: write the spec. Mostly transcription and adversarial planning, since the decisions got made upstream where they were cheap."</span> Then: <span style="background-color: #fbeeb8;">"Build: put the harness in loop mode and let the spec drive. Reviews fire per slice; the plan re-slices itself when the build proves it stale."</span> Finally: <span style="background-color: #fbeeb8;">"Review the choices: read the ledger, least-confident first, push back, let it re-audit."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/terra-incognita-the-economics-/1389.pdf">Terra Incognita: The Economics Of A Shrinking World</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/mathematics-in-the-age-of-ai/1397.pdf">Mathematics in the age of AI</a>
         </h3>
-        <p class="author">Jesús Fernández-Villaverde, Patrick Norrick</p>
-        <p><em>Terra Incognita</em>, a new paper from Penn economist Jes&uacute;s Fern&aacute;ndez-Villaverde and Northwestern graduate student Patrick Norrick, models fertility across 236 countries since 1950. <span style="background-color: #fbeeb8;">"As of 2026, humanity is likely to be below replacement level: we are having fewer births than we need to keep population constant in the long run. As far as we can tell, this has never happened before in our history as a species, not even during wars or pandemics."</span></p>
+        <p class="author">Terence Tao</p>
+        <p>Fields Medalist Terence Tao considers what mathematics loses when AI polishes every proof to a shine. <span style="background-color: #fbeeb8;">"In a human-written proof, the parts of the argument that the author found difficult typically retain some natural friction: an apologetic remark, an unusually careful lemma, a change of notation, a paragraph that has clearly been rewritten several times. This friction is informative."</span></p>
     
 
     <!-- epub -->
@@ -116,18 +116,18 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/489700362">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/hope-for-cynics-the-surprising/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/491899870">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/six-easy-pieces-essentials-of-/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/489700362">Hope for Cynics: The Surprising Science of Human Goodness</a>
+            <a href="https://readwise.io/reader/fd/491899870">Six Easy Pieces: Essentials of Physics Explained by Its Most Brilliant Teacher</a>
         </h3>
-        <p class="author">Jamil Zaki</p>
-        <p>Jamil Zaki directs Stanford's Social Neuroscience Lab and has spent two decades studying empathy while privately being a cynic himself. <em>Hope for Cynics </em>works through that contradiction in two ways: with research showing that people consistently underestimate each other's generosity, and with the example of his late friend Emile Bruneau, a conflict-resolution researcher whose "hopeful skepticism" Zaki envied.</p>
-<p><span style="background-color: #fbeeb8;">"In the lab, suspicion costs people money. In life, it deprives us of a much more vital resource: each other. The novelist Kurt Vonnegut wrote that people are 'chemically engineered' to live in community, 'just as fish are chemically engineered to live in clean water.' Cynics, not wanting to lose, deny their social needs. They seek support from friends less often and negotiate as if the other party is trying to cheat. Like a trout washed ashore, they find themselves starving for connection."</span></p>
-<p>If you enjoy the preview, you can grab the <a href="https://www.amazon.com/dp/B0CR93L55W">full ebook</a> for $1.99 in the US and Canada through the end of August.</p>
+        <p class="author">Richard P. Feynman</p>
+        <p>When Caltech handed Richard Feynman its introductory physics course in 1961, he redesigned it from the ground up. <em>Six Easy Pieces</em> gathers the six least technical of those talks, on atoms, energy, gravitation, and quantum behavior. Feynman kept guest lecturing for that course long after, and by the editors' account his appearances had to be kept secret so registered students could still get a seat. At one of them, just after the 1987 supernova was discovered, he warmed up the room like this:</p>
+<p><span style="background-color: #fbeeb8;">"There are 10&sup1;&sup1; stars in the galaxy. That used to be a huge number. But it&rsquo;s only a hundred billion. It&rsquo;s less than the national deficit! We used to call them astronomical numbers. Now we should call them economical numbers."</span></p>
+<p>Through August 31, the <a href="https://www.amazon.com/dp/B004OVEYNU">full ebook is on sale for $1.99</a> wherever ebooks are sold in the U.S. and Canada.</p>
     
 
     <!-- feed -->
@@ -136,15 +136,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://www.careandcraft.uk/feed/">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/care-craft/cover_image.webp"
+            <a href="https://insightsamuel.substack.com/feed/">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/radical-clarity/cover_image.webp"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://www.careandcraft.uk/feed/">Care &amp; Craft</a>
+            <a href="https://insightsamuel.substack.com/feed/">Radical Clarity</a>
         </h3>
-        <p><em>Care &amp; Craft</em> is Vincent Shaw's newsletter on imagination, childhood reading, and what nostalgia is good for, running from William Morris to Hogwarts. From <a href="https://wise.readwise.io/save?url=https://www.careandcraft.uk/p/why-adults-queue-for-butterbeer">Why Adults Queue for Butterbeer</a>: <span style="background-color: #fbeeb8;">"A book requires something of you before it gives anything back. You have to decode the words, construct the world, populate it with faces and voices that the author has only sketched. The effort is the point."</span></p>
+        <p>Sam William writes <em>Radical Clarity</em>, a newsletter on focus, philosophy, and self-education in a distracted age. From <a href="https://wise.readwise.io/save?url=https://insightsamuel.substack.com/p/a-pocket-notebook-will-make-you-mentally">A pocket notebook will save your mind</a>: <span style="background-color: #fbeeb8;">"A pocket notebook is basically the anti-smartphone. No notifications distracting you. No algorithm designed to hold your attention hostage. No bright colors flashing at your eyes. Just a blank space for pure thinking and creating."</span></p>
     
 </main>
  ]]></content:encoded></item>
