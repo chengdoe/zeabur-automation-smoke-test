@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 161 — Finish What Matters by David Kadavy, The contagion of fear, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-161/</link><description>
-Last week, we shared a preview of Angela Duckworth's new release, Situated: Find the People and Places That Bring Out Your Best. This week, we're sharing a special preview of David Kadavy's conclusion to the Getting Art Done series, Finish What Matters: Make Your Creativity Count.
+<item><title>Wisereads Vol. 162 — Protocols by Andrew Huberman, Sunil Pai on the senior engineer death spiral, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-162/</link><description>
+Last week, we shared a special preview of David Kadavy's conclusion to the Getting Art Done series, Finish What Matters: Make Your Creativity Count. This week, we're sharing a preview from Andrew Huberman's long-awaited guide to the pillars of health, Protocols.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 20 Sep 2026 20:47:10 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-161/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 27 Sep 2026 17:39:20 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-162/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 161 — Finish What Matters by David Kadavy, The contagion of fear, and more</h1>
+    <h1>Wisereads Vol. 162 — Protocols by Andrew Huberman, Sunil Pai on the senior engineer death spiral, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of Angela Duckworth's new release, <em>Situated: Find the People and Places That Bring Out Your Best</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a special preview of David Kadavy's conclusion to the Getting Art Done series, <em>Finish What Matters: Make Your Creativity Count.</em></span></p>
+<p>Last week, we shared a special preview of David Kadavy's conclusion to the Getting Art Done series, <em>Finish What Matters: Make Your Creativity Count.</em> <span style="background-color: #fbeeb8;">This week, we're sharing a preview from Andrew Huberman's long-awaited guide to the pillars of health, <em>Protocols.</em></span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://colossus.com/article/mark-zuckerberg-profile/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/white-collar-peds/cover_image.jpg" alt="None" />
+        <a href="https://sunilpai.dev/posts/the-senior-engineer-death-spiral/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-senior-engineer-death-spir/cover_image.webp" alt="None" />
         </a>
 
         <h3>
-            <a href="https://colossus.com/article/mark-zuckerberg-profile/">White Collar PEDs</a>
+            <a href="https://sunilpai.dev/posts/the-senior-engineer-death-spiral/">the senior engineer death spiral</a>
         </h3>
         <p class="author">
-            Blake Smith · Colossus
+            Sunil Pai · Sunilpai.dev
         </p>
-        <p>Colossus writer Jeremy Stern profiles Mark Zuckerberg and the ancient trap that power sets for the powerful. <span style="background-color: #fbeeb8;">"Yet perhaps it is that simple, intolerable fact&mdash;that new technologies are always being invented; what remains broken is us&mdash;which requires a scapegoat. And who could ask for a better one than him? He is, for millions of people, a hideous mirror of both modern technological capitalism, and the resistance of history and human nature to perfectibility by it."</span></p>
+        <p>PartyKit creator Sunil Pai has been caught more than once in what he calls the senior engineer death spiral: a new role, a big project, weeks of upbeat standups with nothing to show. His advice to avoid the spiral: <span style="background-color: #fbeeb8;">"the thing to do is actually to drop a level. not to try to be a higher-level engineer, but to almost drop a level and simply become the greatest teammate for a while. you&rsquo;re still responsible for your work, you&rsquo;re just trying to get moving again."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://bcantrill.dtrace.org/2026/09/13/the-contagion-of-fear/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-contagion-of-fear/cover_image.png" alt="None" />
+        <a href="https://sockpuppet.org/blog/2026/09/17/how-to-write-with-an-llm/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-write-with-an-llm/cover_image_XBvgqkC.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://bcantrill.dtrace.org/2026/09/13/the-contagion-of-fear/">The contagion of fear</a>
+            <a href="https://sockpuppet.org/blog/2026/09/17/how-to-write-with-an-llm/">How To Write With An LLM</a>
         </h3>
         <p class="author">
-            Bryan Cantrill · The Observation Deck
+            Thomas &amp; Erin Ptacek · sockpuppet.org
         </p>
-        <p>Oxide Computer CTO Bryan Cantrill recalls a shameful college prank to explain how fear spreads. <span style="background-color: #fbeeb8;">"When those domain experts sow fear, it is the fear that takes root, propagating much more readily than any evidence that may follow it... as the fear takes hold, the sheer number of frightened experts becomes its own kind of evidence, with contrary voices drowned out by the din of an apparent consensus."</span></p>
+        <p>An LLM makes a great copyeditor and a terrible ghostwriter, according to Thomas and Erin Ptacek, whose first rule is never to use a single word a model suggests. <span style="background-color: #fbeeb8;">"Readers can detect LLM words in the parts per trillion. However much work you put into scuffing up and humanizing it, an LLM paragraph will register to much of your audience not as writing but as output."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://darioamodei.com/post/we-must-pace-the-frontier/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/we-must-pace-the-frontier/cover_image.webp" alt="None" />
+        <a href="https://nytimes.com/2026/09/20/magazine/ny-public-schools-black-students-segregation.html/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/in-fighting-for-every-black-ch/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://darioamodei.com/post/we-must-pace-the-frontier/">We Must Pace the Frontier</a>
+            <a href="https://nytimes.com/2026/09/20/magazine/ny-public-schools-black-students-segregation.html/">In Fighting for Every Black Child, Did I Betray My Own?</a>
         </h3>
         <p class="author">
-            darioamodei.com · darioamodei.com
+            Nikole Hannah-Jones · The New York Times
         </p>
-        <p>Anthropic CEO Dario Amodei now argues for slowing AI development, an idea he dismissed back in 2023. <span style="background-color: #fbeeb8;">"The question was always: what would you do with the extra time? The AI models of those days... were not capable of significant deception, manipulation, cheating, or cyberattacks. Slowing down in order to address their alignment risks felt like trying to study the psychology of humans by performing experiments on bacteria."</span></p>
+        <p>A decade after choosing a segregated school for her daughter, Pulitzer winner Nikole Hannah-Jones considers the cost through the girl's eyes. <span style="background-color: #fbeeb8;">"I explained our decision over and over, but my answers never satisfied her. '</span><span style="background-color: #fbeeb8;">But what did it do?' she&rsquo;d ask. 'Putting me in this school didn&rsquo;t change anything. I was not trying to be in this type of environment. It makes no sense.'"</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://www.youtube.com/watch?v=qITpEEGskck">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-studied-creativity-for-365-d/cover_image_6Ws2hVR.jpg"
+        <a href="https://youtube.com/watch/?v=Y4s8NadbZfU">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/yann-lecun-where-is-artificial/cover_image_opyYlOx.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://www.youtube.com/watch?v=qITpEEGskck">I studied creativity for 365 days &amp; here’s what I learned.</a>
+            <a href="https://youtube.com/watch/?v=Y4s8NadbZfU">Yann LeCun: Where Is Artificial Intelligence Heading?</a>
         </h3>
-        <p class="author">Deya</p>
-        <p>Cozy entrepreneurship, the anti-hustle approach to business YouTuber Deya champions, puts creativity rather than output at the center. Drawing on her favorite reads, she argues the creative work is exactly the part that can't be tracked week to week. <span style="background-color: #fbeeb8;">"Creativity is not a straight line where you can track the progress and measure the progress week over week. Creativity is a messy process of trying and failing and learning and trying again, and every attempt teaches your brain something new."</span></p>
+        <p class="author">Sciences Po</p>
+        <p>At Sciences Po, Turing Award winner Yann LeCun explains why text alone will never yield human-level intelligence. <span style="background-color: #fbeeb8;">"A four-year-old child has seen as much information through vision alone as the largest LLM has seen in all the text publicly available on the internet. That tells you we will never reach a human-level system by training on text alone."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/iampascio/status/2098799094835675574/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/what-if-agi-is-already-here-an/cover_image.jpeg"
+        <a href="https://x.com/obie/status/2101779116056088732/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/you-re-already-a-meat-proxy/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/iampascio/status/2098799094835675574/?rw_tt_thread=True">What if AGI is already here, and it&#x27;s made of... children?</a>
+            <a href="https://x.com/obie/status/2101779116056088732/?rw_tt_thread=True">You&#x27;re Already a Meat Proxy</a>
         </h3>
-        <p class="author">Pascio</p>
-        <p>Pseudonymous creator Pascio, who writes widely read threads on AI and productivity, rethinks what AGI looks like. <span style="background-color: #fbeeb8;">"The frontier is not 'one big model gets smarter.' The frontier is many small models, coordinating, spawning, dying, reporting back. The architecture of the most capable AI systems on Earth in 2026 already looks more like an ant colony than like a single mind."</span></p>
+        <p class="author">Obie Fernandez</p>
+        <p>"Meat proxy" started as a jab at people who forward AI output verbatim. <em>The Rails Way</em> author Obie Fernandez aims it at most engineering jobs: <span style="background-color: #fbeeb8;">"If all you do for your paycheck is to fit into a process where other people decide what to do and then you transform those directions into software, then congrats you&rsquo;re a 'meat proxy'... The only reason meat proxies still have jobs is inertia."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/detecting-and-countering-misus/Anthropic-Detecting-and-countering-091026_1.pdf">Detecting And Countering Misuse Of AI: September 2026</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/shall-we-repeal-the-laws-of-ec/1430.pdf">Shall We Repeal the Laws of Economics - Part III</a>
         </h3>
-        <p class="author">Anthropic</p>
-        <p>Anthropic's Threat Intelligence team details eight months of disrupted operations in its latest AI misuse report. <span style="background-color: #fbeeb8;">"AI has collapsed the labor and tooling gap that used to separate well-resourced, state-sponsored operations from individual operators... a hacktivist using stolen API keys, disparate financially motivated individuals, and a state espionage operator each sustained multi-victim campaigns that, even just a year ago, would have required many skilled operators and specialist knowledge."</span></p>
+        <p class="author">Howard Marks</p>
+        <p>Oaktree Capital co-founder Howard Marks returns to his case against overriding markets, starting with America&rsquo;s borrowing habit. <span style="background-color: #fbeeb8;">"Thanks to the dollar's position as the world&rsquo;s reserve currency, the U.S. has had what I call a 'golden credit card' on which there&rsquo;s no credit limit, the bill never comes, and the interest rate is extremely low. But it uses the card unwisely."</span></p>
     
 
     <!-- epub -->
@@ -116,16 +116,18 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/498714493">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/finish-what-matters/cover_image.png"
+            <a href="https://readwise.io/reader/fd/501999101">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/protocols/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/498714493">Finish What Matters</a>
+            <a href="https://readwise.io/reader/fd/501999101">Protocols</a>
         </h3>
-        <p class="author">David Kadavy</p>
-        <p>We remember Leonardo da Vinci for the <em>Mona Lisa</em> and <em>The Last Supper</em>, and forget that he finished only about a dozen paintings in his life. Raphael, working at the same time, left behind well over a hundred. One was the master of exploration, the other the master of execution. In his new release, <em>Finish What Matters</em>, David Kadavy closes out his Getting Art Done trilogy by walking creatives through the balancing act between the two: discerning which pursuits deserve the commitment, then seeing them through. <br /><br /><span style="background-color: #fbeeb8;">"The world rewards those who finish &ndash; as it should. If only we could earn money and accolades for thoughts we've never shared, ideas we haven't brought to life, or things we've only half-built. But what's the use of a novel never written, an app never uploaded, or a product never produced? Creations can't be consumed until they're crafted. Innovations can&rsquo;t have impact until they're implemented."</span> <br /><br />If you enjoy the preview, you can pick up <em>Finish What Matters</em> <a href="https://www.amazon.com/dp/B0GJ39NCDP?tag=kadavyinc-20">as an ebook or paperback</a>. If you missed either of the series' first two books, <a href="https://www.amazon.com/Heart-Start-Inner-Your-Shine-ebook/dp/B077XRMBR9"><em>The Heart to Start</em></a> or <a href="https://www.amazon.com/Mind-Management-Not-Time-Productivity-ebook/dp/B08DQGLPSN"><em>Mind Management, Not Time Management</em></a>, they're available too!</p>
+        <p class="author">Andrew D. Huberman</p>
+        <p>Huberman Lab took off in the thick of the pandemic, when people were grasping for some control over their health. Now Stanford neuroscientist Andrew Huberman has gathered the podcast's most grounded advice into his long-awaited debut, <em>Protocols</em>. The book covers seven areas: sleep; exercise; stress control; nutrition; light; focus, motivation, and learning; and personal growth. For each, Huberman shares practical, mostly free ways to feel healthier and more energetic, along with the science behind them.</p>
+<p><span style="background-color: #fbeeb8;">"Our brains and bodies repurpose a lot of the same mechanisms to allow these systems to work in concert. Knowing some of the science behind each protocol affords you insights not just into how that protocol works, but how different protocols synergize. Practically speaking, that gives you a level of control over your health that simply learning 'do protocol A to get effect B' just can't provide. You can determine what works for your needs and your goals in the context of your life, without having to make the pursuit of health a singular focus."</span></p>
+<p><em>Protocols</em> is hot off the press, so if you enjoy the preview, you can pick up a full copy <a href="https://www.simonandschuster.com/books/Protocols/Andrew-D-Huberman/9781668032152">wherever you get your books</a>.</p>
     
 
     <!-- feed -->
@@ -134,15 +136,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://www.onlypoemsdaily.com/feed">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/only-poems-daily-classics/cover_image.png"
+            <a href="https://dearheadofmine.substack.com/feed">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/dear-head-of-mine/cover_image.png"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://www.onlypoemsdaily.com/feed">Only Poems Daily</a>
+            <a href="https://dearheadofmine.substack.com/feed">Dear Head of Mine</a>
         </h3>
-        <p>Only Poems Daily is what it sounds like: a poem every morning, and nothing else. On Tuesdays, poems from dead poets. On Fridays, a translated poem. Every other day of the week has a theme of its own. From <a href="https://wise.readwise.io/save?url=https://www.onlypoemsdaily.com/p/hawks-by-james-stephens">Hawks by James Stephens</a>: <span style="background-color: #fbeeb8;">"O little bird! there's many have a nest, / A hard-found, open place, with many a foe; / And hunger and despair and little rest, / And more to fear than you can know. Shield the nests where'er they be, / On the ground or on the tree; / Guard the poor from treachery."</span></p>
+        <p>Book editor Sean deLone writes Dear Head of Mine, a weekly newsletter on publishing, talent spotting, and taste. From <a href="https://wise.readwise.io/save?url=https://dearheadofmine.substack.com/p/cultivate-good-taste-please">Cultivate Good Taste, Please</a>: <span style="background-color: #fbeeb8;">"Having taste is defined by risk. Whether it is indie films, experimental literature, high fashion, or a brand-new sound, there is far more uncertainty when you&rsquo;re sticking your neck out for something that isn&rsquo;t obvious."</span></p>
     
 </main>
  ]]></content:encoded></item>
