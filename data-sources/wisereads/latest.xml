@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 163 — How to Live a Meaningful Life by Bill Burnett and Dave Evans, Ayman Nadeem on the death of "plan mode," and more</title><link>https://wise.readwise.io/issues/wisereads-vol-163/</link><description>
-Last week, we shared a preview of Andrew Huberman's long-awaited guide to the pillars of health, Protocols. This week, we're sharing a preview of Bill Burnett and Dave Evans's guide to finding meaning in everyday life, How to Live a Meaningful Life.
+<item><title>Wisereads Vol. 164 — Anatomy of a Breakthrough by Adam Alter, David Robinson on quitting OpenAI, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-164/</link><description>
+Last week, we shared a preview of Bill Burnett and Dave Evans's guide to finding meaning in everyday life, How to Live a Meaningful Life. This week, we're sharing a preview of Anatomy of a Breakthrough: How to Get Unstuck When It Matters Most by Adam Alter.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 04 Oct 2026 16:20:25 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-163/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 11 Oct 2026 19:01:34 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-164/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 163 — How to Live a Meaningful Life by Bill Burnett and Dave Evans, Ayman Nadeem on the death of "plan mode," and more</h1>
+    <h1>Wisereads Vol. 164 — Anatomy of a Breakthrough by Adam Alter, David Robinson on quitting OpenAI, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of Andrew Huberman's long-awaited guide to the pillars of health, <em>Protocols. </em><span style="background-color: #fbeeb8;">This week, we're sharing a preview of Bill Burnett and Dave Evans's guide to finding meaning in everyday life, <em>How to Live a Meaningful Life</em>.</span></p>
+<p>Last week, we shared a preview of Bill Burnett and Dave Evans's guide to finding meaning in everyday life, <em>How to Live a Meaningful Life</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of <em>Anatomy of a Breakthrough: How to Get Unstuck When It Matters Most</em> by Adam Alter.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://www.aymannadeem.com/artificial/intelligence,/developer/tools/2026/09/24/plan-mode-is-dead.html">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/plan-mode-is-dead/cover_image.png" alt="None" />
+        <a href="https://www.oneusefulthing.org/p/the-dot-and-the-swarm">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-dot-and-the-swarm/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://www.aymannadeem.com/artificial/intelligence,/developer/tools/2026/09/24/plan-mode-is-dead.html">Plan mode is dead</a>
+            <a href="https://www.oneusefulthing.org/p/the-dot-and-the-swarm">The Dot and the Swarm</a>
         </h3>
         <p class="author">
-            Ayman Nadeem · Ayman Nadeem
+            Ethan Mollick · One Useful Thing
         </p>
-        <p>Ayman Nadeem, founder of Nuanced, set out to help people keep a mental model of software they now build with AI faster than they can follow. <span style="background-color: #fbeeb8;">"While the ease of generating code this way triggered a greater dopamine reward, it obfuscated the uncomfortable work of understanding why building something mattered, whether it mattered at all, and rigorously evaluating product, design, and infrastructure decisions."</span></p>
+        <p>Swarms of thousands of AI agents need almost no managing, which has Wharton&rsquo;s Ethan Mollick walking back a year of his own advice. Call it another bitter lesson: <span style="background-color: #fbeeb8;">"A lot of what we call management exists to solve problems that come from organizations being made of people... Agents have far fewer of these problems. They don't angle for promotions or protect their turf. They don't even have meetings."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://www.noahpinion.blog/p/wheres-the-intelligence-explosion">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/wheres-the-intelligence-explos/cover_image.jpg" alt="None" />
+        <a href="https://www.theatlantic.com/technology/2026/10/openai-safety-team-resignation/688881/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-quit-openai-because-its-cult/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://www.noahpinion.blog/p/wheres-the-intelligence-explosion">Where’s the "intelligence explosion"?</a>
+            <a href="https://www.theatlantic.com/technology/2026/10/openai-safety-team-resignation/688881/">I Quit OpenAI Because Its Culture Is Broken</a>
         </h3>
         <p class="author">
-            Ramez Naam · noahpinion.blog
+            David Robinson · The Atlantic
         </p>
-        <p>In a guest post for Noahpinion, investor and author Ramez Naam explains why he doesn't expect AI's self-improvement to set off an intelligence explosion. <span style="background-color: #fbeeb8;">"Given our best current data, the AI self-improvement loop would need to be roughly 5&ndash;10&times; stronger to sustain itself, let alone run away... I expect incredibly rapid AI progress by the standards of nearly any other technology. But the evidence we have doesn't suggest a sudden explosion to incomprehensible superintelligence anytime soon."</span></p>
+        <p>David Robinson oversaw OpenAI&rsquo;s safety reports for 12 frontier launches before resigning. He grants that many of his former colleagues mean well and that the labs are trying to be careful, but argues the bar needs to be much higher. <span style="background-color: #fbeeb8;">"Given today's risks, frontier labs need to run like nuclear-power plants or busy airports, with layers of redundancy and careful, time-consuming planning, so that the occasional and inevitable human error does not open a door to disaster."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://michaelheap.com/i-dont-want-the-details/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-don-t-want-the-details/cover_image.png" alt="None" />
+        <a href="https://nytimes.com/2026/09/29/us/anthropic-claude-morals-ai.html/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/is-claude-conscious-inside-ant/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://michaelheap.com/i-dont-want-the-details/">I don't want the details</a>
+            <a href="https://nytimes.com/2026/09/29/us/anthropic-claude-morals-ai.html/">Is Claude Conscious? Inside Anthropic's Spiritual Quest</a>
         </h3>
         <p class="author">
-            Michael Heap · michaelheap.com
+            Elizabeth Dias · New York Times
         </p>
-        <p>Kong product leader Michael Heap argues that when something goes wrong, leaders should skip the explanation and ask what's changing. <span style="background-color: #fbeeb8;">"If your postmortem is full of sentences like 'we should involve support earlier' and 'we need to communicate better', or my personal favourite, 'we'll be more careful next time', you have a collection of hopes dressed up as progress."</span></p>
+        <p>Religious leaders and scholars, many under NDA, have been advising Anthropic on Claude&rsquo;s morals and whether it might be conscious, reports Elizabeth Dias of The New York Times. <span style="background-color: #fbeeb8;">"For humans, morality has rarely depended on simply following rules. Communities also shape morality. Values are inherited and imparted over time, learned as we live together in our bodies in the physical world. But A.I. models have no bodies."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/watch/?v=OuNKBjuV7A4">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/dhh-has-gone-completely-off-th/cover_image_2zbVRx4.jpg"
+        <a href="https://youtube.com/watch/?v=TgUMME8J2Hg">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/make-your-art/cover_image_AF4Fhj0.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/watch/?v=OuNKBjuV7A4">DHH has gone completely off the rails...</a>
+            <a href="https://youtube.com/watch/?v=TgUMME8J2Hg">Make Your Art.</a>
         </h3>
-        <p class="author">Fireship</p>
-        <p>Ruby on Rails creator DHH told this year's Rails World conference that writing code by hand is over. Fireship, whose own career started with Rails, sorts out what's left for programmers. <span style="background-color: #fbeeb8;">"Writing code or any skill closely tied to mechanical execution was never that valuable to begin with. What's always been far more important is the ability to define a problem, then design a system that can solve that problem securely and efficiently."</span></p>
+        <p class="author">vlogbrothers</p>
+        <p>John Green remembers a friend and fellow AFC Wimbledon fan who broadcast the club's matches to a tiny audience and gave it everything he had. Green takes it as a model for any kind of work: <span style="background-color: #fbeeb8;">"I want you to think of what you put into the world as art, as an attempt to refashion the raw materials of Earth into something better and more interesting than it needs to be."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/drdominicng/status/2018735498622087346/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-you-waste-your-evenings-th/cover_image.jpeg"
+        <a href="https://x.com/devoncnp/status/2105345806870126935/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/your-entire-life-changes-when-/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/drdominicng/status/2018735498622087346/?rw_tt_thread=True">Why You Waste Your Evenings (The Neuroscience of Post-Work Fatigue)</a>
+            <a href="https://x.com/devoncnp/status/2105345806870126935/?rw_tt_thread=True">Your Entire Life Changes When You Realize Getting Rich Is A Skill Issue</a>
         </h3>
-        <p class="author">Dr. Dominic Ng</p>
-        <p>The sofa scroll after work is about glutamate, not laziness, according to neuroscientist Dominic Ng. <span style="background-color: #fbeeb8;">"Willpower is not a personality trait. It is a prefrontal cortex function. The same region that's been working all day - and is now flooded with glutamate - is the exact region you're asking to override your impulse to stay on the sofa."</span></p>
+        <p class="author">Devon Canup</p>
+        <p>Devon Canup, who says he&rsquo;s made over $10 million online, argues that wealth starts with identity and a "6-month lock-in": <span style="background-color: #fbeeb8;">"Becoming unconsciously rich is the same as embodying the identity of a rich person. You don't even try. You don't even think. You just show up and do the things, without even having to think or try, that make you even more money."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/agentic-ai-and-code-reviews/1439.pdf">Agentic AI and Code Reviews</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/kolibri-a-sovereign-european-m/1458.pdf">Kolibri: A Sovereign European Model on the Pareto Frontier</a>
         </h3>
-        <p class="author">Zach Davis, Michelle Gill, Elisabeth Hendrickson, Angie Jones, Sha Ma, Randy Shoup, James Wickett</p>
-        <p>With agents writing code faster than humans can review it, Randy Shoup and six other engineering leaders propose patterns for handing more of the review work to AI. <span style="background-color: #fbeeb8;">"The organizations most likely to achieve high-confidence autonomous reviews are, therefore, often not those with the most advanced models, but those whose systems are easiest to reason about mechanically."</span></p>
+        <p class="author">Aleph Alpha</p>
+        <p>Aleph Alpha&rsquo;s roughly 200-page technical report on Kolibri, its open-weight bid for European AI sovereignty, shares what failed and what the team came away with. <span style="background-color: #fbeeb8;">"One of the most durable results of this work is neither a checkpoint nor a training pipeline; it is a team in Europe that has trained two Kolibri generations in a short amount of time and knows how to fail forward and learn."</span></p>
     
 
     <!-- epub -->
@@ -116,18 +116,19 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/504408549">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-live-a-meaningful-life/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/506855690">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/anatomy-of-a-breakthrough/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/504408549">How to Live a Meaningful Life</a>
+            <a href="https://readwise.io/reader/fd/506855690">Anatomy of a Breakthrough</a>
         </h3>
-        <p class="author">Bill Burnett and Dave Evans</p>
-        <p>Bill Burnett and Dave Evans, who lead Stanford's Life Design Lab, spent years helping readers redesign their careers with <em>Designing Your Life</em>. They noticed that many people who improved their lives still felt something was missing. In <em>How to Live a Meaningful Life</em>, the pair shifts the goal from fulfillment to meaning and argues that it can be found in the life a person already has, no career overhaul required.</p>
-<p><span style="background-color: #fbeeb8;">"Designing your life so it feels more meaningful is the best alternative to despair and misery that we know. And besides, being a miserable individual never made the world less miserable as a whole."</span></p>
-<p>If you enjoy the preview, you can grab <a href="https://www.simonandschuster.com/books/How-to-Live-a-Meaningful-Life/Bill-Burnett/9781668084908">the full book</a> wherever you get your books.</p>
+        <p class="author">Adam Atler</p>
+        <p>Brie Larson has an Oscar, a Marvel franchise, and more than seventy acting awards, but her list of auditions that didn't work out is far longer. Airbnb was turned down by investor after investor. Amazon was once so bad at filling holiday orders that executives pitched in at fulfillment centers, and critics took to calling it Amazon.con.</p>
+<p>In <em>Anatomy of a Breakthrough</em>, NYU psychologist Adam Alter argues that this pairing of visible success and invisible struggle is nearly universal, and that people dwell on their own hurdles while minimizing the hurdles of others. Praised by Adam Grant and Cal Newport, it's a practical guide to getting unstuck.</p>
+<p><span style="background-color: #fbeeb8;">"People get stuck in every imaginable area of life. They get stuck in jobs they'd prefer to leave, and in relationships that leave them unfulfilled. They get stuck as writers, artists, composers, athletes, scientists, and entrepreneurs. Sometimes they're stuck for days, and other times for decades. Sometimes they stumble on breakthroughs, and other times they remain mired for life. We hear relatively little about these stubborn cases of stuckness because we're bombarded by popular success stories." </span></p>
+<p>If you enjoy the preview of <em>Anatomy of a Breakthrough</em>, you can pick <a href="https://www.simonandschuster.com/books/Anatomy-of-a-Breakthrough/Adam-Alter/9781982182977">up a copy wherever you get your books</a>.</p>
     
 
     <!-- feed -->
@@ -136,15 +137,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://susancain.substack.com/feed">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-quiet-life-with-susan-cain/cover_image_3zRLhsA.jpg"
+            <a href="https://www.brainhealthdecoded.com/feed">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/brain-health-decoded/cover_image_mzs7ZMO.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://susancain.substack.com/feed">The Quiet Life with Susan Cain</a>
+            <a href="https://www.brainhealthdecoded.com/feed">Brain Health, Decoded</a>
         </h3>
-        <p>In <em>The Quiet Life</em>, Susan Cain, author of <em>Quiet</em> and <em>Bittersweet</em>, writes about quiet, depth, and beauty. From <a href="https://wise.readwise.io/save?url=https://thequietlife.net/p/the-empty-nest-the-world-of-dreams">The Empty Nest, the World of Dreams</a>: <span style="background-color: #fbeeb8;">"Sometimes I can't get over the extent to which our dreams speak in deeply known and ancient symbols. And how, despite our 'dream-makers' speaking to us, night after night, in this powerful language, we rarely take the time to listen to them."</span></p>
+        <p>Readers who liked <a href="https://wise.readwise.io/save?url=https://x.com/DrDominicNg/status/2018735498622087346?rw_tt_thread=True">last week's top post</a> will find more in <em>Brain Health, Decoded</em>, where physician-scientist Dominic Ng turns brain research into practical tools. From <a href="https://wise.readwise.io/save?url=https://www.brainhealthdecoded.com/p/how-to-trick-your-brain-into-doing">How to Trick Your Brain into Doing Difficult Things</a>: <span style="background-color: #fbeeb8;">"You're not broken. You're not lazy. You're not lacking willpower. Your brain is simply doing what it evolved to do: avoid discomfort and conserve energy."</span></p>
     
 </main>
  ]]></content:encoded></item>
