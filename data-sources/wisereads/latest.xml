@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 165 — Every Tool's a Hammer by Adam Savage, How to Build Wealth as a Career Person, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-165/</link><description>
-Last week, we shared a preview of Anatomy of a Breakthrough: How to Get Unstuck When It Matters Most by Adam Alter. This week, we're sharing a preview of an on-sale title, Every Tool's a Hammer: Life Is What You Make It, by former MythBusters cohost Adam Savage.
+<item><title>Wisereads Vol. 166 — Finding Focus by Dr. Zelana Montminy, Christopher Marquis on The Case Against Business School, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-166/</link><description>
+Last week, we shared a preview of Every Tool's a Hammer: Life Is What You Make It, by former MythBusters cohost Adam Savage. This week, we're sharing a preview of Dr. Zelana Montminy's Finding Focus: Own Your Attention in an Age of Distraction.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 18 Oct 2026 20:38:28 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-165/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 25 Oct 2026 23:13:03 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-166/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 165 — Every Tool's a Hammer by Adam Savage, How to Build Wealth as a Career Person, and more</h1>
+    <h1>Wisereads Vol. 166 — Finding Focus by Dr. Zelana Montminy, Christopher Marquis on The Case Against Business School, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of <em>Anatomy of a Breakthrough: How to Get Unstuck When It Matters Most</em> by Adam Alter. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of an on-sale title, <em>Every Tool's a Hammer: Life Is What You Make It</em>,<em> </em>by former MythBusters cohost Adam Savage.</span></p>
+<p>Last week, we shared a preview of <em>Every Tool's a Hammer: Life Is What You Make It</em>,<em> </em>by former MythBusters cohost Adam Savage. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of Dr. Zelana Montminy's <em>Finding Focus: Own Your Attention in an Age of Distraction</em>.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://ghuntley.com/replaced/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/if-your-team-is-too-busy-doing/cover_image.jpg" alt="None" />
+        <a href="https://nytimes.com/2026/10/18/opinion/business-school-mba-harvard-cornell-cambridge.html/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-case-against-business-scho/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://ghuntley.com/replaced/">if your team is too busy doing their 'normal job' to experiment with AI, you're preparing them to be replaced</a>
+            <a href="https://nytimes.com/2026/10/18/opinion/business-school-mba-harvard-cornell-cambridge.html/">The Case Against Business School</a>
         </h3>
         <p class="author">
-            Geoffrey Huntley · Geoffrey Huntley
+            Christopher Marquis · New York Times
         </p>
-        <p>Geoffrey Huntley made his name on Ralph, his agent-loop coding technique, and he now aims his warning at managers. <span style="background-color: #fbeeb8;">"For somewhere in the next six months, you're going to have to start having some hard conversations. You'll have to start putting your employees on a vitality curve and ranking them. And naturally, competent employees who have been using AI will be ahead of competent engineers who haven't."</span></p>
+        <p>Coming from Christopher Marquis, a professor who's taught at Harvard, Cornell, and Cambridge, the argument in favor of shutting down business schools seems a little less absurd. <span style="background-color: #fbeeb8;">"The modern business school is designed to promote dealmaking, simplification and optimization. This mind-set has escaped containment and has spread to the wider world. Business-educated elites increasingly populate political leadership, bringing with them a transactional view of public life. One investigation found that out of 45 current heads of state who had studied in the United States, 10 were business majors, and six of those also earned M.B.A.s."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://asheradeniyi.com/2026/04/10/how-to-build-wealth-as-a-career-person/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-build-wealth-as-a-caree/cover_image.webp" alt="None" />
+        <a href="https://already-clean.goodfire.com/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/neural-networks-are-already-cl/cover_image.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://asheradeniyi.com/2026/04/10/how-to-build-wealth-as-a-career-person/">How to Build Wealth as a Career Person</a>
+            <a href="https://already-clean.goodfire.com/">Neural Networks Are Already Clean</a>
         </h3>
         <p class="author">
-            Asher Adeniyi · Asher&#x27;s Blog
+            Nick Cammarata · Goodfire
         </p>
-        <p>Several of Asher Adeniyi&rsquo;s friends built wealth working nine-to-five jobs by taking employment seriously and avoiding lifestyle inflation. <span style="background-color: #fbeeb8;">"Your grades may open the first door. Your grit may move you through the building. Your results may take you to the highest floors. But it is the discipline of turning income into ownership that allows the career you built to become wealth that lasts."</span></p>
+        <p>Interpretability researcher Nick Cammarata argues neural networks are far more legible than the field, himself included, long assumed. <span style="background-color: #fbeeb8;">"So there were two explanations for polysemanticity, and I helped propose both. In some ways, they're opposites: generalization groups similar things together and superposition groups unrelated things together. Superposition is the one the field bet on and, until recently, so did I. But I now think recursive generalization was basically right."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-to-be-more-ambitious-a-tut/cover_image.jpg" alt="None" />
+        <a href="https://claude.dev/blog/solving-code-review-at-anthropic/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-the-claude-code-team-does-/cover_image_eUFGtYa.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/">How to be more ambitious: A tutorial for humans with models</a>
+            <a href="https://claude.dev/blog/solving-code-review-at-anthropic/">How the Claude Code team does code review</a>
         </h3>
         <p class="author">
-            Felix Rieseberg · Felix Rieseberg
+            Addy Osmani · Anthropic
         </p>
-        <p>Ambition with AI is capped less by the models than by self-belief, says Anthropic's Felix Rieseberg. <span style="background-color: #fbeeb8;">"We humans have always been held back by what we believe possible &mdash; and what's worse, we usually trust ourselves only in very narrow disciplines. Michelangelo famously didn't want to paint the Sistine Chapel &mdash; you see, he was a sculptor, not a painter."</span></p>
+        <p>While the team building Claude Code more than doubled their merged PRs, they cut the revert rate by over 40 percent. The secret is in being intentional about when humans are part of the review process, explains Addy Osmani. <span style="background-color: #fbeeb8;">"Now, review runs continuously, more like spellcheck while you write. Most changes have been reviewed and fixed by Claude at least once before a human is asked to look. This catches most routine mistakes, and saves team attention for higher-level questions and scrutiny."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/shorts/fXgj67sL70I/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-you-should-look-at-last-ye/cover_image.jpg"
+        <a href="https://youtube.com/watch/?feature=youtu.be&amp;si=orS7EuFTMaWEvBUf&amp;v=rKgtm81yi94">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/what-sitting-all-day-does-to-y/cover_image.webp"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/shorts/fXgj67sL70I/">Why you should look at last year&#x27;s photos today</a>
+            <a href="https://youtube.com/watch/?feature=youtu.be&amp;si=orS7EuFTMaWEvBUf&amp;v=rKgtm81yi94">What Sitting All Day Does to Your Brain and Body | Keith Diaz</a>
         </h3>
-        <p class="author">Tiago Forte</p>
-        <p><em>Building a Second Brain</em> author Tiago Forte has a one-minute exercise: open the camera roll to this date last year. <span style="background-color: #fbeeb8;">"Whatever you found is like a time capsule returning you to a specific meaningful moment from the past. There's a whole year of memories like that sitting in your pocket right now."</span></p>
+        <p class="author">TED</p>
+        <p>Even regular exercisers face risks from sitting all day, says exercise scientist Keith Diaz. His lab searched for a fix: <span style="background-color: #fbeeb8;">"The answer we found was a five-minute walk every half hour. This reduced the blood sugar spike after eating by about 60 percent. That's the size of reduction you would expect to see if you put someone on medication to manage their blood sugar levels."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/patrickc/status/2108706907859116280/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/assorted-things-i-ve-been-mull/cover_image.jpg"
+        <a href="https://x.com/gregisenberg/status/2110414696037716372/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-spent-48-hours-in-sf-hanging/cover_image.jpeg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/patrickc/status/2108706907859116280/?rw_tt_thread=True">Assorted things I&#x27;ve been mulling over regarding agents</a>
+            <a href="https://x.com/gregisenberg/status/2110414696037716372/?rw_tt_thread=True">I spent 48 hours in SF hanging out with billionaires...</a>
         </h3>
-        <p class="author">Patrick Collison</p>
-        <p>Before forecasting what personal agents change for companies, Stripe's Patrick Collison considers what companies already are. <span style="background-color: #fbeeb8;">"Companies are in some sense the original superintelligence. It's often the case that they can use their amortized cognitive surplus to advance their interests against those of certain consumers: relative to the optimization capacity of companies, consumers can be inattentive, underinformed, irrational, etc."</span></p>
+        <p class="author">GREG ISENBERG</p>
+        <p>After 48 hours with SF billionaires and AI founders, Greg Isenberg came home with 21 learnings, including a new litmus test: <span style="background-color: #fbeeb8;">"At dinner, someone asked the table, 'If a new model drops next month, does your company get better or worse?' HALF the table went quiet! I think that's the best question to ask about any AI startup right now."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/artificial-intelligence-in-the/1466.pdf">Artificial Intelligence in the Firm: Bottlenecks in Software Production</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/building-a-practically-useful-/1474.pdf">Building a Practically Useful Theory of Goal Setting and Task Motivation: A 35-Year Odyssey</a>
         </h3>
-        <p class="author">Fiona Chen, James Stratton</p>
-        <p>Across 718 firms, Harvard economists Fiona Chen and James Stratton found AI's coding gains stalling downstream. <span style="background-color: #fbeeb8;">"We find evidence of a bottleneck from the code review process: The average time to review a pull request increases by 49%, the share of pull requests with changes requested nearly doubles, and the number of comments per pull request increases by 35%."</span></p>
+        <p class="author">Edwin A. Locke, Gary P. Latham</p>
+        <p>Thirty-five years of goal-setting research, summarized by psychologists Edwin Locke and Gary Latham in their classic 2002 paper, shows why setting vague goals backfires. <span style="background-color: #fbeeb8;">"We found that specific, difficult goals consistently led to higher performance than urging people to do their best... In short, when people are asked to do their best, they do not do so. This is because do-your-best goals have no external referent and thus are defined idiosyncratically."</span></p>
     
 
     <!-- epub -->
@@ -116,18 +116,19 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/509271836">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/every-tool-s-a-hammer/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/512371688">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/finding-focus/cover_image.jpg"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/509271836">Every Tool&#x27;s a Hammer</a>
+            <a href="https://readwise.io/reader/fd/512371688">Finding Focus</a>
         </h3>
-        <p class="author">Adam Savage</p>
-        <p>Adam Savage spent the 1980s as a jack of all trades in New York and San Francisco theater, then built models for commercials and films, then spent fourteen years blowing things up on MythBusters. <em>Every Tool's a Hammer</em> gathers what he's learned over four decades of making. It's his permission slip for readers to lean into their niche interests and get creating.</p>
-<p><span style="background-color: #fbeeb8;">"In my experience, bringing anything into the world requires at least a small helping of obsession. Obsession is the gravity of making. It moves things, it binds them together, and gives them structure. Passion (the good side of obsession) can create great things (like ideas), but if it becomes too singular a fixation (the bad side of obsession), it can be a destructive force." </span></p>
-<p>For a limited time in the U.S., you can grab the <a href="https://www.simonandschuster.com/books/Every-Tools-a-Hammer/Adam-Savage/9781982113490">full ebook</a> for $1.99 wherever you buy your ebooks.</p>
+        <p class="author">Dr. Zelana Montminy</p>
+        <p>Most of us know what it's like to pick up our phones for a quick task and lose twenty minutes, or finish a busy day wondering where our attention went. In <em>Finding Focus</em>, clinical psychologist Dr. Zelana Montminy explains why concentrating has become so difficult and what we can do about it.</p>
+<p>Drawing on the science of attention, she explores how sleep, nutrition, exercise, and digital distractions affect our ability to focus. She also shares practical techniques for improving memory, managing distractions, and being more present in everyday life, including a 21-day plan for building better habits. Montminy recalls her own wake-up call while answering a work email at a red light:</p>
+<p><span style="background-color: #fbeeb8;">"Waiting in my car at the intersection, I seized the moment of downtime to answer a work email. As I finished up, feeling pleased that I'd completed this task so efficiently, I became aware that my son was loudly pleading from his seat. 'Mom, I'm talking to you!' I hadn't heard a word he'd said." </span></p>
+<p>If you enjoy the preview of <em>Finding Focus</em>, you can <a href="https://www.hachettebookgroup.com/titles/zelana-montminy/finding-focus/9780306834356">pick up a copy</a> wherever you get your books.</p>
     
 
     <!-- feed -->
@@ -136,15 +137,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://georgesaunders.substack.com">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/story-club-with-george-saunder/cover_image.webp"
+            <a href="https://schooloftheunconformed.substack.com/feed">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/school-of-the-unconformed/cover_image.webp"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://georgesaunders.substack.com">Story Club with George Saunders</a>
+            <a href="https://schooloftheunconformed.substack.com/feed">School of the Unconformed</a>
         </h3>
-        <p>At <em>Story Club</em>, Booker winner George Saunders teaches the short story one reader question at a time. From <a href="https://wise.readwise.io/save?url=https://georgesaunders.substack.com/p/what-is-a-character-anyway">What Is "a Character," Anyway?</a>: <span style="background-color: #fbeeb8;">"When you think of it, a 'character' is really just a sequence of sentences. The sentences add up to an arc, or an impression &ndash; and from this, we intuit 'character.' But there's no character there apart from that accruing idea in your mind, an idea that is adjusted with each new sentence."</span></p>
+        <p>Ruth and Peco Gaskovski write School of the <em>Unconformed</em>, on family, education, and staying grounded in the "Machine Age." From <a href="https://wise.readwise.io/save?url=https://schooloftheunconformed.substack.com/p/art-is-in-the-i-of-the-creator-why">Art is in the 'I' of the Creator</a>: <span style="background-color: #fbeeb8;">"The power of AI art rests not in its originality, but its stunning conventionality. AI art is the glorification of the average."</span></p>
     
 </main>
  ]]></content:encoded></item>
