@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
 <channel>
-<item><title>Wisereads Vol. 166 — Finding Focus by Dr. Zelana Montminy, Christopher Marquis on The Case Against Business School, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-166/</link><description>
-Last week, we shared a preview of Every Tool's a Hammer: Life Is What You Make It, by former MythBusters cohost Adam Savage. This week, we're sharing a preview of Dr. Zelana Montminy's Finding Focus: Own Your Attention in an Age of Distraction.
+<item><title>Wisereads Vol. 167 — The Commanding Heights by Will Manidis and Joe Roberts, Venkatesh Rao on Cognitive Mercantilism, and more</title><link>https://wise.readwise.io/issues/wisereads-vol-167/</link><description>
+Last week, we shared a preview of Dr. Zelana Montminy's Finding Focus: Own Your Attention in an Age of Distraction. This week, we're sharing a full copy of The Commanding Heights by Will Manidis and Joe Roberts, a book-length essay that investors and the tech crowd have spent the week arguing over.
 Keep reading to add to your Reader account below 👇
 
-</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 25 Oct 2026 23:13:03 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-166/</guid><content:encoded><![CDATA[ 
+</description><author>hello@readwise.io (Readwise)</author><pubDate>Sun, 01 Nov 2026 22:06:41 +0000</pubDate><guid>https://wise.readwise.io/issues/wisereads-vol-167/</guid><content:encoded><![CDATA[ 
 
 
 <main>
-    <h1>Wisereads Vol. 166 — Finding Focus by Dr. Zelana Montminy, Christopher Marquis on The Case Against Business School, and more</h1>
+    <h1>Wisereads Vol. 167 — The Commanding Heights by Will Manidis and Joe Roberts, Venkatesh Rao on Cognitive Mercantilism, and more</h1>
     
     <p></p>
-<p>Last week, we shared a preview of <em>Every Tool's a Hammer: Life Is What You Make It</em>,<em> </em>by former MythBusters cohost Adam Savage. <span style="background-color: #fbeeb8;">This week, we're sharing a preview of Dr. Zelana Montminy's <em>Finding Focus: Own Your Attention in an Age of Distraction</em>.</span></p>
+<p>Last week, we shared a preview of Dr. Zelana Montminy's <em>Finding Focus: Own Your Attention in an Age of Distraction</em>. <span style="background-color: #fbeeb8;">This week, we're sharing a full copy of <em>The Commanding Heights</em> by Will Manidis and Joe Roberts, a book-length essay that investors and the tech crowd have spent the week arguing over.</span></p>
 <p>Keep reading to add to your Reader account below 👇</p>
 <p></p>
 <p></p>
@@ -20,49 +20,49 @@ Keep reading to add to your Reader account below 👇
     <hr />
     <h2>Most highlighted Articles of the week</h2>
     
-        <a href="https://nytimes.com/2026/10/18/opinion/business-school-mba-harvard-cornell-cambridge.html/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-case-against-business-scho/cover_image.jpg" alt="None" />
+        <a href="https://daringfireball.net/2026/10/the_iphone_duo/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-iphone-duo/cover_image_0YhnMNE.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://nytimes.com/2026/10/18/opinion/business-school-mba-harvard-cornell-cambridge.html/">The Case Against Business School</a>
+            <a href="https://daringfireball.net/2026/10/the_iphone_duo/">The iPhone Duo</a>
         </h3>
         <p class="author">
-            Christopher Marquis · New York Times
+            John Gruber · Daring Fireball
         </p>
-        <p>Coming from Christopher Marquis, a professor who's taught at Harvard, Cornell, and Cambridge, the argument in favor of shutting down business schools seems a little less absurd. <span style="background-color: #fbeeb8;">"The modern business school is designed to promote dealmaking, simplification and optimization. This mind-set has escaped containment and has spread to the wider world. Business-educated elites increasingly populate political leadership, bringing with them a transactional view of public life. One investigation found that out of 45 current heads of state who had studied in the United States, 10 were business majors, and six of those also earned M.B.A.s."</span></p>
+        <p>Apple's backordered foldable has John Gruber, a twenty-year reviewer of Apple hardware, feeling split. <span style="background-color: #fbeeb8;">"The Duo name is perfect. It truly is like having two devices in one. The outer device is, by far, the worst iPhone Apple has ever made. It's a miserable fat little thing. The inner device is a splendid, joyful, beautiful tablet, with a UI that out-iPads the iPad."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://already-clean.goodfire.com/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/neural-networks-are-already-cl/cover_image.png" alt="None" />
+        <a href="https://apollo.com/wealth/insights-news/insights/daily-spark/no-signs-of-ai-payoff-outside-the-tech-sector/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/no-signs-of-ai-payoff-outside-/cover_image_gZFoZR3.png" alt="None" />
         </a>
 
         <h3>
-            <a href="https://already-clean.goodfire.com/">Neural Networks Are Already Clean</a>
+            <a href="https://apollo.com/wealth/insights-news/insights/daily-spark/no-signs-of-ai-payoff-outside-the-tech-sector/">No Signs of AI Payoff Outside the Tech Sector</a>
         </h3>
         <p class="author">
-            Nick Cammarata · Goodfire
+            Torsten Slok · Apollo Global Management, Inc.
         </p>
-        <p>Interpretability researcher Nick Cammarata argues neural networks are far more legible than the field, himself included, long assumed. <span style="background-color: #fbeeb8;">"So there were two explanations for polysemanticity, and I helped propose both. In some ways, they're opposites: generalization groups similar things together and superposition groups unrelated things together. Superposition is the one the field bet on and, until recently, so did I. But I now think recursive generalization was basically right."</span></p>
+        <p>Zero. That is the financial payoff AI has delivered outside tech, says Apollo chief economist Torsten Slok. <span style="background-color: #fbeeb8;">"AI may be a great calculator, but in business, intelligence is mostly judgment. Judgment depends on context, and the answer varies with which human or which model you ask."</span></p>
 
         
             <hr class="divider" />
         
     
-        <a href="https://claude.dev/blog/solving-code-review-at-anthropic/">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-the-claude-code-team-does-/cover_image_eUFGtYa.png" alt="None" />
+        <a href="https://contraptions.venkateshrao.com/p/cognitive-mercantilism/">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/cognitive-mercantilism/cover_image.jpg" alt="None" />
         </a>
 
         <h3>
-            <a href="https://claude.dev/blog/solving-code-review-at-anthropic/">How the Claude Code team does code review</a>
+            <a href="https://contraptions.venkateshrao.com/p/cognitive-mercantilism/">Cognitive Mercantilism</a>
         </h3>
         <p class="author">
-            Addy Osmani · Anthropic
+            Venkatesh Rao · venkateshrao.com
         </p>
-        <p>While the team building Claude Code more than doubled their merged PRs, they cut the revert rate by over 40 percent. The secret is in being intentional about when humans are part of the review process, explains Addy Osmani. <span style="background-color: #fbeeb8;">"Now, review runs continuously, more like spellcheck while you write. Most changes have been reviewed and fixed by Claude at least once before a human is asked to look. This catches most routine mistakes, and saves team attention for higher-level questions and scrutiny."</span></p>
+        <p>After reading Joyce Appleby's history of capitalism, Venkatesh Rao suggests that much of today's AI panic reflects "cognitive mercantilism," treating intelligence as a scarce resource to hoard. <span style="background-color: #fbeeb8;">"The crucial economic question then becomes not how much intelligence people can produce, but how much intelligence they can find uses for."</span></p>
 
         
     
@@ -71,15 +71,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted YouTube Video of the week</h2>
-        <a href="https://youtube.com/watch/?feature=youtu.be&amp;si=orS7EuFTMaWEvBUf&amp;v=rKgtm81yi94">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/what-sitting-all-day-does-to-y/cover_image.webp"
+        <a href="https://youtube.com/watch/?v=H9Bdv3t5VtQ">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/peter-thiel-the-real-danger-of/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://youtube.com/watch/?feature=youtu.be&amp;si=orS7EuFTMaWEvBUf&amp;v=rKgtm81yi94">What Sitting All Day Does to Your Brain and Body | Keith Diaz</a>
+            <a href="https://youtube.com/watch/?v=H9Bdv3t5VtQ">Peter Thiel: The Real Danger of AI Isn&#x27;t What You Think</a>
         </h3>
-        <p class="author">TED</p>
-        <p>Even regular exercisers face risks from sitting all day, says exercise scientist Keith Diaz. His lab searched for a fix: <span style="background-color: #fbeeb8;">"The answer we found was a five-minute walk every half hour. This reduced the blood sugar spike after eating by about 60 percent. That's the size of reduction you would expect to see if you put someone on medication to manage their blood sugar levels."</span></p>
+        <p class="author">The Builders</p>
+        <p>Pressed by biographer Walter Isaacson, PayPal co-founder Peter Thiel revisits his prophecy. <span style="background-color: #fbeeb8;">"The way the Antichrist would take over the world is you talk about Armageddon nonstop. You talk about existential risk nonstop. The Antichrist wouldn't seize power by creating an AI apocalypse, but by convincing everyone that the apocalypse was coming."</span></p>
     
 
     <!-- twitter -->
@@ -87,15 +87,15 @@ Keep reading to add to your Reader account below 👇
     
         <hr />
         <h2>Most highlighted Twitter Thread of the week</h2>
-        <a href="https://x.com/gregisenberg/status/2110414696037716372/?rw_tt_thread=True">
-            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/i-spent-48-hours-in-sf-hanging/cover_image.jpeg"
+        <a href="https://x.com/thorstenball/status/2114386050638336082/?rw_tt_thread=True">
+            <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/how-i-work-with-agents/cover_image.jpg"
                  alt="None" />
         </a>
         <h3>
-            <a href="https://x.com/gregisenberg/status/2110414696037716372/?rw_tt_thread=True">I spent 48 hours in SF hanging out with billionaires...</a>
+            <a href="https://x.com/thorstenball/status/2114386050638336082/?rw_tt_thread=True">How I work with Agents</a>
         </h3>
-        <p class="author">GREG ISENBERG</p>
-        <p>After 48 hours with SF billionaires and AI founders, Greg Isenberg came home with 21 learnings, including a new litmus test: <span style="background-color: #fbeeb8;">"At dinner, someone asked the table, 'If a new model drops next month, does your company get better or worse?' HALF the table went quiet! I think that's the best question to ask about any AI startup right now."</span></p>
+        <p class="author">Thorsten Ball</p>
+        <p>Thorsten Ball builds Sourcegraph's Amp coding agent, and he found a way to stop hallucinations. <span style="background-color: #fbeeb8;">"What stopped hallucinations? Tool calls. They let agents touch our reality. If the agent can't see something, it makes it up."</span></p>
     
 
     <!-- pdf -->
@@ -104,10 +104,10 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Most highlighted PDF of the week</h2>
         <h3>
-            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/building-a-practically-useful-/1474.pdf">Building a Practically Useful Theory of Goal Setting and Task Motivation: A 35-Year Odyssey</a>
+            <a href="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/why-is-ai-generated-language-s/1482.pdf">Why is AI-generated language so hard to understand?</a>
         </h3>
-        <p class="author">Edwin A. Locke, Gary P. Latham</p>
-        <p>Thirty-five years of goal-setting research, summarized by psychologists Edwin Locke and Gary Latham in their classic 2002 paper, shows why setting vague goals backfires. <span style="background-color: #fbeeb8;">"We found that specific, difficult goals consistently led to higher performance than urging people to do their best... In short, when people are asked to do their best, they do not do so. This is because do-your-best goals have no external referent and thus are defined idiosyncratically."</span></p>
+        <p class="author">Thomas Hikaru Clark, Matias B. Martin, Kyle Mahowald</p>
+        <p>Linguists at NYU and UT Austin demonstrate the problem of AI-generated prose in the first line of their paper: <span style="background-color: #fbeeb8;">"Your instinct is right; the convoluted sentence you are currently reading is quietly eating its own reader-patience budget &mdash; footnote it. If you saw that sentence in the wild, you might suspect that it's the product of a modern LLM."</span></p>
     
 
     <!-- epub -->
@@ -116,19 +116,18 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Hand-picked book of the week</h2>
         
-            <a href="https://readwise.io/reader/fd/512371688">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/finding-focus/cover_image.jpg"
+            <a href="https://readwise.io/reader/fd/515074358">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/the-commanding-heights/cover_image.png"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://readwise.io/reader/fd/512371688">Finding Focus</a>
+            <a href="https://readwise.io/reader/fd/515074358">The Commanding Heights</a>
         </h3>
-        <p class="author">Dr. Zelana Montminy</p>
-        <p>Most of us know what it's like to pick up our phones for a quick task and lose twenty minutes, or finish a busy day wondering where our attention went. In <em>Finding Focus</em>, clinical psychologist Dr. Zelana Montminy explains why concentrating has become so difficult and what we can do about it.</p>
-<p>Drawing on the science of attention, she explores how sleep, nutrition, exercise, and digital distractions affect our ability to focus. She also shares practical techniques for improving memory, managing distractions, and being more present in everyday life, including a 21-day plan for building better habits. Montminy recalls her own wake-up call while answering a work email at a red light:</p>
-<p><span style="background-color: #fbeeb8;">"Waiting in my car at the intersection, I seized the moment of downtime to answer a work email. As I finished up, feeling pleased that I'd completed this task so efficiently, I became aware that my son was loudly pleading from his seat. 'Mom, I'm talking to you!' I hadn't heard a word he'd said." </span></p>
-<p>If you enjoy the preview of <em>Finding Focus</em>, you can <a href="https://www.hachettebookgroup.com/titles/zelana-montminy/finding-focus/9780306834356">pick up a copy</a> wherever you get your books.</p>
+        <p class="author">Will Manidis and Joe Roberts</p>
+        <p>The men who built locomotives didn't get the railroad fortunes. Will Manidis and Joe Roberts think the AI labs are in the same position, and that most of the money will go to whoever controls distribution and payments. In <em>The Commanding Heights</em>, they argue those payments will increasingly run on a stablecoin dollar.</p>
+<p><span style="background-color: #fbeeb8;">"The rails most widely used will become inventories of human activity... And since the underlying digital infrastructure of these apps is American, and the oldest rail is the dollar, it means that increasing usage of these machines results in an increasing demand for dollars. The power to manufacture Dollar demand and intermediate its transactions is power itself."</span></p>
+<p>Will and Joe published <a href="https://commanding-heights.com/"><em>The Commanding Heights</em> online</a> and as an EPUB, available to read for free.</p>
     
 
     <!-- feed -->
@@ -137,15 +136,15 @@ Keep reading to add to your Reader account below 👇
         <hr />
         <h2>Handpicked RSS feed of the week</h2>
         
-            <a href="https://schooloftheunconformed.substack.com/feed">
-                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/school-of-the-unconformed/cover_image.webp"
+            <a href="https://davidepstein.substack.com/">
+                <img class="document-image" src="https://readwise-assets.s3.amazonaws.com/media/wisereads/articles/range-widely/cover_image.webp"
                      alt="None" />
             </a>
         
         <h3>
-            <a href="https://schooloftheunconformed.substack.com/feed">School of the Unconformed</a>
+            <a href="https://davidepstein.substack.com/">Range Widely</a>
         </h3>
-        <p>Ruth and Peco Gaskovski write School of the <em>Unconformed</em>, on family, education, and staying grounded in the "Machine Age." From <a href="https://wise.readwise.io/save?url=https://schooloftheunconformed.substack.com/p/art-is-in-the-i-of-the-creator-why">Art is in the 'I' of the Creator</a>: <span style="background-color: #fbeeb8;">"The power of AI art rests not in its originality, but its stunning conventionality. AI art is the glorification of the average."</span></p>
+        <p><em>Range</em> author David Epstein writes a newsletter for generalists. From <a href="https://wise.readwise.io/save?url=https://davidepstein.substack.com/p/happiness-is-a-2x2-matrix-691">Happiness is a 2x2 Matrix</a>: <span style="background-color: #fbeeb8;">"Psychologists like Laurie Santos have long been extolling the happiness-boosting impacts of conscious gratitude, and even of keeping gratitude journals. If I start a gratitude journal, my first entry will be a 2x2 matrix with a big box for the things I don't want and don't have."</span></p>
     
 </main>
  ]]></content:encoded></item>
